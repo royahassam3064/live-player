@@ -1,9 +1,12 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="false"
         android:label="Kora TV"
+        android:icon="@drawable/kora_icon"
+        android:roundIcon="@drawable/kora_icon"
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:usesCleartextTraffic="false">
 
@@ -17,5 +20,7 @@
             </intent-filter>
 
         </activity>
+
     </application>
+
 </manifest>
