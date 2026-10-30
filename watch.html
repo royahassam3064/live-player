@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#000">
+  <title>مشاهدة البث</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="config.js"></script>
+  <script defer src="watch.js"></script>
+</head>
+<body class="watch-page">
+  <header class="topbar">
+    <a class="admin-link" href="index.html">رجوع للمباريات</a>
+    <div class="brand">البث المباشر</div>
+  </header>
+  <main class="container">
+    <h1 id="watch-title">جارٍ تحميل البث...</h1>
+    <div class="video-frame" id="video-frame">
+      <p class="notice">جارٍ تحميل المشغّل...</p>
+    </div>
+    <p class="footer-note">يجب أن يسمح مصدر البث بالتضمين داخل المواقع. بعض الروابط لا تعمل داخل إطار iframe.</p>
+  </main>
+</body>
+</html>

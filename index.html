@@ -1,5 +1,31 @@
-مشغل البث المباشر<style> * { box-sizing: border-box; } html, body { margin: 0; padding: 0; width: 100%; min-height: 100%; background-color: #000; color: #fff; font-family: Arial, sans-serif; } h3 { text-align: center; padding: 12px; margin: 0; font-size: 20px; } .player { width: 100%; aspect-ratio: 16 / 9; background-color: #000; overflow: hidden; } iframe { display: block; width: 100%; height: 100%; border: none; } </style> 
-
-مشغل البث المباشر
-
-<div class="player"> <iframe src="https://912acsss8af382.sirtv.top/playervv5.php?match=4732657&amp;key=9f39972b67d6ce22189507d008acwc26" title="مشغل البث المباشر" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen scrolling="no"> </iframe> </div> 
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131b">
+  <title>مباريات اليوم</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="config.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">⚽ مباريات اليوم</div>
+    <a class="admin-link" href="admin.html">لوحة الإدارة</a>
+  </header>
+  <main class="container">
+    <nav class="day-tabs" aria-label="أيام المباريات">
+      <button class="day-tab" data-day="-1">الأمس</button>
+      <button class="day-tab active" data-day="0">اليوم</button>
+      <button class="day-tab" data-day="1">الغد</button>
+    </nav>
+    <div id="date-label" class="date-label"></div>
+    <section id="matches" class="matches">
+      <p class="notice">جارٍ تحميل المباريات...</p>
+    </section>
+    <p class="footer-note">توقيت المباريات حسب توقيت بغداد.</p>
+  </main>
+</body>
+</html>

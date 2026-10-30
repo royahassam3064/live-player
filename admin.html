@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10131b">
+  <title>إدارة المباريات</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="config.js"></script>
+  <script defer src="admin.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">⚙️ إدارة المباريات</div>
+    <a class="admin-link" href="index.html">عرض الموقع</a>
+  </header>
+  <main class="container">
+    <section id="login-panel" class="panel">
+      <h1>تسجيل دخول الإدارة</h1>
+      <label>البريد الإلكتروني<input id="email" type="email" autocomplete="username" placeholder="البريد الإلكتروني"></label>
+      <label>كلمة المرور<input id="password" type="password" autocomplete="current-password" placeholder="كلمة المرور"></label>
+      <button id="login-btn" class="primary">دخول</button>
+      <p id="login-message" class="message"></p>
+    </section>
+
+    <section id="admin-panel" class="panel" hidden>
+      <div class="panel-heading">
+        <h1 id="form-title">إضافة مباراة</h1>
+        <button id="logout-btn" class="secondary">تسجيل الخروج</button>
+      </div>
+      <form id="match-form">
+        <input id="match-id" type="hidden">
+        <div class="form-grid">
+          <label>الفريق الأول<input id="home-team" required maxlength="80"></label>
+          <label>الفريق الثاني<input id="away-team" required maxlength="80"></label>
+          <label>رابط شعار الفريق الأول<input id="home-logo" type="url" placeholder="https://..."></label>
+          <label>رابط شعار الفريق الثاني<input id="away-logo" type="url" placeholder="https://..."></label>
+          <label>موعد المباراة (توقيت بغداد)<input id="match-time" type="datetime-local" required></label>
+          <label class="full">رابط البث (اختياري)<input id="stream-url" type="url" placeholder="https://..."></label>
+        </div>
+        <div class="form-actions">
+          <button class="primary" type="submit">حفظ المباراة</button>
+          <button class="secondary" type="button" id="cancel-edit" hidden>إلغاء التعديل</button>
+        </div>
+        <p id="form-message" class="message"></p>
+      </form>
+      <hr>
+      <h2>المباريات المضافة</h2>
+      <div id="admin-matches"><p class="notice">جارٍ التحميل...</p></div>
+    </section>
+  </main>
+</body>
+</html>
