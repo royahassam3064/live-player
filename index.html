@@ -4,27 +4,50 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10131b">
-  <title>مباريات اليوم</title>
+  <title>Kora TV - مباريات اليوم</title>
+
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="config.js"></script>
   <script defer src="app.js"></script>
+
+  <style>
+    .brand {
+      display: flex;
+      align-items: center;
+    }
+
+    .brand img {
+      width: 155px;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+  </style>
 </head>
+
 <body>
   <header class="topbar">
-    <div class="brand">⚽ مباريات اليوم</div>
+    <div class="brand">
+      <img src="kora-tv-logo.png" alt="Kora TV">
+    </div>
+
     <a class="admin-link" href="admin.html">لوحة الإدارة</a>
   </header>
+
   <main class="container">
     <nav class="day-tabs" aria-label="أيام المباريات">
       <button class="day-tab" data-day="-1">الأمس</button>
       <button class="day-tab active" data-day="0">اليوم</button>
       <button class="day-tab" data-day="1">الغد</button>
     </nav>
+
     <div id="date-label" class="date-label"></div>
+
     <section id="matches" class="matches">
       <p class="notice">جارٍ تحميل المباريات...</p>
     </section>
+
     <p class="footer-note">توقيت المباريات حسب توقيت بغداد.</p>
   </main>
 </body>
