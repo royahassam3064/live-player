@@ -3,15 +3,21 @@ package com.koratv.app;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Gravity;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebSettings;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 
 public class MainActivity extends Activity {
 
     WebView webView;
+    FrameLayout fullscreenLayout;
     View customView;
     WebChromeClient.CustomViewCallback customCallback;
 
@@ -54,7 +60,39 @@ public class MainActivity extends Activity {
                     View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 );
 
-                setContentView(customView);
+                fullscreenLayout = new FrameLayout(MainActivity.this);
+
+                fullscreenLayout.addView(
+                    customView,
+                    new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT
+                    )
+                );
+
+                // شعار Kora TV
+                ImageView logo = new ImageView(MainActivity.this);
+                logo.setImageResource(R.drawable.kora_icon);
+                logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                logo.setPadding(8, 8, 8, 8);
+
+                GradientDrawable background = new GradientDrawable();
+                background.setColor(0xCC000000);
+                background.setCornerRadius(12);
+                logo.setBackground(background);
+
+                FrameLayout.LayoutParams logoParams =
+                    new FrameLayout.LayoutParams(
+                        85,
+                        85,
+                        Gravity.BOTTOM | Gravity.LEFT
+                    );
+
+                logoParams.setMargins(16, 0, 0, 16);
+
+                fullscreenLayout.addView(logo, logoParams);
+
+                setContentView(fullscreenLayout);
             }
 
             @Override
