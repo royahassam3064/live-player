@@ -204,33 +204,28 @@ hr{
   border:0
 }
 
-/* شعار Kora TV أعلى يمين البث */
+/* شعار SIR TV داخل إطار المشغّل */
 .player-kora-logo{
-  position:absolute;
-  top:12px;
-  right:12px;
-  width:85px;
-  height:auto;
-  object-fit:contain;
-  z-index:9999;
-  opacity:.9;
-  pointer-events:none
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 85px;
+  height: auto;
+  max-height: 45px;
+  object-fit: contain;
+  padding: 7px 10px;
+  background: rgba(0,0,0,.75);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 9px;
+  z-index: 10;
+  pointer-events: none;
 }
 
-.watch-page{background:#08090d}
-
-[hidden]{display:none!important}
-
-@media(max-width:560px){
-  .form-grid{grid-template-columns:1fr}
-  .full{grid-column:auto}
-  .match-bottom{align-items:flex-start;flex-direction:column}
-  .admin-row{align-items:flex-start;flex-direction:column}
-  .topbar{padding:14px}
-  .brand{font-size:17px}
+@media(max-width: 560px){
   .player-kora-logo{
-    width:65px;
-    top:8px;
-    right:8px
+    width: 70px;
+    top: 8px;
+    right: 8px;
   }
 }
+
