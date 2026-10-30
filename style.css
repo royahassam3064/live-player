@@ -204,28 +204,30 @@ hr{
   border:0
 }
 
-/* شعار SIR TV داخل إطار المشغّل */
+/* شعار Kora TV في الزاوية العليا اليمنى مع الخلفية */
 .player-kora-logo{
   position: absolute;
   top: 12px;
   right: 12px;
-  width: 85px;
+  width: 90px; /* العرض المناسب لشعار Kora TV */
   height: auto;
-  max-height: 45px;
+  max-height: 40px;
   object-fit: contain;
-  padding: 7px 10px;
-  background: rgba(0,0,0,.75);
-  border: 1px solid rgba(255,255,255,.15);
-  border-radius: 9px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.75); /* الخلفية الداكنة الشفافة */
+  border: 1px solid rgba(255, 255, 255, 0.15); /* الحدود الخفيفة */
+  border-radius: 8px; /* الحواف المدورة */
   z-index: 10;
   pointer-events: none;
 }
 
-@media(max-width: 560px){
+@media (max-width: 560px){
   .player-kora-logo{
-    width: 70px;
+    width: 75px;
     top: 8px;
     right: 8px;
+    padding: 5px 8px;
   }
 }
+
 
