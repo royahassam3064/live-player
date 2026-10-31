@@ -1,261 +1,108 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
 
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10131b">
-
-  <title>Kora TV - مباريات اليوم</title>
-
-  <link rel="stylesheet" href="style.css">
-
+  <title>Kora TV</title>  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="config.js"></script>
-  <script defer src="app.js"></script>
-
-  <style>
-    .brand {
-      display: flex;
-      align-items: center;
-    }
-
-    .brand img {
-      width: 155px;
-      height: auto;
-      display: block;
-      object-fit: contain;
-    }
-
-    .player-container {
-      position: relative;
-    }
-
-    .player-kora-logo {
-      position: absolute;
-      top: 12px;
-      right: 12px;
-      width: 85px;
-      height: auto;
-      object-fit: contain;
-      z-index: 999;
-      pointer-events: none;
-      opacity: 0.9;
-    }
-
-    /* القائمة الثانية */
-    .menu-button {
-      background: #202938;
-      color: white;
-      border: 1px solid #344158;
-      padding: 10px 16px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 14px;
-      margin-right: 8px;
-    }
-
-    .menu-button:hover {
-      background: #293950;
-    }
-
-    .about-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.8);
-      z-index: 99999;
-      justify-content: center;
-      align-items: center;
-      padding: 18px;
-    }
-
-    .about-overlay.show {
-      display: flex;
-    }
+  <script defer src="app.js"></script>  <style>
+    .brand { display:flex; align-items:center; }
+    .brand img { width:145px; height:auto; object-fit:contain; }
+    .page-section { display:none; }
+    .page-section.active { display:block; }
 
     .about-card {
-      background: #151c29;
-      color: white;
-      width: 100%;
-      max-width: 390px;
-      padding: 25px 20px;
-      border-radius: 18px;
-      border: 1px solid #344158;
-      text-align: center;
-      position: relative;
+      background:#171e2c;
+      border:1px solid #2b374a;
+      border-radius:16px;
+      padding:24px 18px;
+      text-align:center;
+      max-width:430px;
+      margin:20px auto;
     }
 
-    .about-logo {
-      width: 110px;
-      height: auto;
-      object-fit: contain;
-      margin-bottom: 12px;
-    }
-
-    .about-card h2 {
-      margin: 5px 0;
-      font-size: 24px;
-    }
-
-    .about-description {
-      color: #aab5c8;
-      font-size: 14px;
-      margin-bottom: 22px;
-    }
-
+    .about-logo { width:110px; object-fit:contain; }
+    .about-description { color:#a7b2c5; }
     .social-link {
-      display: block;
-      text-decoration: none;
-      color: white;
-      background: #222e40;
-      border: 1px solid #344158;
-      padding: 13px;
-      border-radius: 11px;
-      margin-top: 10px;
-      font-size: 15px;
-      transition: .2s;
+      display:block;
+      background:#222e40;
+      border:1px solid #344158;
+      padding:13px;
+      border-radius:11px;
+      margin-top:10px;
     }
-
-    .social-link:hover {
-      background: #30425b;
-    }
-
-    .about-close {
-      position: absolute;
-      top: 10px;
-      left: 12px;
-      background: transparent;
-      border: none;
-      color: white;
-      font-size: 25px;
-      cursor: pointer;
-    }
-
-    .about-version {
-      color: #8795aa;
-      font-size: 12px;
-      margin-top: 22px;
-    }
-  </style>
-</head>
-
-<body>
-
-  <header class="topbar">
-
-    <div class="brand">
-      <img src="kora-tv-logo.png" alt="Kora TV">
-    </div>
-
-    <div>
-      <a class="admin-link" href="admin.html">لوحة الإدارة</a>
-
-      <button class="menu-button" onclick="openAbout()">
-        ☰ حول Kora TV
-      </button>
-    </div>
-
-  </header>
-
-  <main class="container">
-
+    .about-version { color:#8795aa; margin-top:22px; font-size:12px; }
+    .section-title { text-align:center; margin:15px 0; }
+  </style></head><body><header class="topbar">
+  <div class="brand">
+    <img src="kora-tv-logo.png" alt="Kora TV">
+  </div>
+  <a class="admin-link" href="admin.html">لوحة الإدارة</a>
+</header><main class="container">  <!-- المباريات -->  <section id="matches-section" class="page-section active">
     <nav class="day-tabs" aria-label="أيام المباريات">
       <button class="day-tab" data-day="-1">الأمس</button>
       <button class="day-tab active" data-day="0">اليوم</button>
       <button class="day-tab" data-day="1">الغد</button>
-    </nav>
+    </nav><div id="date-label" class="date-label"></div>
 
-    <div id="date-label" class="date-label"></div>
+<div id="matches" class="matches">
+  <p class="notice">جارٍ تحميل المباريات...</p>
+</div>
 
-    <section id="matches" class="matches">
-      <p class="notice">جارٍ تحميل المباريات...</p>
-    </section>
+<p class="footer-note">توقيت المباريات حسب توقيت بغداد.</p>
 
-    <p class="footer-note">
-      توقيت المباريات حسب توقيت بغداد.
-    </p>
-
-  </main>
-
-  <!-- نافذة حول التطبيق -->
-  <div class="about-overlay" id="aboutOverlay"
-       onclick="closeAboutOutside(event)">
-
-    <div class="about-card">
-
-      <button class="about-close" onclick="closeAbout()">
-        ×
-      </button>
-
-      <img
-        src="kora-tv-logo.png"
-        alt="Kora TV"
-        class="about-logo"
-      >
-
-      <h2>Kora TV ⚽</h2>
-
-      <p class="about-description">
-        عالم كرة القدم بين يديك
-      </p>
-
-      <a class="social-link"
-         href="https://www.tiktok.com/@fd79"
-         target="_blank"
-         rel="noopener noreferrer">
-        👨‍💻 حساب المطور على TikTok<br>
-        @fd79
-      </a>
-
-      <a class="social-link"
-         href="https://www.tiktok.com/@kora_tv_2"
-         target="_blank"
-         rel="noopener noreferrer">
-        🎵 حساب Kora TV على TikTok<br>
-        @kora_tv_2
-      </a>
-
-      <a class="social-link"
-         href="https://www.instagram.com/kora_tv_2/"
-         target="_blank"
-         rel="noopener noreferrer">
-        📸 حساب Kora TV على Instagram<br>
-        @kora_tv_2
-      </a>
-
-      <p class="about-version">
-        Kora TV v1.3<br>
-        © جميع الحقوق محفوظة
-      </p>
-
+  </section>  <!-- البث المباشر -->  <section id="live-section" class="page-section">
+    <h2 class="section-title">📺 البث المباشر</h2>
+    <div id="live-matches" class="matches">
+      <p class="notice">جارٍ تحميل البث...</p>
     </div>
+  </section>  <!-- الأخبار -->  <section id="news-section" class="page-section">
+    <h2 class="section-title">📰 أخبار كرة القدم</h2>
+    <div id="news-list" class="matches">
+      <p class="notice">قسم الأخبار قيد التجهيز.</p>
+    </div>
+  </section>  <!-- حول Kora TV -->  <section id="about-section" class="page-section">
+    <div class="about-card">
+      <img src="kora-tv-logo.png" alt="Kora TV" class="about-logo">
+      <h2>Kora TV ⚽</h2>
+      <p class="about-description">عالم كرة القدم بين يديك</p>  <a class="social-link" href="https://www.tiktok.com/@fd79"
+     target="_blank" rel="noopener noreferrer">
+    👨‍💻 حساب المطور على TikTok<br>@fd79
+  </a>
 
-  </div>
+  <a class="social-link" href="https://www.tiktok.com/@kora_tv_2"
+     target="_blank" rel="noopener noreferrer">
+    🎵 حساب Kora TV على TikTok<br>@kora_tv_2
+  </a>
 
-  <script>
-    function openAbout() {
-      document.getElementById("aboutOverlay")
-        .classList.add("show");
-    }
+  <a class="social-link" href="https://www.instagram.com/kora_tv_2/"
+     target="_blank" rel="noopener noreferrer">
+    📸 حساب Kora TV على Instagram<br>@kora_tv_2
+  </a>
 
-    function closeAbout() {
-      document.getElementById("aboutOverlay")
-        .classList.remove("show");
-    }
+  <p class="about-version">
+    Kora TV v1.3<br>
+    تطوير وبرمجة: @fd79<br>
+    © جميع الحقوق محفوظة
+  </p>
+</div>
 
-    function closeAboutOutside(event) {
-      if (event.target.id === "aboutOverlay") {
-        closeAbout();
-      }
-    }
-
-    document.addEventListener("keydown", function(event) {
-      if (event.key === "Escape") {
-        closeAbout();
-      }
-    });
-  </script>
-
-</body>
+  </section></main><!-- شريط التنقل السفلي --><nav class="bottom-nav" aria-label="التنقل الرئيسي">
+  <button class="nav-item active" data-page="matches">
+    <span>⚽</span>
+    <small>المباريات</small>
+  </button>  <button class="nav-item" data-page="live">
+    <span>📺</span>
+    <small>البث المباشر</small>
+  </button>  <button class="nav-item" data-page="news">
+    <span>📰</span>
+    <small>الأخبار</small>
+  </button>  <button class="nav-item" data-page="about">
+    <span>ℹ️</span>
+    <small>حول Kora TV</small>
+  </button>
+</nav></body>
 </html>
