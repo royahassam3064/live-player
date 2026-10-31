@@ -1,3 +1,4 @@
+```javascript
 (() => {
   const client = window.supabase.createClient(
     window.SUPABASE_URL,
@@ -51,19 +52,82 @@
     return escapeHtml(s);
   }
 
-  function card(match) {
+  function getStatus(match) {
+    const status = String(match.match_status || "").toUpperCase();
     const now = Date.now();
     const start = new Date(match.match_time).getTime();
 
-    const showStream = !!match.stream_url &&
+    if (["FINISHED", "AWARDED"].includes(status)) {
+      return { text: "انتهت", type: "finished" };
+    }
+
+    if (status === "IN_PLAY") {
+      return { text: "مباشر", type: "live" };
+    }
+
+    if (status === "PAUSED") {
+      return { text: "استراحة", type: "paused" };
+    }
+
+    if (status === "SUSPENDED") {
+      return { text: "متوقفة مؤقتاً", type: "paused" };
+    }
+
+    if (status === "POSTPONED") {
+      return { text: "تأجلت", type: "postponed" };
+    }
+
+    if (status === "CANCELLED") {
+      return { text: "أُلغيت", type: "cancelled" };
+    }
+
+    if (status === "TIMED") {
+      return { text: "موعد المباراة محدد", type: "upcoming" };
+    }
+
+    if (status === "SCHEDULED") {
+      return { text: "لم تبدأ بعد", type: "upcoming" };
+    }
+
+    // حالات المباريات التي لا تحتوي على match_status
+    if (Number.isFinite(start)) {
+      if (now < start - 60 * 60 * 1000) {
+        return { text: "لم تبدأ بعد", type: "upcoming" };
+      }
+
+      if (now < start) {
+        return { text: "تبدأ قريباً", type: "upcoming" };
+      }
+
+      if (now <= start + 4 * 60 * 60 * 1000) {
+        return { text: "مباشر / جارية", type: "live" };
+      }
+
+      return { text: "انتهت", type: "finished" };
+    }
+
+    return { text: "غير محدد", type: "upcoming" };
+  }
+
+  function card(match, showWatch = false) {
+    const now = Date.now();
+    const start = new Date(match.match_time).getTime();
+    const status = getStatus(match);
+
+    const canWatch =
+      showWatch &&
+      !!match.stream_url &&
+      status.type !== "finished" &&
+      status.type !== "cancelled" &&
+      status.type !== "postponed" &&
       now >= start - 60 * 60 * 1000 &&
       now <= start + 4 * 60 * 60 * 1000;
 
-    const status =
-      now < start - 60 * 60 * 1000 ? "لم تبدأ بعد" :
-      now < start ? "تبدأ قريباً" :
-      now <= start + 4 * 60 * 60 * 1000 ? "مباشر / جارية" :
-      "انتهت";
+    const hasScore =
+      match.home_score !== null &&
+      match.home_score !== undefined &&
+      match.away_score !== null &&
+      match.away_score !== undefined;
 
     const homeLogo = match.home_logo
       ? `<img src="${escapeAttr(match.home_logo)}" alt="" loading="lazy">`
@@ -83,7 +147,11 @@
             <strong>${escapeHtml(match.home_team)}</strong>
           </div>
 
-          <div class="vs">VS</div>
+          <div class="vs">
+            ${hasScore
+              ? `<strong>${match.home_score} - ${match.away_score}</strong>`
+              : "VS"}
+          </div>
 
           <div class="team">
             ${awayLogo}
@@ -92,18 +160,22 @@
         </div>
 
         <div class="match-bottom">
-          <span class="status">${status}</span>
+          <span class="status status-${status.type}">
+            ${status.text}
+          </span>
 
-          ${showStream
+          ${canWatch
             ? `<a class="watch-btn"
                  href="watch.html?id=${encodeURIComponent(match.id)}">
-                 تشغيل البث المباشر
+                 مشاهدة البث
                </a>`
-            : `<span class="stream-wait">
-                 ${match.stream_url
-                   ? "زر البث يظهر قبل المباراة بساعة"
-                   : "لا يوجد رابط بث حالياً"}
-               </span>`
+            : showWatch && status.type !== "finished"
+              ? `<span class="stream-wait">
+                   ${match.stream_url
+                     ? "البث غير متاح حالياً"
+                     : "لا يوجد رابط بث حالياً"}
+                 </span>`
+              : ""
           }
         </div>
       </article>
@@ -123,7 +195,7 @@
       );
 
     list.innerHTML = rows.length
-      ? rows.map(card).join("")
+      ? rows.map(m => card(m, false)).join("")
       : `<p class="notice">ماكو مباريات مضافة لهذا اليوم حالياً.</p>`;
   }
 
@@ -134,8 +206,12 @@
     const rows = allMatches
       .filter(m => {
         const start = new Date(m.match_time).getTime();
+        const status = getStatus(m);
 
         return m.stream_url &&
+          status.type !== "finished" &&
+          status.type !== "cancelled" &&
+          status.type !== "postponed" &&
           now >= start - 60 * 60 * 1000 &&
           now <= start + 4 * 60 * 60 * 1000;
       })
@@ -144,7 +220,7 @@
       );
 
     container.innerHTML = rows.length
-      ? rows.map(card).join("")
+      ? rows.map(m => card(m, true)).join("")
       : `<p class="notice">لا توجد مباريات متاحة للبث المباشر حالياً.</p>`;
   }
 
@@ -153,7 +229,18 @@
 
     const { data, error } = await client
       .from("matches")
-      .select("id,home_team,away_team,home_logo,away_logo,match_time,stream_url")
+      .select(`
+        id,
+        home_team,
+        away_team,
+        home_logo,
+        away_logo,
+        match_time,
+        stream_url,
+        match_status,
+        home_score,
+        away_score
+      `)
       .order("match_time", { ascending: true });
 
     if (error) {
@@ -266,3 +353,4 @@
   }, 15 * 60 * 1000);
 
 })();
+```
