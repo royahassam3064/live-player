@@ -1,6 +1,7 @@
 package com.koratv.app;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Gravity;
@@ -19,6 +20,8 @@ public class MainActivity extends Activity {
     private FrameLayout fullscreenLayout;
     private View customView;
     private WebChromeClient.CustomViewCallback customCallback;
+
+    private int previousOrientation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +51,14 @@ public class MainActivity extends Activity {
                 customView = view;
                 customCallback = callback;
 
+                // حفظ اتجاه الهاتف السابق
+                previousOrientation = getRequestedOrientation();
+
+                // تحويل الشاشة تلقائياً إلى الوضع الأفقي
+                setRequestedOrientation(
+                        ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                );
+
                 getWindow().addFlags(
                         WindowManager.LayoutParams.FLAG_FULLSCREEN
                 );
@@ -72,27 +83,28 @@ public class MainActivity extends Activity {
 
                 // شعار Kora TV
                 ImageView logo = new ImageView(MainActivity.this);
-                logo.setImageResource(R.drawable.kora_icon);
+                logo.setImageResource(R.drawable.kora_logo);
                 logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 logo.setPadding(8, 8, 8, 8);
 
                 GradientDrawable background = new GradientDrawable();
                 background.setColor(0xCC000000);
-                background.setCornerRadius(12);
+                background.setCornerRadius(dp(12));
                 background.setStroke(1, 0x33FFFFFF);
 
                 logo.setBackground(background);
-                logo.setElevation(1000f);
+                logo.setElevation(dp(10));
 
+                // وضع الشعار أعلى اليسار
                 FrameLayout.LayoutParams logoParams =
                         new FrameLayout.LayoutParams(
                                 dp(85),
                                 dp(85),
-                                Gravity.BOTTOM | Gravity.LEFT
+                                Gravity.TOP | Gravity.LEFT
                         );
 
                 logoParams.setMargins(
-                        dp(16), 0, 0, dp(16)
+                        dp(16), dp(16), 0, 0
                 );
 
                 fullscreenLayout.addView(logo, logoParams);
@@ -120,11 +132,11 @@ public class MainActivity extends Activity {
     }
 
     private void exitFullscreen() {
+
         if (customView == null) {
             return;
         }
 
-        View oldView = customView;
         customView = null;
 
         getWindow().clearFlags(
@@ -136,6 +148,9 @@ public class MainActivity extends Activity {
         );
 
         setContentView(webView);
+
+        // إعادة اتجاه الهاتف السابق
+        setRequestedOrientation(previousOrientation);
 
         if (customCallback != null) {
             customCallback.onCustomViewHidden();
