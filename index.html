@@ -1,14 +1,20 @@
 <!doctype html>
-
 <html lang="ar" dir="rtl">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10131b">
-  <title>Kora TV - مباريات اليوم</title>  <link rel="stylesheet" href="style.css">
+
+  <title>Kora TV - مباريات اليوم</title>
+
+  <link rel="stylesheet" href="style.css">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="config.js"></script>
-  <script defer src="app.js"></script>  <style>
+  <script defer src="app.js"></script>
+
+  <style>
     .brand {
       display: flex;
       align-items: center;
@@ -21,7 +27,6 @@
       object-fit: contain;
     }
 
-    /* شعار Kora TV داخل المشغل */
     .player-container {
       position: relative;
     }
@@ -37,25 +42,220 @@
       pointer-events: none;
       opacity: 0.9;
     }
-  </style></head><body>
+
+    /* القائمة الثانية */
+    .menu-button {
+      background: #202938;
+      color: white;
+      border: 1px solid #344158;
+      padding: 10px 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-right: 8px;
+    }
+
+    .menu-button:hover {
+      background: #293950;
+    }
+
+    .about-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.8);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      padding: 18px;
+    }
+
+    .about-overlay.show {
+      display: flex;
+    }
+
+    .about-card {
+      background: #151c29;
+      color: white;
+      width: 100%;
+      max-width: 390px;
+      padding: 25px 20px;
+      border-radius: 18px;
+      border: 1px solid #344158;
+      text-align: center;
+      position: relative;
+    }
+
+    .about-logo {
+      width: 110px;
+      height: auto;
+      object-fit: contain;
+      margin-bottom: 12px;
+    }
+
+    .about-card h2 {
+      margin: 5px 0;
+      font-size: 24px;
+    }
+
+    .about-description {
+      color: #aab5c8;
+      font-size: 14px;
+      margin-bottom: 22px;
+    }
+
+    .social-link {
+      display: block;
+      text-decoration: none;
+      color: white;
+      background: #222e40;
+      border: 1px solid #344158;
+      padding: 13px;
+      border-radius: 11px;
+      margin-top: 10px;
+      font-size: 15px;
+      transition: .2s;
+    }
+
+    .social-link:hover {
+      background: #30425b;
+    }
+
+    .about-close {
+      position: absolute;
+      top: 10px;
+      left: 12px;
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 25px;
+      cursor: pointer;
+    }
+
+    .about-version {
+      color: #8795aa;
+      font-size: 12px;
+      margin-top: 22px;
+    }
+  </style>
+</head>
+
+<body>
+
   <header class="topbar">
+
     <div class="brand">
       <img src="kora-tv-logo.png" alt="Kora TV">
-    </div><a class="admin-link" href="admin.html">لوحة الإدارة</a>
+    </div>
 
-  </header>  <main class="container">
+    <div>
+      <a class="admin-link" href="admin.html">لوحة الإدارة</a>
+
+      <button class="menu-button" onclick="openAbout()">
+        ☰ حول Kora TV
+      </button>
+    </div>
+
+  </header>
+
+  <main class="container">
+
     <nav class="day-tabs" aria-label="أيام المباريات">
       <button class="day-tab" data-day="-1">الأمس</button>
       <button class="day-tab active" data-day="0">اليوم</button>
       <button class="day-tab" data-day="1">الغد</button>
-    </nav><div id="date-label" class="date-label"></div>
+    </nav>
 
-<section id="matches" class="matches">
-  <p class="notice">جارٍ تحميل المباريات...</p>
-</section>
+    <div id="date-label" class="date-label"></div>
 
-<p class="footer-note">توقيت المباريات حسب توقيت بغداد.</p>
+    <section id="matches" class="matches">
+      <p class="notice">جارٍ تحميل المباريات...</p>
+    </section>
+
+    <p class="footer-note">
+      توقيت المباريات حسب توقيت بغداد.
+    </p>
 
   </main>
+
+  <!-- نافذة حول التطبيق -->
+  <div class="about-overlay" id="aboutOverlay"
+       onclick="closeAboutOutside(event)">
+
+    <div class="about-card">
+
+      <button class="about-close" onclick="closeAbout()">
+        ×
+      </button>
+
+      <img
+        src="kora-tv-logo.png"
+        alt="Kora TV"
+        class="about-logo"
+      >
+
+      <h2>Kora TV ⚽</h2>
+
+      <p class="about-description">
+        عالم كرة القدم بين يديك
+      </p>
+
+      <a class="social-link"
+         href="https://www.tiktok.com/@fd79"
+         target="_blank"
+         rel="noopener noreferrer">
+        👨‍💻 حساب المطور على TikTok<br>
+        @fd79
+      </a>
+
+      <a class="social-link"
+         href="https://www.tiktok.com/@kora_tv_2"
+         target="_blank"
+         rel="noopener noreferrer">
+        🎵 حساب Kora TV على TikTok<br>
+        @kora_tv_2
+      </a>
+
+      <a class="social-link"
+         href="https://www.instagram.com/kora_tv_2/"
+         target="_blank"
+         rel="noopener noreferrer">
+        📸 حساب Kora TV على Instagram<br>
+        @kora_tv_2
+      </a>
+
+      <p class="about-version">
+        Kora TV v1.3<br>
+        © جميع الحقوق محفوظة
+      </p>
+
+    </div>
+
+  </div>
+
+  <script>
+    function openAbout() {
+      document.getElementById("aboutOverlay")
+        .classList.add("show");
+    }
+
+    function closeAbout() {
+      document.getElementById("aboutOverlay")
+        .classList.remove("show");
+    }
+
+    function closeAboutOutside(event) {
+      if (event.target.id === "aboutOverlay") {
+        closeAbout();
+      }
+    }
+
+    document.addEventListener("keydown", function(event) {
+      if (event.key === "Escape") {
+        closeAbout();
+      }
+    });
+  </script>
+
 </body>
 </html>
