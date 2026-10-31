@@ -1,108 +1,131 @@
 <!doctype html>
-
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10131b">
-  <title>Kora TV</title>  <link rel="stylesheet" href="style.css">
+  <title>Kora TV</title>
+
+  <link rel="stylesheet" href="style.css">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="config.js"></script>
-  <script defer src="app.js"></script>  <style>
-    .brand { display:flex; align-items:center; }
-    .brand img { width:145px; height:auto; object-fit:contain; }
-    .page-section { display:none; }
-    .page-section.active { display:block; }
+  <script defer src="app.js"></script>
+</head>
 
-    .about-card {
-      background:#171e2c;
-      border:1px solid #2b374a;
-      border-radius:16px;
-      padding:24px 18px;
-      text-align:center;
-      max-width:430px;
-      margin:20px auto;
-    }
+<body>
 
-    .about-logo { width:110px; object-fit:contain; }
-    .about-description { color:#a7b2c5; }
-    .social-link {
-      display:block;
-      background:#222e40;
-      border:1px solid #344158;
-      padding:13px;
-      border-radius:11px;
-      margin-top:10px;
-    }
-    .about-version { color:#8795aa; margin-top:22px; font-size:12px; }
-    .section-title { text-align:center; margin:15px 0; }
-  </style></head><body><header class="topbar">
+<header class="topbar">
   <div class="brand">
     <img src="kora-tv-logo.png" alt="Kora TV">
   </div>
   <a class="admin-link" href="admin.html">لوحة الإدارة</a>
-</header><main class="container">  <!-- المباريات -->  <section id="matches-section" class="page-section active">
-    <nav class="day-tabs" aria-label="أيام المباريات">
+</header>
+
+<main class="container">
+
+  <!-- المباريات -->
+  <section id="page-matches" class="page active">
+
+    <h2 class="section-title">⚽ المباريات</h2>
+
+    <nav class="day-tabs">
       <button class="day-tab" data-day="-1">الأمس</button>
       <button class="day-tab active" data-day="0">اليوم</button>
       <button class="day-tab" data-day="1">الغد</button>
-    </nav><div id="date-label" class="date-label"></div>
+    </nav>
 
-<div id="matches" class="matches">
-  <p class="notice">جارٍ تحميل المباريات...</p>
-</div>
+    <div id="date-label" class="date-label"></div>
 
-<p class="footer-note">توقيت المباريات حسب توقيت بغداد.</p>
+    <section id="matches" class="matches">
+      <p class="notice">جارٍ تحميل المباريات...</p>
+    </section>
 
-  </section>  <!-- البث المباشر -->  <section id="live-section" class="page-section">
+    <p class="footer-note">توقيت المباريات حسب توقيت بغداد.</p>
+  </section>
+
+  <!-- البث المباشر -->
+  <section id="page-live" class="page">
     <h2 class="section-title">📺 البث المباشر</h2>
     <div id="live-matches" class="matches">
       <p class="notice">جارٍ تحميل البث...</p>
     </div>
-  </section>  <!-- الأخبار -->  <section id="news-section" class="page-section">
+  </section>
+
+  <!-- الأخبار -->
+  <section id="page-news" class="page">
     <h2 class="section-title">📰 أخبار كرة القدم</h2>
+    <p class="news-subtitle">آخر الأخبار العربية والعالمية</p>
+
+    <button id="refresh-news" class="primary refresh-button">
+      تحديث الأخبار ↻
+    </button>
+
     <div id="news-list" class="matches">
-      <p class="notice">قسم الأخبار قيد التجهيز.</p>
+      <p class="notice">جارٍ تحميل الأخبار...</p>
     </div>
-  </section>  <!-- حول Kora TV -->  <section id="about-section" class="page-section">
+  </section>
+
+  <!-- حول التطبيق -->
+  <section id="page-about" class="page">
     <div class="about-card">
-      <img src="kora-tv-logo.png" alt="Kora TV" class="about-logo">
+      <img src="kora-tv-logo.png" class="about-logo" alt="Kora TV">
+
       <h2>Kora TV ⚽</h2>
-      <p class="about-description">عالم كرة القدم بين يديك</p>  <a class="social-link" href="https://www.tiktok.com/@fd79"
-     target="_blank" rel="noopener noreferrer">
-    👨‍💻 حساب المطور على TikTok<br>@fd79
-  </a>
+      <p class="about-description">عالم كرة القدم بين يديك</p>
 
-  <a class="social-link" href="https://www.tiktok.com/@kora_tv_2"
-     target="_blank" rel="noopener noreferrer">
-    🎵 حساب Kora TV على TikTok<br>@kora_tv_2
-  </a>
+      <a class="social-link"
+         href="https://www.tiktok.com/@fd79"
+         target="_blank" rel="noopener noreferrer">
+        👨‍💻 حساب المطور على TikTok<br>@fd79
+      </a>
 
-  <a class="social-link" href="https://www.instagram.com/kora_tv_2/"
-     target="_blank" rel="noopener noreferrer">
-    📸 حساب Kora TV على Instagram<br>@kora_tv_2
-  </a>
+      <a class="social-link"
+         href="https://www.tiktok.com/@kora_tv_2"
+         target="_blank" rel="noopener noreferrer">
+        🎵 حساب Kora TV على TikTok<br>@kora_tv_2
+      </a>
 
-  <p class="about-version">
-    Kora TV v1.3<br>
-    تطوير وبرمجة: @fd79<br>
-    © جميع الحقوق محفوظة
-  </p>
-</div>
+      <a class="social-link"
+         href="https://www.instagram.com/kora_tv_2/"
+         target="_blank" rel="noopener noreferrer">
+        📸 Instagram<br>@kora_tv_2
+      </a>
 
-  </section></main><!-- شريط التنقل السفلي --><nav class="bottom-nav" aria-label="التنقل الرئيسي">
+      <p class="about-version">
+        Kora TV v1.3<br>
+        تطوير وبرمجة: @fd79<br>
+        © جميع الحقوق محفوظة
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<!-- شريط التنقل السفلي -->
+<nav class="bottom-nav">
+
   <button class="nav-item active" data-page="matches">
     <span>⚽</span>
     <small>المباريات</small>
-  </button>  <button class="nav-item" data-page="live">
+  </button>
+
+  <button class="nav-item" data-page="live">
     <span>📺</span>
     <small>البث المباشر</small>
-  </button>  <button class="nav-item" data-page="news">
+  </button>
+
+  <button class="nav-item" data-page="news">
     <span>📰</span>
     <small>الأخبار</small>
-  </button>  <button class="nav-item" data-page="about">
+  </button>
+
+  <button class="nav-item" data-page="about">
     <span>ℹ️</span>
     <small>حول Kora TV</small>
   </button>
-</nav></body>
+
+</nav>
+
+</body>
 </html>
