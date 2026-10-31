@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080d18">
+<meta name="description" content="حمّل تطبيق Kora TV لمتابعة المباريات والبث المباشر وأخبار كرة القدم.">
+<title>Kora TV | تحميل التطبيق</title>
+
+<style>
+:root {
+  --bg:#080d18;
+  --panel:#111b2b;
+  --muted:#a8b4c7;
+  --green:#27e0a1;
+  --cyan:#55d9ef;
+  --line:#ffffff18;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  background:
+    radial-gradient(ellipse at 80% 5%,#123b3a 0,transparent 35%),
+    radial-gradient(ellipse at 5% 45%,#17264b 0,transparent 35%),
+    var(--bg);
+  color:#f5f8ff;
+  font-family:Tahoma,Arial,sans-serif;
+  min-height:100vh;
+}
+
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1080px,calc(100% - 36px));margin:auto}
+
+header{
+  padding:20px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.nav{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  font-weight:900;
+  font-size:23px;
+}
+
+.logo{
+  width:45px;
+  height:45px;
+  border-radius:15px;
+  display:grid;
+  place-items:center;
+  background:linear-gradient(140deg,var(--green),#16a8c8);
+  color:#06131a;
+  font-size:25px;
+}
+
+.badge,.eyebrow{
+  border:1px solid #27e0a155;
+  background:#27e0a111;
+  color:#8cf5ce;
+  border-radius:999px;
+  padding:9px 13px;
+  font-size:12px;
+}
+
+.hero{padding:76px 0 64px}
+
+.hero-grid{
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  align-items:center;
+  gap:48px;
+}
+
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+}
+
+.dot{
+  width:7px;
+  height:7px;
+  background:var(--green);
+  border-radius:50%;
+  box-shadow:0 0 12px var(--green);
+}
+
+h1{
+  font-size:clamp(43px,6vw,70px);
+  line-height:1.18;
+  margin:22px 0 17px;
+}
+
+h1 span{
+  background:linear-gradient(90deg,var(--green),var(--cyan));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+.lead{
+  color:#bdc8d9;
+  font-size:17px;
+  line-height:2;
+  max-width:570px;
+  margin:0 0 27px;
+}
+
+.actions,.download-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+}
+
+.btn{
+  min-height:52px;
+  padding:14px 22px;
+  border-radius:15px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  font-weight:900;
+  transition:.2s;
+}
+
+.btn:hover{transform:translateY(-3px);filter:brightness(1.08)}
+
+.primary{
+  background:linear-gradient(110deg,var(--green),#59e7cf);
+  color:#061812;
+  box-shadow:0 12px 32px #27e0a12b;
+}
+
+.secondary{
+  border:1px solid #ffffff28;
+  background:#ffffff09;
+  color:#edf5ff;
+}
+
+.app-art{
+  position:relative;
+  min-height:390px;
+  border:1px solid #ffffff20;
+  border-radius:34px;
+  background:linear-gradient(145deg,#1b3c4a,#15253b 55%,#10172b);
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  box-shadow:0 30px 90px #0007;
+}
+
+.app-art:before,.app-art:after{
+  content:"";
+  position:absolute;
+  width:310px;
+  height:310px;
+  border:1px solid #6be8c655;
+  border-radius:50%;
+  left:-110px;
+  top:40px;
+}
+
+.app-art:after{
+  width:235px;
+  height:235px;
+  left:-72px;
+  top:78px;
+}
+
+.glow{
+  position:absolute;
+  width:210px;
+  height:210px;
+  background:#27e0a133;
+  filter:blur(65px);
+  border-radius:50%;
+}
+
+.phone{
+  z-index:1;
+  width:190px;
+  height:300px;
+  border:5px solid #dce8ed;
+  border-radius:30px;
+  background:linear-gradient(160deg,#152c3b,#091522);
+  box-shadow:0 25px 55px #0008;
+  padding:13px;
+  transform:rotate(-7deg);
+}
+
+.phone-top{
+  height:8px;
+  width:55px;
+  border-radius:9px;
+  background:#647b86;
+  margin:0 auto 22px;
+}
+
+.phone-logo{
+  height:112px;
+  border-radius:18px;
+  background:linear-gradient(140deg,#1b6b5b,#153d54);
+  display:grid;
+  place-items:center;
+  font-size:55px;
+}
+
+.phone-name{
+  text-align:center;
+  font-weight:900;
+  font-size:20px;
+  margin-top:18px;
+}
+
+.phone-sub{
+  text-align:center;
+  color:#a9c6c8;
+  font-size:10px;
+  margin-top:7px;
+}
+
+.phone-bars{
+  display:flex;
+  gap:6px;
+  margin-top:19px;
+}
+
+.phone-bars i{
+  height:7px;
+  border-radius:9px;
+  background:#27e0a1;
+  flex:1;
+}
+
+.art-caption{
+  position:absolute;
+  bottom:22px;
+  right:25px;
+  left:25px;
+  display:flex;
+  justify-content:space-between;
+  color:#b8d8d6;
+  font-size:12px;
+  z-index:2;
+}
+
+.features{padding:24px 0 72px}
+
+.section-head{
+  text-align:center;
+  margin-bottom:27px;
+}
+
+.section-head h2{
+  font-size:30px;
+  margin:0 0 10px;
+}
+
+.section-head p{
+  color:var(--muted);
+  line-height:1.8;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+}
+
+.card{
+  padding:23px;
+  border-radius:21px;
+  background:linear-gradient(145deg,#142238,#101a2a);
+  border:1px solid var(--line);
+}
+
+.icon{
+  width:48px;
+  height:48px;
+  border-radius:15px;
+  display:grid;
+  place-items:center;
+  background:#27e0a119;
+  font-size:23px;
+  margin-bottom:15px;
+}
+
+.card h3{margin:0 0 9px;font-size:18px}
+
+.card p{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.9;
+}
+
+.download{padding:15px 0 80px}
+
+.download-box{
+  border:1px solid #27e0a14d;
+  border-radius:28px;
+  padding:34px;
+  background:linear-gradient(115deg,#123c3b,#14283d 75%);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:25px;
+}
+
+.download-box h2{
+  font-size:29px;
+  margin:14px 0 9px;
+}
+
+.download-box p{
+  color:#c1d0dc;
+  line-height:1.9;
+}
+
+.code-wrap{
+  margin-top:15px;
+  color:#b8d3d2;
+  font-size:12px;
+}
+
+.code{
+  direction:ltr;
+  display:inline-block;
+  margin-top:8px;
+  padding:10px 17px;
+  border:1px dashed #64eac1;
+  border-radius:12px;
+  background:#071a20;
+  color:#7ef2c9;
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:3px;
+}
+
+.note{
+  text-align:center;
+  color:#8f9db1;
+  font-size:12px;
+  margin:18px 0 0;
+  line-height:1.8;
+}
+
+footer{
+  border-top:1px solid var(--line);
+  padding:25px 0;
+  color:#93a2b7;
+  text-align:center;
+  font-size:13px;
+  line-height:2;
+}
+
+footer strong{color:#e8fff6}
+
+@media(max-width:760px){
+  .hero{padding:48px 0 42px}
+  .hero-grid{grid-template-columns:1fr;gap:30px}
+  .app-art{min-height:340px}
+  .cards{grid-template-columns:1fr}
+  .download-box{
+    align-items:flex-start;
+    flex-direction:column;
+    padding:25px;
+  }
+  .wrap{width:min(100% - 28px,600px)}
+  .badge{font-size:10px;padding:8px 10px}
+  h1{font-size:48px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <span class="logo">⚽</span>
+      <span>KORA <b style="color:#27e0a1">TV</b></span>
+    </a>
+    <a class="badge" href="#download">التطبيق الرسمي · حمّل الآن</a>
+  </div>
+</header>
+
+<main id="top">
+
+<section class="hero">
+  <div class="wrap hero-grid">
+
+    <div>
+      <span class="eyebrow"><i class="dot"></i> كرة القدم أقرب إلك</span>
+
+      <h1>
+        عِش المباراة.<br>
+        <span>وين ما تكون.</span>
+      </h1>
+
+      <p class="lead">
+        Kora TV يجمع لك عالم كرة القدم بتجربة سهلة وأنيقة.
+        تابع جدول المباريات، اكتشف البث المتاح، وابقَ على اطلاع بآخر الأخبار.
+      </p>
+
+      <div class="actions">
+        <a class="btn primary"
+           href="https://github.com/royahassam3064/live-player/releases/latest/download/kora-tv.apk">
+          ⬇ تحميل APK مباشرة
+        </a>
+
+        <a class="btn secondary" href="#features">
+          اكتشف المميزات ↓
+        </a>
+      </div>
+
+      <p class="note" style="text-align:right">
+        ملف تثبيت أندرويد APK · حمّله من الرابط المباشر
+      </p>
+    </div>
+
+    <div class="app-art">
+      <div class="glow"></div>
+
+      <div class="phone">
+        <div class="phone-top"></div>
+        <div class="phone-logo">⚽</div>
+        <div class="phone-name">KORA TV</div>
+        <div class="phone-sub">FOOTBALL · LIVE · NEWS</div>
+        <div class="phone-bars">
+          <i></i><i></i><i></i>
+        </div>
+      </div>
+
+      <div class="art-caption">
+        <span>YOUR FOOTBALL HUB</span>
+        <span>⚡ MATCH DAY</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="wrap">
+
+    <div class="section-head">
+      <h2>كل اللي تحتاجه كروياً</h2>
+      <p>واجهة بسيطة ومحتوى كرة القدم بمكان واحد.</p>
+    </div>
+
+    <div class="cards">
+
+      <article class="card">
+        <div class="icon">⚽</div>
+        <h3>المباريات والنتائج</h3>
+        <p>تعرّف على مواعيد المباريات ونتائجها وحالات اللقاءات.</p>
+      </article>
+
+      <article class="card">
+        <div class="icon">📺</div>
+        <h3>البث المباشر</h3>
+        <p>وصل بسهولة إلى روابط البث المتاحة للمباريات.</p>
+      </article>
+
+      <article class="card">
+        <div class="icon">📰</div>
+        <h3>أخبار كرة القدم</h3>
+        <p>تابع آخر الأخبار وأبرز المستجدات الكروية.</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<section class="download" id="download">
+  <div class="wrap">
+
+    <div class="download-box">
+
+      <div>
+        <span class="eyebrow"><i class="dot"></i> Kora TV · Android</span>
+
+        <h2>جاهز تنضم إلى عالم Kora TV؟</h2>
+
+        <p>
+          اضغط تحميل APK للحصول على التطبيق مباشرة.<br>
+          وتكدر تستخدم كود Downloader إذا تفضّل.
+        </p>
+
+        <div class="code-wrap">
+          كود Downloader
+          <div class="code">1119057</div>
+        </div>
+      </div>
+
+      <div class="download-actions">
+        <a class="btn primary"
+           href="https://github.com/royahassam3064/live-player/releases/latest/download/kora-tv.apk">
+          ⬇ تحميل التطبيق
+        </a>
+
+        <a class="btn secondary"
+           href="http://aftv.news/1119057"
+           target="_blank"
+           rel="noopener noreferrer">
+          فتح Downloader
+        </a>
+      </div>
+
+    </div>
+
+    <p class="note">
+      إذا ما بدأ التحميل، تأكد من اتصال الإنترنت وجرّب مرة ثانية.
+    </p>
+
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <strong>KORA TV</strong> · كرة القدم كلها بمكان واحد<br>
+    © 2026 Kora TV · جميع الحقوق محفوظة
+  </div>
+</footer>
+
+</body>
+</html>
