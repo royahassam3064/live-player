@@ -1,4 +1,4 @@
-```javascript
+javascript
 (() => {
   const client = window.supabase.createClient(
     window.SUPABASE_URL,
@@ -353,4 +353,4 @@
   }, 15 * 60 * 1000);
 
 })();
-```
+
