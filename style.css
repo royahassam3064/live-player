@@ -1,233 +1,458 @@
-*{box-sizing:border-box}
-:root{color-scheme:dark}
-
-body{
-  margin:0;
-  background:#10131b;
-  color:#f4f5f7;
-  font-family:Arial,sans-serif
+@font-face {
+font-family: "KoraFont";
+src: url("./fonts/as.ttf") format("truetype");
+font-weight: 100 900;
+font-style: normal;
+font-display: swap;
 }
 
-.topbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:16px max(16px,calc((100% - 900px)/2));
-  background:#191e2a;
-  border-bottom:1px solid #2a3140
+* {
+  box-sizing: border-box;
+  font-family: "KoraFont", sans-serif;
+  }
+
+:root {
+color-scheme: dark;
+--bg: #0d111b;
+--surface: #171e2c;
+--surface-light: #202a3b;
+--border: #2b374a;
+--text: #f4f6fb;
+--muted: #a7b2c5;
+--purple: #654de0;
+--green: #16865a;
 }
 
-.brand{font-size:20px;font-weight:800}
-a{color:inherit;text-decoration:none}
-
-.admin-link,.secondary{
-  background:#30394b;
-  color:#fff;
-  padding:10px 14px;
-  border-radius:9px
+html {
+scroll-behavior: smooth;
 }
 
-.container{width:min(900px,94%);margin:22px auto}
-
-.day-tabs{display:flex;gap:8px;margin-bottom:12px}
-
-.day-tab{
-  flex:1;
-  background:#202737;
-  color:#dce2ed;
-  border:1px solid #30394b;
-  border-radius:10px;
-  padding:13px;
-  font-size:16px
+body {
+margin: 0;
+background: var(--bg);
+color: var(--text);
+font-size: 14px;
+line-height: 1.6;
 }
 
-.day-tab.active{
-  background:#5b42c5;
-  border-color:#806cf0;
-  color:#fff
+a {
+color: inherit;
+text-decoration: none;
 }
 
-.date-label{text-align:center;color:#b7c0d0;margin:12px 0 18px}
-.matches{display:grid;gap:14px}
-
-.match-card,.panel{
-  background:#1a202d;
-  border:1px solid #2b3445;
-  border-radius:15px;
-  padding:16px
+button,
+input {
+font: inherit;
 }
 
-.match-time{text-align:center;color:#b8c2d3;font-size:14px}
-
-.teams{
-  display:grid;
-  grid-template-columns:1fr 44px 1fr;
-  align-items:center;
-  gap:8px;
-  padding:18px 0
+button {
+cursor: pointer;
+transition: .2s ease;
 }
 
-.team{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:9px;
-  text-align:center;
-  min-width:0
+button:active {
+transform: scale(.97);
 }
 
-.team img,.logo-placeholder{
-  width:58px;
-  height:58px;
-  object-fit:contain
+/* الشريط العلوي */
+
+.topbar {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 11px max(12px, calc((100% - 900px) / 2));
+background: #151c29;
+border-bottom: 1px solid var(--border);
+min-height: 56px;
 }
 
-.logo-placeholder{
-  display:grid;
-  place-items:center;
-  font-size:36px
+.brand {
+font-size: 19px;
+font-weight: 900;
+letter-spacing: -.3px;
 }
 
-.team strong{font-size:16px;overflow-wrap:anywhere}
-.vs{text-align:center;color:#8792a5;font-weight:bold}
-
-.match-bottom{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  border-top:1px solid #30394b;
-  padding-top:13px
+.admin-link,
+.secondary {
+background: var(--surface-light);
+color: #fff;
+padding: 8px 12px;
+border: 1px solid var(--border);
+border-radius: 9px;
+font-size: 13px;
 }
 
-.status,.stream-wait{font-size:13px;color:#b7c0d0}
+/* المحتوى */
 
-.watch-btn,.primary{
-  display:inline-block;
-  background:#16865a;
-  color:white;
-  border:0;
-  border-radius:9px;
-  padding:12px 16px;
-  font-weight:bold;
-  text-align:center
+.container {
+width: min(900px, 96%);
+margin: 14px auto;
 }
 
-.notice{text-align:center;color:#b7c0d0;padding:24px}
-.error{color:#ff9b9b}
-.footer-note{text-align:center;color:#8792a5;font-size:12px;margin:22px 0}
-
-.panel{max-width:760px;margin:20px auto}
-.panel h1{font-size:22px;margin-top:0}
-
-label{
-  display:block;
-  color:#c9d1df;
-  font-size:14px;
-  margin-bottom:13px
+.day-tabs {
+display: flex;
+gap: 6px;
+margin-bottom: 9px;
 }
 
-input{
-  display:block;
-  width:100%;
-  margin-top:7px;
-  padding:12px;
-  background:#101520;
-  border:1px solid #394357;
-  border-radius:8px;
-  color:#fff;
-  font-size:15px
+.day-tab {
+flex: 1;
+background: var(--surface);
+color: #dce2ed;
+border: 1px solid var(--border);
+border-radius: 9px;
+padding: 10px 5px;
+font-size: 14px;
 }
 
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
-.full{grid-column:1/-1}
-
-.form-actions,.panel-heading,.row-actions{
-  display:flex;
-  align-items:center;
-  gap:9px
+.day-tab.active {
+background: var(--purple);
+border-color: #8b78f5;
+color: white;
 }
 
-.panel-heading{justify-content:space-between}
-
-.secondary,.danger,.primary{
-  border:0;
-  cursor:pointer;
-  font-size:14px
+.date-label {
+text-align: center;
+color: var(--muted);
+margin: 9px 0 13px;
+font-size: 13px;
 }
 
-.danger{
-  background:#9d3038;
-  color:white;
-  padding:10px 14px;
-  border-radius:9px
+/* بطاقات المباريات */
+
+.matches {
+display: grid;
+gap: 9px;
 }
 
-.message{color:#b9d4ff;min-height:20px}
-
-.admin-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  padding:13px 0;
-  border-bottom:1px solid #30394b
+.match-card,
+.panel {
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 12px;
+padding: 12px;
 }
 
-.admin-row small{
-  display:block;
-  color:#9ca8ba;
-  margin-top:6px
+.match-time {
+text-align: center;
+color: var(--muted);
+font-size: 12px;
 }
 
-hr{
-  border:0;
-  border-top:1px solid #30394b;
-  margin:24px 0
+.teams {
+display: grid;
+grid-template-columns: 1fr 35px 1fr;
+align-items: center;
+gap: 5px;
+padding: 12px 0;
+}
+
+.team {
+display: flex;
+flex-direction: column;
+align-items: center;
+gap: 6px;
+text-align: center;
+min-width: 0;
+}
+
+.team img,
+.logo-placeholder {
+width: 45px;
+height: 45px;
+object-fit: contain;
+}
+
+.logo-placeholder {
+display: grid;
+place-items: center;
+font-size: 29px;
+}
+
+.team strong {
+font-size: 13px;
+font-weight: 800;
+overflow-wrap: anywhere;
+}
+
+.vs {
+text-align: center;
+color: #8995aa;
+font-weight: bold;
+font-size: 12px;
+}
+
+.match-bottom {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 8px;
+border-top: 1px solid var(--border);
+padding-top: 9px;
+}
+
+.status,
+.stream-wait {
+font-size: 12px;
+color: var(--muted);
+}
+
+.watch-btn,
+.primary {
+display: inline-block;
+background: var(--green);
+color: white;
+border: 0;
+border-radius: 8px;
+padding: 9px 14px;
+font-weight: bold;
+font-size: 13px;
+text-align: center;
+}
+
+.watch-btn:hover,
+.primary:hover {
+filter: brightness(1.15);
+}
+
+.notice {
+text-align: center;
+color: var(--muted);
+padding: 18px 10px;
+}
+
+.error {
+color: #ff9b9b;
+}
+
+.footer-note {
+text-align: center;
+color: #8792a5;
+font-size: 11px;
+margin: 17px 0;
+}
+
+/* لوحة الإدارة */
+
+.panel {
+max-width: 760px;
+margin: 14px auto;
+}
+
+.panel h1 {
+font-size: 20px;
+margin-top: 0;
+}
+
+.panel h2 {
+font-size: 17px;
+}
+
+label {
+display: block;
+color: #c9d1df;
+font-size: 13px;
+margin-bottom: 11px;
+}
+
+input {
+display: block;
+width: 100%;
+margin-top: 6px;
+padding: 10px;
+background: #101520;
+border: 1px solid #394357;
+border-radius: 8px;
+color: #fff;
+font-size: 14px;
+outline: none;
+}
+
+input:focus {
+border-color: var(--purple);
+box-shadow: 0 0 0 2px #654de033;
+}
+
+.form-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 0 11px;
+}
+
+.full {
+grid-column: 1 / -1;
+}
+
+.form-actions,
+.panel-heading,
+.row-actions {
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.panel-heading {
+justify-content: space-between;
+}
+
+.secondary,
+.danger,
+.primary {
+border: 0;
+cursor: pointer;
+font-size: 13px;
+}
+
+.danger {
+background: #9d3038;
+color: white;
+padding: 9px 12px;
+border-radius: 8px;
+}
+
+.message {
+color: #b9d4ff;
+min-height: 18px;
+font-size: 13px;
+}
+
+.admin-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+gap: 8px;
+padding: 11px 0;
+border-bottom: 1px solid var(--border);
+}
+
+.admin-row small {
+display: block;
+color: #9ca8ba;
+margin-top: 4px;
+font-size: 12px;
+}
+
+hr {
+border: 0;
+border-top: 1px solid var(--border);
+margin: 17px 0;
 }
 
 /* مشغل الفيديو */
-.video-frame{
-  position:relative;
-  width:100%;
-  aspect-ratio:16/9;
-  background:#000;
-  border-radius:12px;
-  overflow:hidden
+
+.video-frame {
+position: relative;
+width: 100%;
+aspect-ratio: 16 / 9;
+background: #000;
+border-radius: 10px;
+overflow: hidden;
 }
 
-.video-frame iframe{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  border:0
+.video-frame iframe {
+position: absolute;
+inset: 0;
+width: 100%;
+height: 100%;
+border: 0;
 }
 
-/* شعار Kora TV في الزاوية العليا اليمنى مع الخلفية */
-.player-kora-logo{
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 90px; /* العرض المناسب لشعار Kora TV */
-  height: auto;
-  max-height: 40px;
-  object-fit: contain;
-  padding: 6px 10px;
-  background: rgba(0, 0, 0, 0.75); /* الخلفية الداكنة الشفافة */
-  border: 1px solid rgba(255, 255, 255, 0.15); /* الحدود الخفيفة */
-  border-radius: 8px; /* الحواف المدورة */
-  z-index: 10;
-  pointer-events: none;
+/* شعار Kora TV */
+
+.player-kora-logo {
+position: absolute;
+top: 9px;
+right: 9px;
+width: 76px;
+height: auto;
+max-height: 34px;
+object-fit: contain;
+padding: 5px 7px;
+background: rgba(0, 0, 0, .75);
+border: 1px solid rgba(255, 255, 255, .13);
+border-radius: 7px;
+z-index: 10;
+pointer-events: none;
 }
 
-@media (max-width: 560px){
-  .player-kora-logo{
-    width: 75px;
-    top: 8px;
-    right: 8px;
-    padding: 5px 8px;
-  }
+/* تحسين شاشات الموبايل */
+
+@media (max-width: 560px) {
+.topbar {
+padding: 9px 12px;
+min-height: 51px;
 }
 
+.brand {
+font-size: 17px;
+}
 
+.container {
+width: 97%;
+margin: 10px auto;
+}
+
+.match-card,
+.panel {
+padding: 10px;
+border-radius: 10px;
+}
+
+.matches {
+gap: 7px;
+}
+
+.teams {
+grid-template-columns: 1fr 30px 1fr;
+padding: 10px 0;
+}
+
+.team img,
+.logo-placeholder {
+width: 40px;
+height: 40px;
+}
+
+.team strong {
+font-size: 12px;
+}
+
+.day-tab {
+padding: 9px 3px;
+font-size: 12px;
+}
+
+.watch-btn,
+.primary {
+padding: 8px 11px;
+font-size: 12px;
+}
+
+.player-kora-logo {
+width: 65px;
+top: 7px;
+right: 7px;
+padding: 4px 6px;
+}
+}
+
+/* الشاشات الصغيرة جداً */
+
+@media (max-width: 360px) {
+.form-grid {
+grid-template-columns: 1fr;
+}
+
+.full {
+grid-column: auto;
+}
+
+.admin-row {
+align-items: flex-start;
+flex-direction: column;
+}
+
+.row-actions {
+width: 100%;
+}
+}
