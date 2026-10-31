@@ -1,458 +1,619 @@
 @font-face {
-font-family: "KoraFont";
-src: url("./fonts/as.ttf") format("truetype");
-font-weight: 100 900;
-font-style: normal;
-font-display: swap;
+  font-family: "KoraFont";
+  src: url("./fonts/as.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
 
 * {
   box-sizing: border-box;
   font-family: "KoraFont", sans-serif;
-  }
+}
 
 :root {
-color-scheme: dark;
---bg: #0d111b;
---surface: #171e2c;
---surface-light: #202a3b;
---border: #2b374a;
---text: #f4f6fb;
---muted: #a7b2c5;
---purple: #654de0;
---green: #16865a;
+  color-scheme: dark;
+  --bg: #0d111b;
+  --surface: #171e2c;
+  --surface-light: #202a3b;
+  --border: #2b374a;
+  --text: #f4f6fb;
+  --muted: #a7b2c5;
+  --purple: #654de0;
+  --green: #16865a;
 }
 
 html {
-scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 body {
-margin: 0;
-background: var(--bg);
-color: var(--text);
-font-size: 14px;
-line-height: 1.6;
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 a {
-color: inherit;
-text-decoration: none;
+  color: inherit;
+  text-decoration: none;
 }
 
 button,
 input {
-font: inherit;
+  font: inherit;
 }
 
 button {
-cursor: pointer;
-transition: .2s ease;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
 button:active {
-transform: scale(.97);
+  transform: scale(0.97);
 }
 
 /* الشريط العلوي */
 
 .topbar {
-display: flex;
-align-items: center;
-justify-content: space-between;
-padding: 11px max(12px, calc((100% - 900px) / 2));
-background: #151c29;
-border-bottom: 1px solid var(--border);
-min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px max(12px, calc((100% - 900px) / 2));
+  background: #151c29;
+  border-bottom: 1px solid var(--border);
+  min-height: 56px;
 }
 
 .brand {
-font-size: 19px;
-font-weight: 900;
-letter-spacing: -.3px;
+  display: flex;
+  align-items: center;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+}
+
+.brand img {
+  width: 155px;
+  height: auto;
+  display: block;
+  object-fit: contain;
 }
 
 .admin-link,
 .secondary {
-background: var(--surface-light);
-color: #fff;
-padding: 8px 12px;
-border: 1px solid var(--border);
-border-radius: 9px;
-font-size: 13px;
+  background: var(--surface-light);
+  color: #fff;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font-size: 13px;
 }
 
-/* المحتوى */
+/* المحتوى والأقسام */
 
 .container {
-width: min(900px, 96%);
-margin: 14px auto;
+  width: min(900px, 96%);
+  margin: 14px auto;
+  padding-bottom: 95px;
 }
 
+.page {
+  display: none;
+  padding-bottom: 25px;
+}
+
+.page.active {
+  display: block;
+}
+
+.section-title {
+  font-size: 20px;
+  margin: 12px 0 16px;
+}
+
+.news-subtitle {
+  color: var(--muted);
+  margin-top: -10px;
+}
+
+/* أيام المباريات */
+
 .day-tabs {
-display: flex;
-gap: 6px;
-margin-bottom: 9px;
+  display: flex;
+  gap: 6px;
+  margin-bottom: 9px;
 }
 
 .day-tab {
-flex: 1;
-background: var(--surface);
-color: #dce2ed;
-border: 1px solid var(--border);
-border-radius: 9px;
-padding: 10px 5px;
-font-size: 14px;
+  flex: 1;
+  background: var(--surface);
+  color: #dce2ed;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 10px 5px;
+  font-size: 14px;
 }
 
 .day-tab.active {
-background: var(--purple);
-border-color: #8b78f5;
-color: white;
+  background: var(--purple);
+  border-color: #8b78f5;
+  color: white;
 }
 
 .date-label {
-text-align: center;
-color: var(--muted);
-margin: 9px 0 13px;
-font-size: 13px;
+  text-align: center;
+  color: var(--muted);
+  margin: 9px 0 13px;
+  font-size: 13px;
 }
 
 /* بطاقات المباريات */
 
 .matches {
-display: grid;
-gap: 9px;
+  display: grid;
+  gap: 9px;
 }
 
 .match-card,
 .panel {
-background: var(--surface);
-border: 1px solid var(--border);
-border-radius: 12px;
-padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
 }
 
 .match-time {
-text-align: center;
-color: var(--muted);
-font-size: 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .teams {
-display: grid;
-grid-template-columns: 1fr 35px 1fr;
-align-items: center;
-gap: 5px;
-padding: 12px 0;
+  display: grid;
+  grid-template-columns: 1fr 35px 1fr;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 0;
 }
 
 .team {
-display: flex;
-flex-direction: column;
-align-items: center;
-gap: 6px;
-text-align: center;
-min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  min-width: 0;
 }
 
 .team img,
 .logo-placeholder {
-width: 45px;
-height: 45px;
-object-fit: contain;
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
 }
 
 .logo-placeholder {
-display: grid;
-place-items: center;
-font-size: 29px;
+  display: grid;
+  place-items: center;
+  font-size: 29px;
 }
 
 .team strong {
-font-size: 13px;
-font-weight: 800;
-overflow-wrap: anywhere;
+  font-size: 13px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
 }
 
 .vs {
-text-align: center;
-color: #8995aa;
-font-weight: bold;
-font-size: 12px;
+  text-align: center;
+  color: #8995aa;
+  font-weight: bold;
+  font-size: 12px;
 }
 
 .match-bottom {
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: 8px;
-border-top: 1px solid var(--border);
-padding-top: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 9px;
 }
 
 .status,
 .stream-wait {
-font-size: 12px;
-color: var(--muted);
+  font-size: 12px;
+  color: var(--muted);
 }
 
 .watch-btn,
 .primary {
-display: inline-block;
-background: var(--green);
-color: white;
-border: 0;
-border-radius: 8px;
-padding: 9px 14px;
-font-weight: bold;
-font-size: 13px;
-text-align: center;
+  display: inline-block;
+  background: var(--green);
+  color: white;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-weight: bold;
+  font-size: 13px;
+  text-align: center;
 }
 
 .watch-btn:hover,
 .primary:hover {
-filter: brightness(1.15);
+  filter: brightness(1.15);
 }
 
 .notice {
-text-align: center;
-color: var(--muted);
-padding: 18px 10px;
+  text-align: center;
+  color: var(--muted);
+  padding: 18px 10px;
 }
 
 .error {
-color: #ff9b9b;
+  color: #ff9b9b;
 }
 
 .footer-note {
-text-align: center;
-color: #8792a5;
-font-size: 11px;
-margin: 17px 0;
+  text-align: center;
+  color: #8792a5;
+  font-size: 11px;
+  margin: 17px 0;
+}
+
+/* الأخبار */
+
+.news-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.news-card h3 {
+  font-size: 15px;
+  margin: 0 0 10px;
+  line-height: 1.8;
+}
+
+.news-meta {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.news-link {
+  display: inline-block;
+  color: #a99aff;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.refresh-button {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+/* حول Kora TV */
+
+.about-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px 18px;
+  text-align: center;
+  max-width: 420px;
+  margin: 15px auto;
+}
+
+.about-logo {
+  width: 110px;
+  height: auto;
+  object-fit: contain;
+}
+
+.about-card h2 {
+  font-size: 23px;
+}
+
+.about-description {
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.social-link {
+  display: block;
+  background: var(--surface-light);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+.about-version {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 22px;
+}
+
+/* شريط التنقل السفلي */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+
+  background: #151c29;
+  border-top: 1px solid var(--border);
+  padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+
+  background: transparent;
+  border: none;
+  color: #929db0;
+  padding: 5px 2px;
+}
+
+.nav-item span {
+  font-size: 21px;
+}
+
+.nav-item small {
+  font-size: 11px;
+}
+
+.nav-item.active {
+  color: #8d7cff;
+  font-weight: bold;
 }
 
 /* لوحة الإدارة */
 
 .panel {
-max-width: 760px;
-margin: 14px auto;
+  max-width: 760px;
+  margin: 14px auto;
 }
 
 .panel h1 {
-font-size: 20px;
-margin-top: 0;
+  font-size: 20px;
+  margin-top: 0;
 }
 
 .panel h2 {
-font-size: 17px;
+  font-size: 17px;
 }
 
 label {
-display: block;
-color: #c9d1df;
-font-size: 13px;
-margin-bottom: 11px;
+  display: block;
+  color: #c9d1df;
+  font-size: 13px;
+  margin-bottom: 11px;
 }
 
 input {
-display: block;
-width: 100%;
-margin-top: 6px;
-padding: 10px;
-background: #101520;
-border: 1px solid #394357;
-border-radius: 8px;
-color: #fff;
-font-size: 14px;
-outline: none;
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px;
+  background: #101520;
+  border: 1px solid #394357;
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
 }
 
 input:focus {
-border-color: var(--purple);
-box-shadow: 0 0 0 2px #654de033;
+  border-color: var(--purple);
+  box-shadow: 0 0 0 2px #654de033;
 }
 
 .form-grid {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 0 11px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 11px;
 }
 
 .full {
-grid-column: 1 / -1;
+  grid-column: 1 / -1;
 }
 
 .form-actions,
 .panel-heading,
 .row-actions {
-display: flex;
-align-items: center;
-gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .panel-heading {
-justify-content: space-between;
+  justify-content: space-between;
 }
 
 .secondary,
 .danger,
 .primary {
-border: 0;
-cursor: pointer;
-font-size: 13px;
+  border: 0;
+  cursor: pointer;
+  font-size: 13px;
 }
 
 .danger {
-background: #9d3038;
-color: white;
-padding: 9px 12px;
-border-radius: 8px;
+  background: #9d3038;
+  color: white;
+  padding: 9px 12px;
+  border-radius: 8px;
 }
 
 .message {
-color: #b9d4ff;
-min-height: 18px;
-font-size: 13px;
+  color: #b9d4ff;
+  min-height: 18px;
+  font-size: 13px;
 }
 
 .admin-row {
-display: flex;
-justify-content: space-between;
-align-items: center;
-gap: 8px;
-padding: 11px 0;
-border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
 }
 
 .admin-row small {
-display: block;
-color: #9ca8ba;
-margin-top: 4px;
-font-size: 12px;
+  display: block;
+  color: #9ca8ba;
+  margin-top: 4px;
+  font-size: 12px;
 }
 
 hr {
-border: 0;
-border-top: 1px solid var(--border);
-margin: 17px 0;
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 17px 0;
 }
 
 /* مشغل الفيديو */
 
 .video-frame {
-position: relative;
-width: 100%;
-aspect-ratio: 16 / 9;
-background: #000;
-border-radius: 10px;
-overflow: hidden;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .video-frame iframe {
-position: absolute;
-inset: 0;
-width: 100%;
-height: 100%;
-border: 0;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
-/* شعار Kora TV */
+/* شعار Kora TV داخل المشغل */
 
 .player-kora-logo {
-position: absolute;
-top: 9px;
-right: 9px;
-width: 76px;
-height: auto;
-max-height: 34px;
-object-fit: contain;
-padding: 5px 7px;
-background: rgba(0, 0, 0, .75);
-border: 1px solid rgba(255, 255, 255, .13);
-border-radius: 7px;
-z-index: 10;
-pointer-events: none;
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 76px;
+  height: auto;
+  max-height: 34px;
+  object-fit: contain;
+  padding: 5px 7px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 7px;
+  z-index: 10;
+  pointer-events: none;
 }
 
 /* تحسين شاشات الموبايل */
 
 @media (max-width: 560px) {
-.topbar {
-padding: 9px 12px;
-min-height: 51px;
-}
+  .topbar {
+    padding: 9px 12px;
+    min-height: 51px;
+  }
 
-.brand {
-font-size: 17px;
-}
+  .brand {
+    font-size: 17px;
+  }
 
-.container {
-width: 97%;
-margin: 10px auto;
-}
+  .brand img {
+    width: 135px;
+  }
 
-.match-card,
-.panel {
-padding: 10px;
-border-radius: 10px;
-}
+  .container {
+    width: 97%;
+    margin: 10px auto;
+  }
 
-.matches {
-gap: 7px;
-}
+  .match-card,
+  .panel {
+    padding: 10px;
+    border-radius: 10px;
+  }
 
-.teams {
-grid-template-columns: 1fr 30px 1fr;
-padding: 10px 0;
-}
+  .matches {
+    gap: 7px;
+  }
 
-.team img,
-.logo-placeholder {
-width: 40px;
-height: 40px;
-}
+  .teams {
+    grid-template-columns: 1fr 30px 1fr;
+    padding: 10px 0;
+  }
 
-.team strong {
-font-size: 12px;
-}
+  .team img,
+  .logo-placeholder {
+    width: 40px;
+    height: 40px;
+  }
 
-.day-tab {
-padding: 9px 3px;
-font-size: 12px;
-}
+  .team strong {
+    font-size: 12px;
+  }
 
-.watch-btn,
-.primary {
-padding: 8px 11px;
-font-size: 12px;
-}
+  .day-tab {
+    padding: 9px 3px;
+    font-size: 12px;
+  }
 
-.player-kora-logo {
-width: 65px;
-top: 7px;
-right: 7px;
-padding: 4px 6px;
-}
+  .watch-btn,
+  .primary {
+    padding: 8px 11px;
+    font-size: 12px;
+  }
+
+  .player-kora-logo {
+    width: 65px;
+    top: 7px;
+    right: 7px;
+    padding: 4px 6px;
+  }
+
+  .nav-item span {
+    font-size: 20px;
+  }
+
+  .nav-item small {
+    font-size: 10px;
+  }
 }
 
 /* الشاشات الصغيرة جداً */
 
 @media (max-width: 360px) {
-.form-grid {
-grid-template-columns: 1fr;
-}
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
 
-.full {
-grid-column: auto;
-}
+  .full {
+    grid-column: auto;
+  }
 
-.admin-row {
-align-items: flex-start;
-flex-direction: column;
-}
+  .admin-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 
-.row-actions {
-width: 100%;
-}
+  .row-actions {
+    width: 100%;
+  }
 }
