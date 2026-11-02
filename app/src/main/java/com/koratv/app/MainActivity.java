@@ -127,12 +127,12 @@ public class MainActivity extends Activity {
 
                 FrameLayout.LayoutParams logoParams =
                         new FrameLayout.LayoutParams(
-                                dp(85),
-                                dp(85),
-                                Gravity.TOP | Gravity.LEFT
+                                dp(120),
+                                dp(75),
+                                Gravity.TOP | Gravity.RIGHT
                         );
 
-                logoParams.setMargins(dp(16), dp(16), 0, 0);
+                logoParams.setMargins(dp(0), dp(12), 0, 0);
 
                 fullscreenLayout.addView(logo, logoParams);
                 logo.bringToFront();
