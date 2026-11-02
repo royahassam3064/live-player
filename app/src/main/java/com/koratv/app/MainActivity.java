@@ -104,6 +104,7 @@ public class MainActivity extends Activity {
                 fullscreenLayout = new FrameLayout(MainActivity.this);
                 fullscreenLayout.setBackgroundColor(0xFF000000);
 
+                // إضافة الفيديو
                 FrameLayout.LayoutParams videoParams =
                         new FrameLayout.LayoutParams(
                                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -112,29 +113,47 @@ public class MainActivity extends Activity {
 
                 fullscreenLayout.addView(view, videoParams);
 
+                // شعار Kora TV
                 ImageView logo = new ImageView(MainActivity.this);
-                logo.setImageResource(R.drawable.kora_logo);
-                logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                logo.setPadding(8, 8, 8, 8);
 
+                logo.setImageResource(R.drawable.kora_logo);
+
+                logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
+
+                // خلفية سوداء صافية 100%
                 GradientDrawable background = new GradientDrawable();
-                background.setColor(0xCC000000);
-                background.setCornerRadius(dp(12));
-                background.setStroke(1, 0x33FFFFFF);
+                background.setColor(0xFF000000);
+                background.setCornerRadius(dp(8));
 
                 logo.setBackground(background);
-                logo.setElevation(dp(10));
 
+                // مسافة داخلية للشعار
+                logo.setPadding(
+                        dp(8),
+                        dp(5),
+                        dp(8),
+                        dp(5)
+                );
+
+                logo.setElevation(dp(20));
+
+                // الحجم والموقع: منتصف أعلى البث
                 FrameLayout.LayoutParams logoParams =
                         new FrameLayout.LayoutParams(
-                                dp(120),
-                                dp(75),
+                                dp(150),
+                                dp(48),
                                 Gravity.TOP | Gravity.RIGHT
                         );
 
-                logoParams.setMargins(dp(0), dp(12), 0, 0);
+                logoParams.setMargins(
+                        0,
+                        dp(12),
+                        0,
+                        0
+                );
 
                 fullscreenLayout.addView(logo, logoParams);
+
                 logo.bringToFront();
 
                 setContentView(fullscreenLayout);
@@ -209,7 +228,6 @@ public class MainActivity extends Activity {
                         isNewerVersion(latestVersion, currentVersion)) {
 
                     handler.post(() -> showUpdateDialog());
-
                 }
 
             } catch (Exception e) {
