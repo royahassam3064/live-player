@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#000">
-  <title>مشاهدة البث</title>
+  <title>مشاهدة البث - Kora TV</title>
 
   <link rel="stylesheet" href="style.css">
 
@@ -14,53 +14,170 @@
 
   <style>
     #video-frame {
-      position: relative;
-      width: 100%;
-      max-width: 640px;
+      position: relative !important;
+      width: 640px;
+      max-width: 100%;
       aspect-ratio: 16 / 9;
       height: auto;
-      margin: 0 auto;
-      background: #000;
+      margin: 15px auto;
       overflow: hidden;
+      background: #000;
+      isolation: isolate;
     }
 
     #video-frame iframe {
+      position: absolute !important;
+      inset: 0;
       width: 100% !important;
       height: 100% !important;
-      display: block;
       border: 0;
+      display: block;
+      z-index: 1;
     }
 
-    #video-frame::after {
-      content: "";
+    .kora-logo {
       position: absolute;
       top: 12px;
       right: 12px;
       width: 150px;
-      height: 48px;
-      background: url("kora-tv-logo.png") center / contain no-repeat;
-      z-index: 9999;
+      height: auto;
+      max-height: 55px;
+      object-fit: contain;
+      z-index: 100;
       pointer-events: none;
+    }
+
+    .fullscreen-btn {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      z-index: 101;
+      border: 0;
+      border-radius: 7px;
+      padding: 10px 15px;
+      background: rgba(0, 0, 0, .85);
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #video-frame:fullscreen {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      aspect-ratio: auto;
+      margin: 0;
+      background: #000;
+    }
+
+    #video-frame:fullscreen iframe {
+      width: 100%;
+      height: 100%;
+    }
+
+    #video-frame:-webkit-full-screen {
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      margin: 0;
+      background: #000;
+    }
+
+    #video-frame:-webkit-full-screen iframe {
+      width: 100%;
+      height: 100%;
+    }
+
+    @media (max-width: 500px) {
+      .kora-logo {
+        width: 105px;
+        top: 8px;
+        right: 8px;
+      }
+
+      .fullscreen-btn {
+        left: 8px;
+        bottom: 8px;
+        padding: 8px 11px;
+      }
     }
   </style>
 </head>
 
 <body class="watch-page">
+
   <header class="topbar">
     <a class="admin-link" href="index.html">رجوع للمباريات</a>
     <div class="brand">البث المباشر</div>
   </header>
 
   <main class="container">
+
     <h1 id="watch-title">جارٍ تحميل البث...</h1>
 
     <div class="video-frame" id="video-frame">
+
       <p class="notice">جارٍ تحميل المشغّل...</p>
+
+      <img
+        src="kora-tv-logo.png"
+        class="kora-logo"
+        alt="Kora TV"
+      >
+
+      <button
+        type="button"
+        class="fullscreen-btn"
+        id="fullscreen-btn">
+        ⛶ ملء الشاشة
+      </button>
+
     </div>
 
     <p class="footer-note">
       يجب أن يسمح مصدر البث بالتضمين داخل المواقع. بعض الروابط لا تعمل داخل إطار iframe.
     </p>
+
   </main>
+
+  <script>
+    const player = document.getElementById("video-frame");
+    const fullscreenBtn = document.getElementById("fullscreen-btn");
+
+    fullscreenBtn.addEventListener("click", async function () {
+      try {
+        if (!document.fullscreenElement) {
+          if (player.requestFullscreen) {
+            await player.requestFullscreen();
+          } else if (player.webkitRequestFullscreen) {
+            player.webkitRequestFullscreen();
+          }
+        } else {
+          if (document.exitFullscreen) {
+            await document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          }
+        }
+      } catch (error) {
+        console.error("Fullscreen error:", error);
+      }
+    });
+
+    function updateFullscreenButton() {
+      const isFullscreen =
+        !!document.fullscreenElement ||
+        !!document.webkitFullscreenElement;
+
+      fullscreenBtn.textContent = isFullscreen
+        ? "⛶ خروج من ملء الشاشة"
+        : "⛶ ملء الشاشة";
+    }
+
+    document.addEventListener("fullscreenchange", updateFullscreenButton);
+    document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
+  </script>
+
 </body>
 </html>
