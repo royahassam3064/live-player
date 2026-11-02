@@ -6,13 +6,14 @@
 
   const params = new URLSearchParams(location.search);
   const id = params.get("id");
+
   const title = document.getElementById("watch-title");
   const frame = document.getElementById("video-frame");
 
   function safeUrl(raw) {
     try {
-      const u = new URL(raw);
-      return u.protocol === "https:" ? u.href : null;
+      const url = new URL(raw);
+      return url.protocol === "https:" ? url.href : null;
     } catch {
       return null;
     }
@@ -21,45 +22,57 @@
   async function load() {
     if (!id) {
       title.textContent = "رابط المباراة غير صحيح";
-      frame.innerHTML = "";
       return;
     }
 
-    const { data, error } = await client.from("matches")
+    const { data, error } = await client
+      .from("matches")
       .select("home_team,away_team,stream_url")
-      .eq("id", id).single();
+      .eq("id", id)
+      .single();
 
     if (error || !data) {
       title.textContent = "تعذر العثور على المباراة";
-      frame.innerHTML = "";
       return;
     }
 
-    title.textContent = `${data.home_team} × ${data.away_team}`;
+    title.textContent =
+      `${data.home_team} × ${data.away_team}`;
 
     const url = safeUrl(data.stream_url || "");
 
     if (!url) {
-      frame.innerHTML =
-        `<p class="notice">رابط البث غير متوفر أو غير صالح.</p>`;
+      const notice = document.createElement("p");
+      notice.className = "notice";
+      notice.textContent = "رابط البث غير متوفر أو غير صالح.";
+
+      const oldIframe = frame.querySelector("iframe");
+      if (oldIframe) oldIframe.remove();
+
+      frame.prepend(notice);
       return;
     }
 
-    frame.innerHTML = "";
+    // حذف رسالة التحميل وإطار البث القديم فقط
+    frame.querySelectorAll(".notice, iframe").forEach(element => {
+      element.remove();
+    });
 
+    // إنشاء إطار البث
     const iframe = document.createElement("iframe");
+
     iframe.src = url;
-    iframe.allow = "autoplay; fullscreen; picture-in-picture";
+    iframe.width = "640";
+    iframe.height = "360";
+    iframe.frameBorder = "0";
+    iframe.scrolling = "no";
+    iframe.allow =
+      "autoplay; fullscreen; picture-in-picture";
     iframe.allowFullscreen = true;
     iframe.title = "مشغل البث";
 
-    const logo = document.createElement("img");
-    logo.src = "kora-tv-logo.png";
-    logo.alt = "Kora TV";
-    logo.className = "player-kora-logo";
-
-    frame.appendChild(iframe);
-    frame.appendChild(logo);
+    // إضافة البث دون حذف الشعار أو زر ملء الشاشة
+    frame.prepend(iframe);
   }
 
   load();
