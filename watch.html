@@ -35,19 +35,19 @@
       z-index: 1;
     }
 
-    /* شعار Kora TV داخل حدود مساحة البث */
+    /* شعار Kora TV أسفل يمين البث */
     #video-frame .kora-logo {
       position: absolute;
-      top: 12px;
       right: 12px;
+      bottom: 12px;
       width: 150px;
       height: 48px;
       max-width: 35%;
-      padding: 4px 8px;
-      box-sizing: border-box;
       object-fit: contain;
-      background: #000;
-      border-radius: 4px;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      box-sizing: border-box;
       z-index: 20;
       pointer-events: none;
       display: block;
@@ -68,7 +68,6 @@
       cursor: pointer;
     }
 
-    /* عند ملء الشاشة من زر Kora TV */
     #video-frame:fullscreen,
     #video-frame:-webkit-full-screen {
       width: 100%;
@@ -87,8 +86,8 @@
 
     #video-frame:fullscreen .kora-logo,
     #video-frame:-webkit-full-screen .kora-logo {
-      top: 18px;
       right: 18px;
+      bottom: 18px;
       width: 150px;
       height: 48px;
     }
@@ -97,8 +96,8 @@
       #video-frame .kora-logo {
         width: 105px;
         height: 40px;
-        top: 8px;
         right: 8px;
+        bottom: 8px;
       }
 
       .fullscreen-btn {
@@ -128,7 +127,7 @@
       </p>
 
       <img
-        src="kora-tv-logo.png"
+        src="https://i.postimg.cc/jSmhKgmX/lv-0-20261103200323.jpg"
         class="kora-logo"
         alt="Kora TV"
       >
