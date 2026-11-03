@@ -608,3 +608,87 @@ html[data-theme=light] .bottom-nav button.active {
     padding-right: 1px;
   }
 }
+
+/* Kora TV fixes */
+
+.brand {
+  direction: ltr;
+  white-space: nowrap;
+}
+
+.brand-name {
+  display: inline-flex;
+  direction: ltr;
+  gap: 4px;
+}
+
+.match-meta {
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px 12px;
+}
+
+.match-time-label {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.status-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.live-label {
+  color: #ff646d !important;
+  font-weight: 900;
+}
+
+.break-label {
+  color: #f2c75c !important;
+  font-weight: 800;
+}
+
+.finished-label {
+  color: #aeb3c5 !important;
+  font-weight: 700;
+}
+
+.match-minute {
+  color: #ff646d;
+  font-weight: 900;
+  direction: ltr;
+}
+
+.score {
+  display: inline-block;
+  font-size: 22px;
+  font-weight: 900;
+  direction: ltr;
+  white-space: nowrap;
+}
+
+.team-logo-fallback {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  display: grid;
+  place-items: center;
+  font-size: 23px;
+}
+
+.stream-notice {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  padding: 8px;
+}
+
+@media(max-width:480px) {
+  .match-meta {
+    justify-content: space-between;
+  }
+
+  .score {
+    font-size: 19px;
+  }
+}
