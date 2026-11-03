@@ -1,363 +1,265 @@
-javascript
 (() => {
-"use strict";
+  "use strict";
 
-const $ = id => document.getElementById(id);
+  const $ = (id) => document.getElementById(id);
+  let allMatches = [];
+  let selectedDay = 0;
+  let supabaseClient = null;
 
-const required = [
-  "matches","date-label","live-matches",
-  "home-upcoming-preview","home-news-preview",
-  "news-list"
-];
-
-if (required.some(id => !$(id))) return;
-
-let client = null;
-let selectedDay = 0;
-let allMatches = [];
-
-const escape = value => String(value ?? "").replace(/[&<>"']/g, c => ({
-  "&":"&amp;",
-  "<":"&lt;",
-  ">":"&gt;",
-  '"':"&quot;",
-  "'":"&#39;"
-}[c]));
-
-const baghdadDate = date =>
-  new Intl.DateTimeFormat("en-CA", {
-    timeZone:"Asia/Baghdad",
-    year:"numeric",
-    month:"2-digit",
-    day:"2-digit"
-  }).format(date);
-
-const shiftDate = (ymd, amount) => {
-  const [y,m,d] = ymd.split("-").map(Number);
-  return new Date(Date.UTC(y,m-1,d+amount,12))
-    .toISOString().slice(0,10);
-};
-
-const fmtTime = value =>
-  new Intl.DateTimeFormat("ar-IQ", {
-    timeZone:"Asia/Baghdad",
-    hour:"numeric",
-    minute:"2-digit"
-  }).format(new Date(value));
-
-const fmtDate = ymd =>
-  new Intl.DateTimeFormat("ar-IQ", {
-    timeZone:"Asia/Baghdad",
-    weekday:"long",
-    day:"numeric",
-    month:"long"
-  }).format(new Date(`${ymd}T12:00:00+03:00`));
-
-function matchCard(m, compact=false) {
-  const start = new Date(m.match_time).getTime();
-  const now = Date.now();
-
-  const statusText = m.match_status ||
-    (now < start-3600000 ? "لم تبدأ بعد" :
-    now <= start+14400000 ? "مباشر / جارية" : "انتهت");
-
-  const showStream = !!m.stream_url &&
-    now >= start-3600000 &&
-    now <= start+14400000;
-
-  const homeLogo = m.home_logo
-    ? `<img src="${escape(m.home_logo)}" alt="" loading="lazy">`
-    : `<span class="team-fallback">H</span>`;
-
-  const awayLogo = m.away_logo
-    ? `<img src="${escape(m.away_logo)}" alt="" loading="lazy">`
-    : `<span class="team-fallback">A</span>`;
-
-  return `
-  <article class="match-card ${compact?"compact":""}">
-    <div class="match-meta">
-      <span>${escape(m.competition || "مباراة كرة قدم")}</span>
-      <time>${fmtTime(m.match_time)}</time>
-    </div>
-
-    <div class="teams">
-      <div class="team">
-        ${homeLogo}
-        <strong>${escape(m.home_team)}</strong>
-      </div>
-
-      <span class="versus">VS</span>
-
-      <div class="team">
-        ${awayLogo}
-        <strong>${escape(m.away_team)}</strong>
-      </div>
-    </div>
-
-    <div class="match-bottom">
-      <span class="status-pill">${escape(statusText)}</span>
-
-      ${
-        showStream
-        ? `<a class="watch-btn" href="watch.html?id=${encodeURIComponent(m.id)}">▶ مشاهدة البث</a>`
-        : `<span class="stream-wait">لا يتوفر بث حالياً</span>`
-      }
-    </div>
-  </article>`;
-}
-
-function renderMatches() {
-  const target = shiftDate(baghdadDate(new Date()), selectedDay);
-
-  $("date-label").textContent = fmtDate(target);
-
-  const rows = allMatches
-    .filter(m => baghdadDate(new Date(m.match_time)) === target)
-    .sort((a,b)=>new Date(a.match_time)-new Date(b.match_time));
-
-  $("matches").innerHTML = rows.length
-    ? rows.map(m=>matchCard(m)).join("")
-    : `<p class="empty-state">ماكو مباريات مضافة لهذا اليوم حالياً.</p>`;
-}
-
-function renderLive() {
-  const now = Date.now();
-
-  const rows = allMatches.filter(m => {
-    const start = new Date(m.match_time).getTime();
-    return m.stream_url &&
-      now >= start-3600000 &&
-      now <= start+14400000;
-  });
-
-  $("live-matches").innerHTML = rows.length
-    ? rows.map(m=>matchCard(m)).join("")
-    : `<p class="empty-state">ماكو روابط بث متاحة حالياً.</p>`;
-}
-
-function renderHome() {
-  const upcoming = allMatches
-    .filter(m=>new Date(m.match_time).getTime()>Date.now()-3600000)
-    .sort((a,b)=>new Date(a.match_time)-new Date(b.match_time))
-    .slice(0,2);
-
-  $("home-upcoming-preview").innerHTML = upcoming.length
-    ? upcoming.map(m=>matchCard(m,true)).join("")
-    : `<p class="empty-state">ماكو مباريات قادمة مضافة حالياً.</p>`;
-
-  renderLive();
-}
-
-async function loadMatches() {
-  if (
-    !window.supabase ||
-    !window.SUPABASE_URL ||
-    !window.SUPABASE_PUBLISHABLE_KEY
-  ) {
-    $("matches").innerHTML =
-      `<p class="empty-state">إعدادات الاتصال غير موجودة في config.js.</p>`;
-    return;
+  function safeText(value) {
+    return String(value ?? "").replace(/[&<>"']/g, ch => ({
+      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+    }[ch]));
   }
 
-  client = window.supabase.createClient(
-    window.SUPABASE_URL,
-    window.SUPABASE_PUBLISHABLE_KEY
-  );
-
-  const {data,error} = await client
-    .from("matches")
-    .select(`
-      id,home_team,away_team,home_logo,away_logo,
-      match_time,stream_url,competition,
-      match_status,home_score,away_score
-    `)
-    .order("match_time",{ascending:true});
-
-  if(error) {
-    $("matches").innerHTML =
-      `<p class="empty-state error">تعذر تحميل المباريات.</p>`;
-    return;
+  function baghdadDate(offset = 0) {
+    const now = new Date(Date.now() + offset * 86400000);
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Baghdad",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).format(now);
   }
 
-  allMatches = data || [];
-
-  renderMatches();
-  renderHome();
-}
-
-function showPage(name) {
-  document.querySelectorAll(".page").forEach(page => {
-    page.classList.toggle("active",page.id===`page-${name}`);
-  });
-
-  document.querySelectorAll(".nav-item").forEach(button => {
-    button.classList.toggle("active",button.dataset.page===name);
-  });
-
-  if(name==="matches") renderMatches();
-  if(name==="live") renderLive();
-
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
-document.querySelectorAll(".nav-item").forEach(button => {
-  button.addEventListener("click",()=>showPage(button.dataset.page));
-});
-
-document.querySelectorAll("[data-go]").forEach(button => {
-  button.addEventListener("click",()=>showPage(button.dataset.go));
-});
-
-document.querySelectorAll(".day-tab").forEach(button => {
-  button.addEventListener("click",()=>{
-    selectedDay = Number(button.dataset.day);
-
-    document.querySelectorAll(".day-tab").forEach(b => {
-      b.classList.toggle("active",b===button);
+  function showPage(name) {
+    document.querySelectorAll(".page").forEach(p => {
+      p.classList.toggle("active", p.id === `page-${name}`);
     });
 
-    renderMatches();
-  });
-});
+    document.querySelectorAll("[data-page]").forEach(b => {
+      b.classList.toggle("active", b.dataset.page === name);
+    });
 
-async function loadNews() {
-  const list = $("news-list");
-  const preview = $("home-news-preview");
-
-  list.innerHTML = `<p class="empty-state">جارٍ تحميل الأخبار...</p>`;
-
-  if(!client) {
-    list.innerHTML = `<p class="empty-state">الأخبار غير متاحة حالياً.</p>`;
-    return;
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  try {
-    const {data,error} = await client.functions.invoke("football-news");
+  function initNavigation() {
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-page]");
+      if (!button) return;
 
-    if(error) throw error;
+      event.preventDefault();
+      showPage(button.dataset.page);
+    });
 
-    const items = Array.isArray(data)
-      ? data
-      : (data?.articles || data?.news || []);
+    document.querySelectorAll("[data-day]").forEach(button => {
+      button.addEventListener("click", () => {
+        selectedDay = Number(button.dataset.day);
 
-    if(!items.length) throw new Error("لا توجد أخبار");
+        document.querySelectorAll("[data-day]").forEach(b => {
+          b.classList.toggle("selected", b === button);
+        });
 
-    const html = items.slice(0,12).map(n => {
-      const url = /^https?:\/\//i.test(n.url || n.link || "")
-        ? (n.url || n.link)
-        : "#";
+        renderMatches();
+      });
+    });
+  }
 
-      return `
-      <a class="news-card"
-         href="${escape(url)}"
-         target="_blank"
-         rel="noopener noreferrer">
-        <div>
-          <small>${escape(n.source?.name || n.source || "أخبار كرة القدم")}</small>
-          <h3>${escape(n.title || "خبر رياضي")}</h3>
-          <p>${escape(n.description || "اضغط لقراءة التفاصيل.")}</p>
+  function matchCard(match) {
+    const home = safeText(match.home_team || "الفريق الأول");
+    const away = safeText(match.away_team || "الفريق الثاني");
+
+    const homeLogo = match.home_logo
+      ? `<img src="${safeText(match.home_logo)}" alt="" onerror="this.style.display='none'">`
+      : "";
+
+    const awayLogo = match.away_logo
+      ? `<img src="${safeText(match.away_logo)}" alt="" onerror="this.style.display='none'">`
+      : "";
+
+    const status = safeText(match.match_status || "");
+
+    const score = match.home_score != null && match.away_score != null
+      ? `<strong class="score">${match.home_score} - ${match.away_score}</strong>`
+      : "";
+
+    const time = safeText(match.match_time || "");
+    const live = /live|in_play|1h|2h/i.test(status);
+
+    return `
+      <article class="match-card">
+        <div class="match-meta">
+          <span>${safeText(match.competition || "مباراة")}</span>
+          <span class="${live ? "live-label" : ""}">${live ? "مباشر" : (status || time || "قريباً")}</span>
         </div>
-        <span>↗</span>
-      </a>`;
-    }).join("");
 
-    list.innerHTML = html;
+        <div class="teams">
+          <div class="team">${homeLogo}<b>${home}</b></div>
+          <div class="match-middle">${score || `<span class="vs">VS</span>`}</div>
+          <div class="team">${awayLogo}<b>${away}</b></div>
+        </div>
 
-    preview.innerHTML = items.slice(0,2).map(n => `
-      <div class="news-mini">
-        <small>${escape(n.source?.name || "أخبار الكرة")}</small>
-        <strong>${escape(n.title || "خبر رياضي")}</strong>
-      </div>
-    `).join("");
-
-  } catch(error) {
-    list.innerHTML = `<p class="empty-state">تعذر تحميل الأخبار حالياً.</p>`;
-    preview.innerHTML = `<p class="empty-state">الأخبار غير متاحة حالياً.</p>`;
+        ${match.stream_url
+          ? `<a class="watch-btn" href="watch.html?id=${encodeURIComponent(match.id)}">مشاهدة البث</a>`
+          : ""}
+      </article>`;
   }
-}
 
-$("refresh-news").addEventListener("click",loadNews);
+  function renderMatches() {
+    const date = baghdadDate(selectedDay);
 
-window.KoraTV = {showPage,renderMatches};
+    const dayMatches = allMatches.filter(m => {
+      if (!m.match_time) return selectedDay === 0;
 
-loadMatches().then(loadNews);
+      const parsed = new Date(m.match_time);
 
-setInterval(()=>{
-  renderMatches();
-  renderHome();
-},60000);
+      if (Number.isNaN(parsed.getTime())) {
+        return String(m.match_time).slice(0, 10) === date;
+      }
 
+      return new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Asia/Baghdad",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      }).format(parsed) === date;
+    });
 
-// إعدادات المظهر المحلية
+    const html = dayMatches.length
+      ? dayMatches.map(matchCard).join("")
+      : `<div class="notice">ماكو مباريات بهذا اليوم حالياً.</div>`;
 
-const defaults = {
-  theme:"dark",
-  accent:"purple",
-  font:"normal",
-  bold:true
-};
+    if ($("matches-list")) $("matches-list").innerHTML = html;
 
-function applySettings(s) {
-  document.documentElement.dataset.theme = s.theme;
-  document.documentElement.dataset.accent = s.accent;
-  document.documentElement.dataset.font = s.font;
+    if ($("home-matches")) {
+      $("home-matches").innerHTML =
+        dayMatches.slice(0, 3).map(matchCard).join("") ||
+        `<div class="notice">ماكو مباريات اليوم حالياً.</div>`;
+    }
 
-  document.documentElement.classList.toggle(
-    "heavy-text",
-    s.bold
-  );
+    if ($("live-list")) {
+      const liveMatches = allMatches.filter(m =>
+        /live|in_play|1h|2h/i.test(String(m.match_status || ""))
+      );
 
-  $("theme-setting").value = s.theme;
-  $("accent-setting").value = s.accent;
-  $("font-setting").value = s.font;
-  $("bold-setting").checked = s.bold;
-}
+      $("live-list").innerHTML =
+        liveMatches.map(matchCard).join("") ||
+        `<div class="notice">ماكو مباريات مباشرة حالياً.</div>`;
+    }
+  }
 
-let settings = {...defaults};
+  async function loadMatches() {
+    const home = $("home-matches");
+    const list = $("matches-list");
 
-try {
-  settings = {
-    ...defaults,
-    ...JSON.parse(localStorage.getItem("kora-tv-settings") || "{}")
-  };
-} catch {}
+    if (
+      !window.supabase ||
+      !window.SUPABASE_URL ||
+      !window.SUPABASE_PUBLISHABLE_KEY
+    ) {
+      const msg = `<div class="notice">تأكد من إعدادات config.js واتصال Supabase.</div>`;
+      if (home) home.innerHTML = msg;
+      if (list) list.innerHTML = msg;
+      return;
+    }
 
-applySettings(settings);
+    try {
+      supabaseClient = window.supabase.createClient(
+        window.SUPABASE_URL,
+        window.SUPABASE_PUBLISHABLE_KEY
+      );
 
-function saveSettings() {
-  settings = {
-    theme:$("theme-setting").value,
-    accent:$("accent-setting").value,
-    font:$("font-setting").value,
-    bold:$("bold-setting").checked
-  };
+      const timeout = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error("انتهى وقت الاتصال")), 12000);
+      });
 
-  localStorage.setItem(
-    "kora-tv-settings",
-    JSON.stringify(settings)
-  );
+      const request = supabaseClient
+        .from("matches")
+        .select("*")
+        .order("match_time", { ascending: true })
+        .limit(150);
 
-  applySettings(settings);
-}
+      const { data, error } = await Promise.race([request, timeout]);
 
-[
-  "theme-setting",
-  "accent-setting",
-  "font-setting",
-  "bold-setting"
-].forEach(id => {
-  $(id).addEventListener("change",saveSettings);
-});
+      if (error) throw error;
 
-$("reset-settings").addEventListener("click",()=>{
-  settings = {...defaults};
+      allMatches = Array.isArray(data) ? data : [];
+      renderMatches();
 
-  localStorage.setItem(
-    "kora-tv-settings",
-    JSON.stringify(settings)
-  );
+    } catch (error) {
+      console.error("Kora TV matches:", error);
 
-  applySettings(settings);
-});
+      const msg = `
+        <div class="notice">
+          تعذر تحميل المباريات. تحقق من الإنترنت أو إعدادات Supabase ثم حدّث الصفحة.
+        </div>`;
 
+      if (home) home.innerHTML = msg;
+      if (list) list.innerHTML = msg;
+      if ($("live-list")) $("live-list").innerHTML = msg;
+    }
+  }
+
+  async function loadNews() {
+    const box = $("news-list");
+    if (!box || !supabaseClient) return;
+
+    try {
+      const { data, error } = await supabaseClient.functions.invoke("football-news");
+
+      if (error) throw error;
+
+      const articles = Array.isArray(data)
+        ? data
+        : (data?.articles || data?.news || []);
+
+      box.innerHTML = articles.length
+        ? articles.slice(0, 20).map(item => `
+          <a class="news-card" href="${safeText(item.url || "#")}" target="_blank" rel="noopener">
+            <b>${safeText(item.title || "خبر رياضي")}</b>
+            <span>${safeText(item.description || "")}</span>
+          </a>
+        `).join("")
+        : `<div class="notice">ماكو أخبار متاحة حالياً.</div>`;
+
+    } catch (error) {
+      console.warn("Kora TV news:", error);
+      box.innerHTML = `<div class="notice">الأخبار غير متاحة حالياً.</div>`;
+    }
+  }
+
+  function initSettings() {
+    const root = document.documentElement;
+
+    const saved = (key, fallback) =>
+      localStorage.getItem("kora_" + key) || fallback;
+
+    const theme = $("theme-setting");
+    const accent = $("accent-setting");
+    const font = $("font-setting");
+    const bold = $("bold-setting");
+
+    if (!theme) return;
+
+    theme.value = saved("theme", "dark");
+    accent.value = saved("accent", "#7657f6");
+    font.value = saved("font", "16");
+    bold.checked = saved("bold", "false") === "true";
+
+    function apply() {
+      root.dataset.theme = theme.value;
+      root.style.setProperty("--accent", accent.value);
+      root.style.setProperty("--base-font", font.value + "px");
+      root.classList.toggle("heavy-text", bold.checked);
+
+      localStorage.setItem("kora_theme", theme.value);
+      localStorage.setItem("kora_accent", accent.value);
+      localStorage.setItem("kora_font", font.value);
+      localStorage.setItem("kora_bold", String(bold.checked));
+    }
+
+    [theme, accent, font, bold].forEach(el => {
+      el.addEventListener("change", apply);
+    });
+
+    apply();
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    initNavigation();
+    initSettings();
+
+    loadMatches().then(loadNews);
+  });
 })();
