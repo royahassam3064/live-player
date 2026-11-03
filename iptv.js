@@ -1,482 +1,273 @@
-javascript
 (() => {
-"use strict";
+  "use strict";
 
-const $ = id => document.getElementById(id);
-const video = $("iptv-video");
+  const $ = id => document.getElementById(id);
 
-if(!video) return;
-
-let mode = "xtream";
-let channels = [];
-let categories = [];
-let activeCategory = "all";
-let favoritesOnly = false;
-let hls = null;
-
-const STORE = "kora-iptv-local-v1";
-
-const esc = s => String(s ?? "").replace(/[&<>"']/g,c=>({
-  "&":"&amp;",
-  "<":"&lt;",
-  ">":"&gt;",
-  '"':"&quot;",
-  "'":"&#39;"
-}[c]));
-
-const saved = () => {
-  try {
-    return JSON.parse(localStorage.getItem(STORE) || "{}");
-  } catch {
-    return {};
-  }
-};
-
-const persist = (key,value) => {
-  const data = saved();
-  data[key] = value;
-  localStorage.setItem(STORE,JSON.stringify(data));
-};
-
-const msg = (id,text,error=false) => {
-  const el = $(id);
-  el.textContent = text;
-  el.classList.toggle("error",error);
-};
-
-function setMode(next) {
-  mode = next;
-
-  document.querySelectorAll(".iptv-tab").forEach(button => {
-    button.classList.toggle(
-      "active",
-      button.dataset.iptvMode === next
-    );
-  });
-
-  $("xtream-panel").hidden = next !== "xtream";
-  $("m3u-panel").hidden = next !== "m3u";
-}
-
-document.querySelectorAll(".iptv-tab").forEach(button => {
-  button.addEventListener("click",()=>{
-    setMode(button.dataset.iptvMode);
-  });
-});
-
-function cleanServer(value) {
-  const u = new URL(value.trim());
-
-  if(!["http:","https:"].includes(u.protocol)) {
-    throw new Error("استخدم رابط http أو https");
-  }
-
-  return u.origin + u.pathname.replace(/\/+$/,"");
-}
-
-async function xtreamRequest(server,user,pass,params={}) {
-  const u = new URL(
-    server.replace(/\/+$/,"") + "/player_api.php"
+  let channels = [];
+  let favorites = new Set(
+    JSON.parse(localStorage.getItem("kora_iptv_favs") || "[]")
   );
 
-  u.searchParams.set("username",user);
-  u.searchParams.set("password",pass);
+  let favoritesOnly = false;
+  let hls = null;
 
-  Object.entries(params).forEach(([key,value])=>{
-    u.searchParams.set(key,value);
-  });
-
-  const response = await fetch(u.toString());
-
-  if(!response.ok) {
-    throw new Error("السيرفر لم يستجب");
+  function status(message) {
+    const el = $("iptv-status");
+    if (el) el.textContent = message;
   }
 
-  return response.json();
-}
+  function esc(value) {
+    return String(value ?? "").replace(/[&<>"']/g, c => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#39;"
+    }[c]));
+  }
 
+  function switchTab(tab) {
+    $("iptv-m3u-form")?.classList.toggle("hidden", tab !== "m3u");
+    $("iptv-xtream-form")?.classList.toggle("hidden", tab !== "xtream");
 
-// Xtream Codes
+    document.querySelectorAll("[data-iptv-tab]").forEach(b => {
+      b.classList.toggle("selected", b.dataset.iptvTab === tab);
+    });
+  }
 
-$("xt-connect").addEventListener("click",async()=>{
-  const button = $("xt-connect");
+  function parseM3U(text) {
+    const lines = text.replace(/\r/g, "").split("\n");
+    const result = [];
+    let pending = null;
 
-  button.disabled = true;
-  msg("xt-message","جارٍ الاتصال...");
+    for (const lineRaw of lines) {
+      const line = lineRaw.trim();
 
-  try {
-    const server = cleanServer($("xt-server").value);
-    const user = $("xt-user").value.trim();
-    const pass = $("xt-pass").value;
+      if (line.startsWith("#EXTINF")) {
+        const name = line.split(",").slice(1).join(",").trim() || "قناة";
+        const group = (line.match(/group-title="([^"]*)"/i) || [])[1] || "عام";
+        const logo = (line.match(/tvg-logo="([^"]*)"/i) || [])[1] || "";
 
-    if(!user || !pass) {
-      throw new Error("أدخل اسم المستخدم وكلمة المرور");
+        pending = { name, group, logo };
+
+      } else if (line && !line.startsWith("#") && pending) {
+        result.push({ ...pending, url: line });
+        pending = null;
+      }
     }
 
-    const [cats,streams] = await Promise.all([
-      xtreamRequest(server,user,pass,{
-        action:"get_live_categories"
-      }),
-      xtreamRequest(server,user,pass,{
-        action:"get_live_streams"
-      })
-    ]);
+    return result;
+  }
 
-    if(!Array.isArray(streams)) {
-      throw new Error("بيانات القنوات غير صالحة");
-    }
+  function renderChannels() {
+    const box = $("channel-list");
+    if (!box) return;
 
-    channels = streams.map(c=>({
-      id:String(c.stream_id),
-      name:c.name || "قناة",
-      logo:c.stream_icon || "",
-      group:c.category_name || "عام",
-      url:
-        `${server}/live/${encodeURIComponent(user)}/`+
-        `${encodeURIComponent(pass)}/`+
-        `${encodeURIComponent(c.stream_id)}.`+
-        `${(c.container_extension || "m3u8").replace(/[^a-z0-9]/gi,"")}`,
-      kind:"xtream"
-    }));
+    const q = ($("channel-search")?.value || "").toLowerCase();
 
-    categories = Array.isArray(cats)
-      ? cats.map(c=>({
-          id:String(c.category_id),
-          name:c.category_name
-        }))
-      : [];
-
-    persist("xtream",{server,user,pass});
-    persist("channels",channels);
-    persist("categories",categories);
-
-    activeCategory = "all";
-
-    renderCategories();
-    renderChannels();
-
-    msg("xt-message",`تم تحميل ${channels.length} قناة.`);
-
-  } catch(error) {
-    msg(
-      "xt-message",
-      error.message || "فشل الاتصال. تحقق من البيانات.",
-      true
+    const shown = channels.filter(c =>
+      (!favoritesOnly || favorites.has(c.url)) &&
+      (!q || c.name.toLowerCase().includes(q) || c.group.toLowerCase().includes(q))
     );
-  } finally {
-    button.disabled = false;
+
+    box.innerHTML = shown.length
+      ? shown.map(c => `
+        <div class="channel-row">
+          <button type="button" class="channel-play" data-play="${channels.indexOf(c)}">
+            ${esc(c.name)}
+            <small>${esc(c.group)}</small>
+          </button>
+          <button type="button" class="fav-btn ${favorites.has(c.url) ? "is-fav" : ""}" data-fav="${esc(c.url)}">
+            ${favorites.has(c.url) ? "★" : "☆"}
+          </button>
+        </div>
+      `).join("")
+      : `<div class="notice">ماكو قنوات تطابق البحث.</div>`;
   }
-});
 
+  function playChannel(channel) {
+    const video = $("iptv-video");
 
-// M3U
+    if (!video || !channel?.url) return;
 
-function parseM3U(text) {
-  const lines = text.replace(/^\uFEFF/,"").split(/\r?\n/);
-  const output = [];
+    if (hls) {
+      hls.destroy();
+      hls = null;
+    }
 
-  let meta = null;
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
 
-  for(const raw of lines) {
-    const line = raw.trim();
+    const url = channel.url;
 
-    if(!line) continue;
+    if (/\.m3u8($|\?)/i.test(url) && window.Hls && Hls.isSupported()) {
+      hls = new Hls();
+      hls.loadSource(url);
+      hls.attachMedia(video);
 
-    if(line.startsWith("#EXTINF")) {
-      const title =
-        line.split(",").slice(1).join(",").trim() || "قناة";
-
-      const group =
-        (line.match(/group-title="([^"]*)"/i) || [])[1] || "عام";
-
-      const logo =
-        (line.match(/tvg-logo="([^"]*)"/i) || [])[1] || "";
-
-      meta = {
-        name:title,
-        group,
-        logo
-      };
-
-    } else if(
-      !line.startsWith("#") &&
-      meta &&
-      /^https?:\/\//i.test(line)
-    ) {
-      output.push({
-        id:`m3u-${output.length}`,
-        name:meta.name,
-        group:meta.group,
-        logo:meta.logo,
-        url:line,
-        kind:"m3u"
+      hls.on(Hls.Events.ERROR, (_, data) => {
+        if (data.fatal) {
+          status("تعذر تشغيل القناة. قد يكون الرابط غير مدعوم أو يمنع الاتصال.");
+        }
       });
 
-      meta = null;
+    } else {
+      video.src = url;
     }
+
+    video.play().catch(() => {
+      status("اضغط زر التشغيل داخل المشغل إذا ما بدأ الفيديو تلقائياً.");
+    });
+
+    status("تم اختيار: " + channel.name);
   }
 
-  return output;
-}
+  async function loadM3U() {
+    try {
+      let text = $("m3u-text")?.value.trim() || "";
+      const file = $("m3u-file")?.files?.[0];
 
-$("m3u-file").addEventListener("change",async event=>{
-  const file = event.target.files?.[0];
-
-  if(file) {
-    $("m3u-text").value = await file.text();
-  }
-});
-
-$("m3u-load").addEventListener("click",async()=>{
-  const button = $("m3u-load");
-
-  button.disabled = true;
-  msg("m3u-message","جارٍ قراءة القائمة...");
-
-  try {
-    let text = $("m3u-text").value.trim();
-    const url = $("m3u-url").value.trim();
-
-    if(!text && url) {
-      const response = await fetch(url);
-
-      if(!response.ok) {
-        throw new Error("تعذر تنزيل القائمة");
+      if (file) {
+        text = await file.text();
       }
 
-      text = await response.text();
+      if (!text) {
+        const url = $("m3u-url")?.value.trim();
+
+        if (!url) {
+          status("الصق القائمة أو أدخل رابطها أو اختر ملفاً.");
+          return;
+        }
+
+        status("جار جلب القائمة...");
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+          throw new Error("HTTP " + response.status);
+        }
+
+        text = await response.text();
+      }
+
+      channels = parseM3U(text);
+      favoritesOnly = false;
+      renderChannels();
+
+      status(
+        channels.length
+          ? `تم تحميل ${channels.length} قناة.`
+          : "ما حصلت قنوات بالقائمة. تأكد من صيغة M3U."
+      );
+
+    } catch (error) {
+      console.error(error);
+
+      status(
+        "فشل تحميل القائمة. قد يكون رابط M3U يمنع الوصول من المتصفح (CORS). جرّب رفع الملف أو لصق محتواه."
+      );
     }
-
-    if(!text) {
-      throw new Error("أدخل رابط القائمة أو محتواها أو اختر ملفاً");
-    }
-
-    channels = parseM3U(text);
-
-    if(!channels.length) {
-      throw new Error("لم يتم العثور على قنوات صالحة");
-    }
-
-    categories = [
-      ...new Set(channels.map(c=>c.group))
-    ].map((name,index)=>({
-      id:String(index),
-      name
-    }));
-
-    persist("m3u-url",url);
-    persist("channels",channels);
-    persist("categories",categories);
-
-    activeCategory = "all";
-
-    renderCategories();
-    renderChannels();
-
-    msg("m3u-message",`تم تحميل ${channels.length} قناة.`);
-
-  } catch(error) {
-    msg(
-      "m3u-message",
-      error.message || "فشل تحميل القائمة.",
-      true
-    );
-  } finally {
-    button.disabled = false;
   }
-});
 
+  async function loadXtream() {
+    const serverRaw = $("xt-server")?.value.trim();
+    const username = $("xt-user")?.value.trim();
+    const password = $("xt-pass")?.value;
 
-// تصنيفات القنوات
+    if (!serverRaw || !username || !password) {
+      status("أدخل السيرفر واسم المستخدم وكلمة المرور.");
+      return;
+    }
 
-function renderCategories() {
-  const groups = [
-    ...new Set(channels.map(c=>c.group || "عام"))
-  ];
+    try {
+      const server = new URL(serverRaw);
 
-  $("channel-categories").innerHTML = [
-    `<button class="category-chip ${activeCategory==="all"?"active":""}" data-category="all">الكل</button>`,
-    ...groups.map(group=>`
-      <button class="category-chip ${activeCategory===group?"active":""}"
-              data-category="${esc(group)}">
-        ${esc(group)}
-      </button>
-    `)
-  ].join("");
+      status("جار الاتصال بسيرفر Xtream...");
 
-  $("channel-categories")
-    .querySelectorAll("[data-category]")
-    .forEach(button=>{
-      button.addEventListener("click",()=>{
-        activeCategory = button.dataset.category;
-        renderCategories();
-        renderChannels();
-      });
+      const api = new URL(
+        server.origin + server.pathname.replace(/\/$/, "") + "/player_api.php"
+      );
+
+      api.search = new URLSearchParams({
+        username,
+        password,
+        action: "get_live_streams"
+      }).toString();
+
+      const response = await fetch(api.toString());
+
+      if (!response.ok) {
+        throw new Error("HTTP " + response.status);
+      }
+
+      const data = await response.json();
+
+      if (!Array.isArray(data)) {
+        throw new Error("استجابة السيرفر غير صحيحة");
+      }
+
+      channels = data.map(item => ({
+        name: item.name || "قناة",
+        group: item.category_name || item.category_id || "عام",
+        logo: item.stream_icon || "",
+        url: `${server.origin}${server.pathname.replace(/\/$/, "")}/live/${encodeURIComponent(username)}/${encodeURIComponent(password)}/${item.stream_id}.${item.container_extension || "m3u8"}`
+      }));
+
+      favoritesOnly = false;
+      renderChannels();
+
+      status(
+        channels.length
+          ? `تم الاتصال وتحميل ${channels.length} قناة.`
+          : "ماكو قنوات مباشرة بهذا الحساب."
+      );
+
+    } catch (error) {
+      console.error(error);
+      status("تعذر الاتصال. تحقق من البيانات؛ بعض السيرفرات تمنع الاتصال من المتصفح (CORS).");
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll("[data-iptv-tab]").forEach(b => {
+      b.addEventListener("click", () => switchTab(b.dataset.iptvTab));
     });
-}
 
+    $("load-m3u")?.addEventListener("click", loadM3U);
+    $("load-xtream")?.addEventListener("click", loadXtream);
 
-// عرض القنوات والمفضلة
+    $("channel-search")?.addEventListener("input", renderChannels);
 
-function renderChannels() {
-  const fav = new Set(saved().favorites || []);
+    $("show-favorites")?.addEventListener("click", () => {
+      favoritesOnly = !favoritesOnly;
+      renderChannels();
+    });
 
-  const list = channels.filter(channel =>
-    (activeCategory==="all" || channel.group===activeCategory) &&
-    (!favoritesOnly || fav.has(channel.id))
-  );
+    $("channel-list")?.addEventListener("click", event => {
+      const play = event.target.closest("[data-play]");
+      const fav = event.target.closest("[data-fav]");
 
-  $("channel-list").innerHTML = list.length
-    ? list.map(channel=>`
-      <article class="channel-row">
-        <button class="channel-play" data-play="${esc(channel.id)}">
-          <span class="channel-logo">
-            ${
-              channel.logo
-              ? `<img src="${esc(channel.logo)}" alt="">`
-              : "▶"
-            }
-          </span>
+      if (play) {
+        playChannel(channels[Number(play.dataset.play)]);
+      }
 
-          <span class="channel-name">
-            ${esc(channel.name)}
-            <small>${esc(channel.group)}</small>
-          </span>
-        </button>
+      if (fav) {
+        const url = fav.dataset.fav;
 
-        <button class="favorite-btn ${fav.has(channel.id)?"saved":""}"
-                data-fav="${esc(channel.id)}">
-          ${fav.has(channel.id)?"★":"☆"}
-        </button>
-      </article>
-    `).join("")
-    : `<p class="empty-state">ماكو قنوات بهذا التصنيف.</p>`;
+        if (favorites.has(url)) {
+          favorites.delete(url);
+        } else {
+          favorites.add(url);
+        }
 
-  $("channel-list")
-    .querySelectorAll("[data-play]")
-    .forEach(button=>{
-      button.addEventListener("click",()=>{
-        playChannel(
-          channels.find(c=>c.id===button.dataset.play)
+        localStorage.setItem(
+          "kora_iptv_favs",
+          JSON.stringify([...favorites])
         );
-      });
-    });
 
-  $("channel-list")
-    .querySelectorAll("[data-fav]")
-    .forEach(button=>{
-      button.addEventListener("click",()=>{
-        const set = new Set(saved().favorites || []);
-
-        set.has(button.dataset.fav)
-          ? set.delete(button.dataset.fav)
-          : set.add(button.dataset.fav);
-
-        persist("favorites",[...set]);
         renderChannels();
-      });
-    });
-}
-
-
-// تشغيل القناة
-
-function playChannel(channel) {
-  if(!channel) return;
-
-  if(hls) {
-    hls.destroy();
-    hls = null;
-  }
-
-  video.pause();
-  video.removeAttribute("src");
-  video.load();
-
-  $("player-title").textContent = channel.name;
-  $("player-state").textContent = "جارٍ التشغيل...";
-
-  const url = channel.url;
-
-  if(
-    /\.m3u8($|\?)/i.test(url) &&
-    window.Hls &&
-    Hls.isSupported()
-  ) {
-    hls = new Hls({
-      enableWorker:true
-    });
-
-    hls.loadSource(url);
-    hls.attachMedia(video);
-
-    hls.on(Hls.Events.MANIFEST_PARSED,()=>{
-      video.play().catch(()=>{});
-    });
-
-    hls.on(Hls.Events.ERROR,(_,data)=>{
-      if(data.fatal) {
-        $("player-state").textContent = "تعذر تشغيل القناة";
       }
     });
-
-  } else if(
-    video.canPlayType("application/vnd.apple.mpegurl") ||
-    !(/\.m3u8($|\?)/i.test(url))
-  ) {
-    video.src = url;
-
-    video.play().catch(()=>{
-      $("player-state").textContent = "اضغط تشغيل";
-    });
-
-  } else {
-    $("player-state").textContent = "صيغة البث غير مدعومة";
-  }
-
-  video.onplaying = ()=>{
-    $("player-state").textContent = "يعمل الآن";
-  };
-
-  video.onerror = ()=>{
-    $("player-state").textContent = "فشل التشغيل";
-  };
-}
-
-$("show-favorites").addEventListener("click",()=>{
-  favoritesOnly = !favoritesOnly;
-
-  $("show-favorites").textContent =
-    favoritesOnly ? "عرض الكل" : "☆ المفضلة";
-
-  renderChannels();
-});
-
-
-// استعادة البيانات المحفوظة محلياً
-
-const old = saved();
-
-if(Array.isArray(old.channels)) {
-  channels = old.channels;
-  categories = old.categories || [];
-
-  renderCategories();
-  renderChannels();
-}
-
-if(old.xtream) {
-  $("xt-server").value = old.xtream.server || "";
-  $("xt-user").value = old.xtream.user || "";
-  $("xt-pass").value = old.xtream.pass || "";
-}
-
-if(old["m3u-url"]) {
-  $("m3u-url").value = old["m3u-url"];
-}
-
-window.addEventListener("beforeunload",()=>{
-  if(hls) hls.destroy();
-});
-
+  });
 })();
