@@ -1,28 +1,19 @@
 (() => {
   "use strict";
 
-  // إظهار الأخطاء داخل الموقع بدلاً من توقفه بصمت
   function showError(message) {
     let box = document.getElementById("app-error");
-
     if (!box) {
       box = document.createElement("div");
       box.id = "app-error";
       box.style.cssText =
-        "background:#8b0000;color:white;padding:12px;margin:12px;" +
-        "border-radius:10px;direction:rtl;text-align:center;";
-
+        "background:#8b0000;color:white;padding:12px;margin:12px;border-radius:10px;direction:rtl;text-align:center;";
       document.body.prepend(box);
     }
-
     box.textContent = message;
   }
 
-  // التأكد من تحميل Supabase والإعدادات
-  if (
-    !window.supabase ||
-    typeof window.supabase.createClient !== "function"
-  ) {
+  if (!window.supabase || typeof window.supabase.createClient !== "function") {
     showError("تعذر تحميل مكتبة Supabase. تحقق من اتصال الإنترنت.");
     return;
   }
@@ -33,7 +24,6 @@
   }
 
   let client;
-
   try {
     client = window.supabase.createClient(
       window.SUPABASE_URL,
@@ -50,8 +40,12 @@
   const liveContainer = document.getElementById("live-matches");
   const newsContainer = document.getElementById("news-list");
   const refreshButton = document.getElementById("refresh-news");
+  const homeLive = document.getElementById("home-live-preview");
+  const homeUpcoming = document.getElementById("home-upcoming-preview");
+  const homeNews = document.getElementById("home-news-preview");
 
-  if (!list || !dateLabel || !liveContainer || !newsContainer || !refreshButton) {
+  if (!list || !dateLabel || !liveContainer || !newsContainer ||
+      !refreshButton || !homeLive || !homeUpcoming || !homeNews) {
     showError("بعض عناصر الصفحة غير موجودة. تحقق من ملف index.html.");
     return;
   }
@@ -59,8 +53,8 @@
   let selectedDay = 0;
   let allMatches = [];
   let newsLoaded = false;
+  let cachedArticles = [];
 
-  // تاريخ بغداد
   function baghdadDate(date) {
     return new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Baghdad",
@@ -78,7 +72,6 @@
 
   function formatTime(value) {
     const date = new Date(value);
-
     if (Number.isNaN(date.getTime())) return "--:--";
 
     return new Intl.DateTimeFormat("ar-IQ", {
@@ -97,7 +90,6 @@
     }).format(new Date(`${ymd}T12:00:00+03:00`));
   }
 
-  // حماية النصوص قبل عرضها في HTML
   function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, character => ({
       "&": "&amp;",
@@ -126,39 +118,25 @@
     };
 
     if (knownStatuses[status]) {
-      return {
-        text: knownStatuses[status][0],
-        type: knownStatuses[status][1]
-      };
+      return { text: knownStatuses[status][0], type: knownStatuses[status][1] };
     }
 
     if (Number.isFinite(start)) {
-      if (now < start - 60 * 60 * 1000) {
-        return { text: "لم تبدأ بعد", type: "upcoming" };
-      }
-
-      if (now < start) {
-        return { text: "تبدأ قريباً", type: "upcoming" };
-      }
-
-      if (now <= start + 4 * 60 * 60 * 1000) {
-        return { text: "مباشر / جارية", type: "live" };
-      }
-
+      if (now < start - 60 * 60 * 1000) return { text: "لم تبدأ بعد", type: "upcoming" };
+      if (now < start) return { text: "تبدأ قريباً", type: "upcoming" };
+      if (now <= start + 4 * 60 * 60 * 1000) return { text: "مباشر / جارية", type: "live" };
       return { text: "انتهت", type: "finished" };
     }
 
     return { text: "غير محدد", type: "upcoming" };
   }
 
-  // بطاقة المباراة
-  function card(match, showWatch = false) {
+  function card(match, showWatch = false, compact = false) {
     const now = Date.now();
     const start = new Date(match.match_time).getTime();
     const status = getStatus(match);
 
     const canWatch =
-      showWatch &&
       Boolean(match.stream_url) &&
       Number.isFinite(start) &&
       !["finished", "cancelled", "postponed"].includes(status.type) &&
@@ -166,10 +144,8 @@
       now <= start + 4 * 60 * 60 * 1000;
 
     const hasScore =
-      match.home_score !== null &&
-      match.home_score !== undefined &&
-      match.away_score !== null &&
-      match.away_score !== undefined;
+      match.home_score !== null && match.home_score !== undefined &&
+      match.away_score !== null && match.away_score !== undefined;
 
     const homeLogo = match.home_logo
       ? `<img src="${escapeHtml(match.home_logo)}" alt="" loading="lazy">`
@@ -180,9 +156,13 @@
       : `<span class="logo-placeholder">⚽</span>`;
 
     return `
-      <article class="match-card">
-        <div class="match-time">
-          ${formatTime(match.match_time)}
+      <article class="match-card ${compact ? "compact-card" : ""}">
+        <div class="match-card-top">
+          <span class="match-time">${formatTime(match.match_time)}</span>
+          <span class="status status-${status.type}">
+            ${status.type === "live" ? '<i></i>' : ""}
+            ${status.text}
+          </span>
         </div>
 
         <div class="teams">
@@ -192,11 +172,9 @@
           </div>
 
           <div class="vs">
-            ${
-              hasScore
-                ? `<strong>${escapeHtml(match.home_score)} - ${escapeHtml(match.away_score)}</strong>`
-                : "VS"
-            }
+            ${hasScore
+              ? `<strong>${escapeHtml(match.home_score)} - ${escapeHtml(match.away_score)}</strong>`
+              : '<span>VS</span>'}
           </div>
 
           <div class="team">
@@ -205,246 +183,196 @@
           </div>
         </div>
 
-        <div class="match-bottom">
-          <span class="status status-${status.type}">
-            ${status.text}
-          </span>
-
-          ${
-            canWatch
-              ? `<a class="watch-btn"
-                   href="watch.html?id=${encodeURIComponent(match.id)}">
-                   مشاهدة البث
-                 </a>`
-              : showWatch && !["finished", "cancelled", "postponed"].includes(status.type)
-                ? `<span class="stream-wait">
-                     ${match.stream_url
-                       ? "البث غير متاح حالياً"
-                       : "لا يوجد رابط بث حالياً"}
-                   </span>`
-                : ""
-          }
-        </div>
+        ${showWatch ? `
+          <div class="match-bottom">
+            ${canWatch
+              ? `<a class="watch-btn" href="watch.html?id=${encodeURIComponent(match.id)}">▶ مشاهدة البث</a>`
+              : `<span class="stream-wait">${
+                  match.stream_url ? "البث غير متاح حالياً" : "لا يوجد رابط بث حالياً"
+                }</span>`}
+          </div>
+        ` : ""}
       </article>
     `;
   }
 
-  // عرض مباريات اليوم أو الأمس أو الغد
+  function getLiveMatches() {
+    const now = Date.now();
+    return allMatches.filter(match => {
+      const start = new Date(match.match_time).getTime();
+      const status = getStatus(match);
+      return Boolean(match.stream_url) &&
+        Number.isFinite(start) &&
+        !["finished", "cancelled", "postponed"].includes(status.type) &&
+        now >= start - 60 * 60 * 1000 &&
+        now <= start + 4 * 60 * 60 * 1000;
+    }).sort((a, b) => new Date(a.match_time) - new Date(b.match_time));
+  }
+
+  function getUpcomingMatches() {
+    const now = Date.now();
+    return allMatches.filter(match => {
+      const start = new Date(match.match_time).getTime();
+      return Number.isFinite(start) &&
+        start > now &&
+        getStatus(match).type === "upcoming";
+    }).sort((a, b) => new Date(a.match_time) - new Date(b.match_time));
+  }
+
   function renderMatches() {
     const today = baghdadDate(new Date());
     const target = shiftDate(today, selectedDay);
-
     dateLabel.textContent = formatDate(target);
 
-    const rows = allMatches
-      .filter(match => {
-        const date = new Date(match.match_time);
-
-        return (
-          !Number.isNaN(date.getTime()) &&
-          baghdadDate(date) === target
-        );
-      })
-      .sort((a, b) =>
-        new Date(a.match_time) - new Date(b.match_time)
-      );
+    const rows = allMatches.filter(match => {
+      const date = new Date(match.match_time);
+      return !Number.isNaN(date.getTime()) && baghdadDate(date) === target;
+    }).sort((a, b) => new Date(a.match_time) - new Date(b.match_time));
 
     list.innerHTML = rows.length
       ? rows.map(match => card(match)).join("")
       : `<p class="notice">ماكو مباريات مضافة لهذا اليوم حالياً.</p>`;
   }
 
-  // عرض البث المباشر
   function renderLive() {
-    const now = Date.now();
-
-    const rows = allMatches
-      .filter(match => {
-        const start = new Date(match.match_time).getTime();
-        const status = getStatus(match);
-
-        return (
-          Boolean(match.stream_url) &&
-          Number.isFinite(start) &&
-          !["finished", "cancelled", "postponed"].includes(status.type) &&
-          now >= start - 60 * 60 * 1000 &&
-          now <= start + 4 * 60 * 60 * 1000
-        );
-      })
-      .sort((a, b) =>
-        new Date(a.match_time) - new Date(b.match_time)
-      );
-
+    const rows = getLiveMatches();
     liveContainer.innerHTML = rows.length
       ? rows.map(match => card(match, true)).join("")
       : `<p class="notice">لا توجد مباريات متاحة للبث المباشر حالياً.</p>`;
+
+    homeLive.innerHTML = rows.length
+      ? rows.slice(0, 2).map(match => card(match, true, true)).join("")
+      : `<p class="notice empty-card">لا توجد مباريات مباشرة حالياً.</p>`;
   }
 
-  // تحميل المباريات من Supabase
+  function renderUpcoming() {
+    const rows = getUpcomingMatches();
+    homeUpcoming.innerHTML = rows.length
+      ? rows.slice(0, 3).map(match => card(match, false, true)).join("")
+      : `<p class="notice empty-card">لا توجد مباريات قادمة حالياً.</p>`;
+  }
+
   async function loadMatches() {
-    list.innerHTML =
-      `<p class="notice">جارٍ تحميل المباريات...</p>`;
+    list.innerHTML = `<p class="notice">جارٍ تحميل المباريات...</p>`;
 
     try {
       const { data, error } = await client
         .from("matches")
         .select(`
-          id,
-          home_team,
-          away_team,
-          home_logo,
-          away_logo,
-          match_time,
-          stream_url,
-          match_status,
-          home_score,
-          away_score
+          id, home_team, away_team, home_logo, away_logo,
+          match_time, stream_url, match_status, home_score, away_score
         `)
         .order("match_time", { ascending: true });
 
       if (error) throw error;
 
       allMatches = Array.isArray(data) ? data : [];
-
       renderMatches();
       renderLive();
-
+      renderUpcoming();
     } catch (error) {
       console.error("Matches error:", error);
-
-      list.innerHTML = `
-        <p class="notice error">
-          تعذر تحميل المباريات: ${escapeHtml(error.message)}
-        </p>
-      `;
-
-      liveContainer.innerHTML =
-        `<p class="notice error">تعذر تحميل البث حالياً.</p>`;
+      list.innerHTML = `<p class="notice error">تعذر تحميل المباريات: ${escapeHtml(error.message)}</p>`;
+      liveContainer.innerHTML = `<p class="notice error">تعذر تحميل البث حالياً.</p>`;
+      homeLive.innerHTML = `<p class="notice error">تعذر تحميل المباريات.</p>`;
+      homeUpcoming.innerHTML = `<p class="notice error">تعذر تحميل المباريات.</p>`;
     }
   }
 
-  // تحميل الأخبار
+  function renderNewsCards(articles, limit) {
+    return articles.slice(0, limit).map(article => `
+      <article class="news-card">
+        <h3>${escapeHtml(article.title)}</h3>
+        <div class="news-meta">
+          ${escapeHtml(article.source || "مصدر إخباري")}
+          ${article.published ? " • " + escapeHtml(article.published) : ""}
+        </div>
+        <a class="news-link"
+           href="${escapeHtml(article.link)}"
+           target="_blank"
+           rel="noopener noreferrer">قراءة الخبر ←</a>
+      </article>
+    `).join("");
+  }
+
   async function loadNews(force = false) {
     if (newsLoaded && !force) return;
 
-    newsContainer.innerHTML =
-      `<p class="notice">جارٍ تحميل الأخبار العربية...</p>`;
-
+    newsContainer.innerHTML = `<p class="notice">جارٍ تحميل الأخبار العربية...</p>`;
     refreshButton.disabled = true;
 
     try {
-      const { data, error } = await client.functions.invoke(
-        "football-news"
-      );
-
+      const { data, error } = await client.functions.invoke("football-news");
       if (error) throw error;
-
       if (!data || !Array.isArray(data.articles)) {
         throw new Error("استجابة الأخبار غير صحيحة");
       }
 
-      if (!data.articles.length) {
-        newsContainer.innerHTML =
-          `<p class="notice">لا توجد أخبار متاحة حالياً.</p>`;
-
-        newsLoaded = true;
-        return;
+      cachedArticles = data.articles;
+      if (!cachedArticles.length) {
+        newsContainer.innerHTML = `<p class="notice">لا توجد أخبار متاحة حالياً.</p>`;
+        homeNews.innerHTML = `<p class="notice">لا توجد أخبار متاحة حالياً.</p>`;
+      } else {
+        newsContainer.innerHTML = renderNewsCards(cachedArticles, cachedArticles.length);
+        homeNews.innerHTML = renderNewsCards(cachedArticles, 2);
       }
-
-      newsContainer.innerHTML = data.articles.map(article => `
-        <article class="news-card">
-          <h3>${escapeHtml(article.title)}</h3>
-
-          <div class="news-meta">
-            ${escapeHtml(article.source || "مصدر إخباري")}
-            ${
-              article.published
-                ? " • " + escapeHtml(article.published)
-                : ""
-            }
-          </div>
-
-          <a class="news-link"
-             href="${escapeHtml(article.link)}"
-             target="_blank"
-             rel="noopener noreferrer">
-            قراءة الخبر ←
-          </a>
-        </article>
-      `).join("");
-
       newsLoaded = true;
-
     } catch (error) {
       console.error("News error:", error);
-
-      newsContainer.innerHTML = `
-        <p class="notice error">
-          تعذر تحميل الأخبار حالياً. حاول مرة أخرى لاحقاً.
-        </p>
-      `;
-
+      newsContainer.innerHTML = `<p class="notice error">تعذر تحميل الأخبار حالياً. حاول مرة أخرى لاحقاً.</p>`;
+      homeNews.innerHTML = `<p class="notice error">تعذر تحميل الأخبار حالياً.</p>`;
     } finally {
       refreshButton.disabled = false;
     }
   }
 
-  // التنقل بين الأقسام
+  function showPage(page) {
+    document.querySelectorAll(".page").forEach(section => {
+      section.classList.toggle("active", section.id === `page-${page}`);
+    });
+
+    document.querySelectorAll(".nav-item").forEach(item => {
+      item.classList.toggle("active", item.dataset.page === page);
+    });
+
+    if (page === "news") loadNews();
+    if (page === "live") renderLive();
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   document.querySelectorAll(".nav-item").forEach(button => {
-    button.addEventListener("click", () => {
-      const page = button.dataset.page;
+    button.addEventListener("click", () => showPage(button.dataset.page));
+  });
 
-      document.querySelectorAll(".page").forEach(section => {
-        section.classList.toggle(
-          "active",
-          section.id === `page-${page}`
-        );
-      });
-
-      document.querySelectorAll(".nav-item").forEach(item => {
-        item.classList.toggle("active", item === button);
-      });
-
-      if (page === "news") loadNews();
-      if (page === "live") renderLive();
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+  document.querySelectorAll("[data-go]").forEach(button => {
+    button.addEventListener("click", event => {
+      event.preventDefault();
+      showPage(button.dataset.go);
     });
   });
 
-  // التنقل بين الأيام
   document.querySelectorAll(".day-tab").forEach(button => {
     button.addEventListener("click", () => {
       selectedDay = Number(button.dataset.day);
-
       document.querySelectorAll(".day-tab").forEach(item => {
         item.classList.toggle("active", item === button);
       });
-
       renderMatches();
     });
   });
 
-  // تحديث الأخبار
-  refreshButton.addEventListener("click", () => {
-    loadNews(true);
-  });
+  refreshButton.addEventListener("click", () => loadNews(true));
 
-  // بدء تحميل البيانات
   loadMatches();
 
-  // تحديث حالة المباريات كل دقيقة
   setInterval(() => {
     renderMatches();
     renderLive();
+    renderUpcoming();
   }, 60 * 1000);
 
-  // إعادة السماح بتحديث الأخبار بعد 15 دقيقة
   setInterval(() => {
     newsLoaded = false;
   }, 15 * 60 * 1000);
-
 })();
