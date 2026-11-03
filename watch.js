@@ -81,10 +81,17 @@
     iframe.allowFullscreen = true;
     iframe.title = "مشغل البث";
 
+    iframe.style.position = "absolute";
+    iframe.style.inset = "0";
+    iframe.style.width = "100%";
+    iframe.style.height = "100%";
+    iframe.style.zIndex = "1";
+
     // يبقى الشعار وزر ملء الشاشة فوق إطار البث
     frame.insertBefore(
       iframe,
-      frame.querySelector(".kora-logo")
+      frame.querySelector(".kora-logo") ||
+      frame.querySelector(".fullscreen-btn")
     );
   }
 
