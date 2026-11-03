@@ -13,15 +13,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.view.View;
-import android.view.Gravity;
 import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebSettings;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.graphics.drawable.GradientDrawable;
 import android.widget.Toast;
 
 import androidx.core.content.FileProvider;
@@ -112,38 +109,8 @@ public class MainActivity extends Activity {
 
                 fullscreenLayout.addView(view, videoParams);
 
-                // شعار Kora TV فوق الفيديو داخل إطار ملء الشاشة
-                ImageView logo = new ImageView(MainActivity.this);
-                logo.setImageResource(R.drawable.kora_logo);
-                logo.setScaleType(ImageView.ScaleType.FIT_CENTER);
-
-                // خلفية سوداء صافية بدون شفافية أو حدود
-                GradientDrawable background = new GradientDrawable();
-                background.setColor(0xFF000000);
-                background.setCornerRadius(dp(6));
-                logo.setBackground(background);
-
-                // مساحة داخلية بسيطة حول الشعار
-                logo.setPadding(dp(8), dp(4), dp(8), dp(4));
-
-                // رفع الشعار فوق طبقة الفيديو قدر الإمكان
-                logo.setElevation(dp(24));
-                logo.setTranslationZ(dp(24));
-                logo.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-
-                // حجم قريب من شريط شعارات البث وموقعه بمنتصف الأعلى
-                FrameLayout.LayoutParams logoParams =
-                        new FrameLayout.LayoutParams(
-                                dp(150),
-                                dp(48),
-                                Gravity.TOP | Gravity.RIGHT
-                        );
-
-                logoParams.setMargins(0, dp(12), 0, 0);
-
-                fullscreenLayout.addView(logo, logoParams);
-                logo.bringToFront();
-                fullscreenLayout.invalidate();
+                // لا نضيف أي شعار هنا.
+                // الشعار موجود في watch.html فوق مساحة البث.
 
                 setContentView(fullscreenLayout);
             }
@@ -217,7 +184,6 @@ public class MainActivity extends Activity {
                         isNewerVersion(latestVersion, currentVersion)) {
 
                     handler.post(() -> showUpdateDialog());
-
                 }
 
             } catch (Exception e) {
@@ -350,7 +316,6 @@ public class MainActivity extends Activity {
                 File apkFile = new File(directory, APK_NAME);
 
                 InputStream input = connection.getInputStream();
-
                 FileOutputStream output = new FileOutputStream(apkFile);
 
                 byte[] buffer = new byte[8192];
@@ -457,11 +422,6 @@ public class MainActivity extends Activity {
                     Toast.LENGTH_LONG
             ).show();
         }
-    }
-
-    private int dp(int value) {
-        return (int) (value * getResources()
-                .getDisplayMetrics().density + 0.5f);
     }
 
     private void exitFullscreen() {
