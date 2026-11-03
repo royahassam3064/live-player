@@ -2,8 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10131b">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090611">
   <title>Kora TV</title>
 
   <link rel="stylesheet" href="style.css">
@@ -12,22 +12,78 @@
   <script defer src="config.js"></script>
   <script defer src="app.js"></script>
 </head>
-
 <body>
 
 <header class="topbar">
-  <div class="brand">
+  <a class="brand" href="#" data-go="home">
     <img src="kora-tv-logo.png" alt="Kora TV">
+  </a>
+  <div class="top-actions">
+    <a class="icon-button" href="admin.html" aria-label="لوحة الإدارة">⚙</a>
   </div>
-  <a class="admin-link" href="admin.html">لوحة الإدارة</a>
 </header>
 
 <main class="container">
 
-  <!-- المباريات -->
-  <section id="page-matches" class="page active">
+  <!-- الرئيسية -->
+  <section id="page-home" class="page active">
+    <section class="hero">
+      <div class="hero-content">
+        <span class="hero-tag">عالم كرة القدم</span>
+        <h1>كل المباريات<br><strong>بمكان واحد</strong></h1>
+        <p>تابع المباريات والأخبار أولاً بأول مع Kora TV</p>
+        <button class="hero-button" data-go="matches">استكشف المباريات <span>←</span></button>
+      </div>
+      <div class="hero-ball" aria-hidden="true">⚽</div>
+      <div class="hero-glow"></div>
+    </section>
 
-    <h2 class="section-title">⚽ المباريات</h2>
+    <div class="welcome-row">
+      <div>
+        <span class="eyebrow">مرحباً بك في</span>
+        <h2>Kora TV</h2>
+      </div>
+      <span class="live-indicator"><i></i> تغطية المباريات</span>
+    </div>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2><i class="heading-icon live-icon"></i> المباريات المباشرة</h2>
+        <button class="text-link" data-go="live">عرض الكل ←</button>
+      </div>
+      <div id="home-live-preview" class="matches">
+        <p class="notice">جارٍ تحميل المباريات...</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2><i class="heading-icon calendar-icon"></i> المباريات القادمة</h2>
+        <button class="text-link" data-go="matches">عرض الكل ←</button>
+      </div>
+      <div id="home-upcoming-preview" class="matches">
+        <p class="notice">جارٍ تحميل المباريات...</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <div class="section-heading">
+        <h2><i class="heading-icon news-icon"></i> أحدث الأخبار</h2>
+        <button class="text-link" data-go="news">عرض الكل ←</button>
+      </div>
+      <div id="home-news-preview" class="matches">
+        <p class="notice">افتح قسم الأخبار لمشاهدة آخر الأخبار.</p>
+      </div>
+    </section>
+  </section>
+
+  <!-- المباريات -->
+  <section id="page-matches" class="page">
+    <div class="page-heading">
+      <span class="eyebrow">جدول المواجهات</span>
+      <h1>المباريات</h1>
+      <p>تابع مواعيد مباريات اليوم والأيام القادمة</p>
+    </div>
 
     <nav class="day-tabs">
       <button class="day-tab" data-day="-1">الأمس</button>
@@ -36,17 +92,19 @@
     </nav>
 
     <div id="date-label" class="date-label"></div>
-
     <section id="matches" class="matches">
       <p class="notice">جارٍ تحميل المباريات...</p>
     </section>
-
-    <p class="footer-note">توقيت المباريات حسب توقيت بغداد.</p>
+    <p class="footer-note">جميع المواعيد حسب توقيت بغداد.</p>
   </section>
 
   <!-- البث المباشر -->
   <section id="page-live" class="page">
-    <h2 class="section-title">📺 البث المباشر</h2>
+    <div class="page-heading">
+      <span class="eyebrow">شاهد الآن</span>
+      <h1>البث المباشر</h1>
+      <p>المباريات المتاحة للمشاهدة</p>
+    </div>
     <div id="live-matches" class="matches">
       <p class="notice">جارٍ تحميل البث...</p>
     </div>
@@ -54,8 +112,11 @@
 
   <!-- الأخبار -->
   <section id="page-news" class="page">
-    <h2 class="section-title">📰 أخبار كرة القدم</h2>
-    <p class="news-subtitle">آخر الأخبار العربية والعالمية</p>
+    <div class="page-heading">
+      <span class="eyebrow">آخر المستجدات</span>
+      <h1>أخبار كرة القدم</h1>
+      <p>آخر الأخبار العربية والعالمية</p>
+    </div>
 
     <button id="refresh-news" class="primary refresh-button">
       تحديث الأخبار ↻
@@ -66,65 +127,51 @@
     </div>
   </section>
 
-  <!-- حول التطبيق -->
+  <!-- الإعدادات / حول التطبيق -->
   <section id="page-about" class="page">
+    <div class="page-heading">
+      <span class="eyebrow">معلومات التطبيق</span>
+      <h1>الإعدادات</h1>
+      <p>تعرف على Kora TV وروابط التواصل</p>
+    </div>
+
     <div class="about-card">
       <img src="kora-tv-logo.png" class="about-logo" alt="Kora TV">
+      <h2>Kora TV</h2>
+      <p class="about-description">عالم كرة القدم بين يديك ⚽</p>
 
-      <h2>Kora TV ⚽</h2>
-      <p class="about-description">عالم كرة القدم بين يديك</p>
-
-      <a class="social-link"
-         href="https://www.tiktok.com/@fd79"
-         target="_blank" rel="noopener noreferrer">
-        👨‍💻 حساب المطور على TikTok<br>@fd79
+      <a class="social-link" href="https://www.tiktok.com/@fd79" target="_blank" rel="noopener noreferrer">
+        <span>👨‍💻</span><span>حساب المطور<small>@fd79</small></span><b>←</b>
+      </a>
+      <a class="social-link" href="https://www.tiktok.com/@kora_tv_2" target="_blank" rel="noopener noreferrer">
+        <span>🎵</span><span>Kora TV على TikTok<small>@kora_tv_2</small></span><b>←</b>
+      </a>
+      <a class="social-link" href="https://www.instagram.com/kora_tv_2/" target="_blank" rel="noopener noreferrer">
+        <span>📸</span><span>Instagram<small>@kora_tv_2</small></span><b>←</b>
       </a>
 
-      <a class="social-link"
-         href="https://www.tiktok.com/@kora_tv_2"
-         target="_blank" rel="noopener noreferrer">
-        🎵 حساب Kora TV على TikTok<br>@kora_tv_2
-      </a>
-
-      <a class="social-link"
-         href="https://www.instagram.com/kora_tv_2/"
-         target="_blank" rel="noopener noreferrer">
-        📸 Instagram<br>@kora_tv_2
-      </a>
-
-      <p class="about-version">
-        Kora TV v1.3<br>
-        تطوير وبرمجة: @fd79<br>
-        © جميع الحقوق محفوظة
-      </p>
+      <p class="about-version">Kora TV v1.3<br>تطوير وبرمجة: @fd79<br>© جميع الحقوق محفوظة</p>
     </div>
   </section>
 
 </main>
 
-<!-- شريط التنقل السفلي -->
 <nav class="bottom-nav">
-
-  <button class="nav-item active" data-page="matches">
-    <span>⚽</span>
-    <small>المباريات</small>
+  <button class="nav-item active" data-page="home">
+    <span>⌂</span><small>الرئيسية</small>
   </button>
-
-  <button class="nav-item" data-page="live">
-    <span>📺</span>
-    <small>البث المباشر</small>
+  <button class="nav-item" data-page="matches">
+    <span>⚽</span><small>المباريات</small>
   </button>
-
   <button class="nav-item" data-page="news">
-    <span>📰</span>
-    <small>الأخبار</small>
+    <span>▤</span><small>الأخبار</small>
   </button>
-
+  <button class="nav-item" data-page="live">
+    <span>▷</span><small>البث المباشر</small>
+  </button>
   <button class="nav-item" data-page="about">
-    <span>ℹ️</span>
-    <small>حول Kora TV</small>
+    <span>⚙</span><small>الإعدادات</small>
   </button>
-
 </nav>
 
 </body>
