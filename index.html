@@ -1,176 +1,261 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#090611">
-  <title>Kora TV</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#090b12">
+<title>Kora TV</title>
 
-  <link rel="stylesheet" href="style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="config.js"></script>
-  <script defer src="app.js"></script>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
+<script defer src="config.js"></script>
+<script defer src="app.js"></script>
+<script defer src="iptv.js"></script>
 </head>
+
 <body>
 
 <header class="topbar">
   <a class="brand" href="#" data-go="home">
-    <img src="kora-tv-logo.png" alt="Kora TV">
+    <img src="kora-tv-logo.png" alt="">
+    <span>KORA <b>TV</b></span>
   </a>
-  <div class="top-actions">
-    <a class="icon-button" href="admin.html" aria-label="لوحة الإدارة">⚙</a>
-  </div>
+  <a class="admin-link" href="admin.html">لوحة الإدارة</a>
 </header>
 
-<main class="container">
+<main class="app-shell">
 
-  <!-- الرئيسية -->
-  <section id="page-home" class="page active">
-    <section class="hero">
-      <div class="hero-content">
-        <span class="hero-tag">عالم كرة القدم</span>
-        <h1>كل المباريات<br><strong>بمكان واحد</strong></h1>
-        <p>تابع المباريات والأخبار أولاً بأول مع Kora TV</p>
-        <button class="hero-button" data-go="matches">استكشف المباريات <span>←</span></button>
+<section id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow"><i></i> عالم الكرة بين إيديك</span>
+      <h1>كل المباريات،<br><span>بمكان واحد.</span></h1>
+      <p>تابع مواعيد المباريات والبث المباشر وآخر أخبار كرة القدم.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" data-go="matches">شوف المباريات</button>
+        <button class="btn btn-ghost" data-go="live">البث المباشر</button>
       </div>
-      <div class="hero-ball" aria-hidden="true">⚽</div>
-      <div class="hero-glow"></div>
-    </section>
+    </div>
+    <div class="hero-mark">
+      <div class="ball-orbit">K</div>
+      <span>FOOTBALL<br>IS HERE</span>
+    </div>
+  </div>
 
-    <div class="welcome-row">
-      <div>
-        <span class="eyebrow">مرحباً بك في</span>
-        <h2>Kora TV</h2>
-      </div>
-      <span class="live-indicator"><i></i> تغطية المباريات</span>
+  <div class="section-title">
+    <div><small>تابع الآن</small><h2>المباريات القادمة</h2></div>
+    <button class="text-btn" data-go="matches">الكل ←</button>
+  </div>
+  <div id="home-upcoming-preview" class="preview-grid">
+    <p class="notice">جارٍ تحميل المباريات...</p>
+  </div>
+
+  <div class="section-title">
+    <div><small>آخر المستجدات</small><h2>أخبار الكرة</h2></div>
+    <button class="text-btn" data-go="news">المزيد ←</button>
+  </div>
+  <div id="home-news-preview" class="news-preview"></div>
+</section>
+
+<section id="page-matches" class="page">
+  <div class="page-heading">
+    <small>جدول المواجهات</small>
+    <h1>المباريات</h1>
+    <p>مواعيد المباريات حسب توقيت بغداد.</p>
+  </div>
+
+  <nav class="day-tabs">
+    <button class="day-tab" data-day="-1">الأمس</button>
+    <button class="day-tab active" data-day="0">اليوم</button>
+    <button class="day-tab" data-day="1">الغد</button>
+  </nav>
+
+  <div id="date-label" class="date-label"></div>
+  <section id="matches" class="matches"></section>
+</section>
+
+<section id="page-live" class="page">
+  <div class="page-heading">
+    <small>شاهد وتابع</small>
+    <h1>البث المباشر</h1>
+    <p>روابط المباريات المتاحة حالياً.</p>
+  </div>
+
+  <div id="live-matches" class="matches"></div>
+
+  <div class="iptv-entry-card">
+    <div class="iptv-entry-icon">▣</div>
+    <div>
+      <strong>مشغل IPTV</strong>
+      <p>شغّل قوائمك الخاصة عبر Xtream أو M3U.</p>
+    </div>
+    <button class="btn btn-primary" data-go="iptv">فتح المشغل</button>
+  </div>
+</section>
+
+<section id="page-news" class="page">
+  <div class="page-heading">
+    <small>من الملاعب</small>
+    <h1>الأخبار</h1>
+    <p>أحدث أخبار كرة القدم.</p>
+  </div>
+
+  <div class="news-toolbar">
+    <span>آخر الأخبار</span>
+    <button id="refresh-news" class="btn btn-ghost">تحديث</button>
+  </div>
+  <div id="news-list" class="news-list"></div>
+</section>
+
+<section id="page-iptv" class="page">
+  <div class="page-heading">
+    <small>مشغل القوائم</small>
+    <h1>IPTV Player</h1>
+    <p>استخدم قائمة أو اشتراك تملك حق الوصول إليه.</p>
+  </div>
+
+  <div class="iptv-tabs">
+    <button class="iptv-tab active" data-iptv-mode="xtream">Xtream Codes</button>
+    <button class="iptv-tab" data-iptv-mode="m3u">M3U</button>
+  </div>
+
+  <div id="xtream-panel" class="panel-card">
+    <h2>إضافة اشتراك Xtream</h2>
+
+    <label>رابط السيرفر
+      <input id="xt-server" type="url" placeholder="https://server.example:port">
+    </label>
+
+    <label>اسم المستخدم
+      <input id="xt-user" type="text" autocomplete="username">
+    </label>
+
+    <label>كلمة المرور
+      <input id="xt-pass" type="password" autocomplete="current-password">
+    </label>
+
+    <button id="xt-connect" class="btn btn-primary wide">اتصال وتحميل القنوات</button>
+    <p id="xt-message" class="form-message"></p>
+  </div>
+
+  <div id="m3u-panel" class="panel-card" hidden>
+    <h2>إضافة قائمة M3U</h2>
+
+    <label>رابط القائمة (اختياري)
+      <input id="m3u-url" type="url" placeholder="https://example.com/list.m3u">
+    </label>
+
+    <label>أو الصق محتوى القائمة
+      <textarea id="m3u-text" rows="5" placeholder="#EXTM3U"></textarea>
+    </label>
+
+    <label class="file-label">أو اختر ملف M3U
+      <input id="m3u-file" type="file" accept=".m3u,.m3u8,text/plain">
+    </label>
+
+    <button id="m3u-load" class="btn btn-primary wide">تحميل القنوات</button>
+    <p id="m3u-message" class="form-message"></p>
+  </div>
+
+  <div class="player-card">
+    <div class="player-top">
+      <strong id="player-title">المشغل</strong>
+      <span id="player-state">جاهز</span>
+    </div>
+    <video id="iptv-video" controls playsinline></video>
+    <p class="player-hint">قد لا تعمل بعض الروابط إذا كان مزوّد القائمة يمنع التشغيل داخل المتصفح أو إذا كان تنسيق البث غير مدعوم.</p>
+  </div>
+
+  <div class="channels-head">
+    <h2>القنوات</h2>
+    <button id="show-favorites" class="text-btn">☆ المفضلة</button>
+  </div>
+
+  <div id="channel-categories" class="category-list"></div>
+  <div id="channel-list" class="channel-list">
+    <p class="notice">أضف قائمة لعرض القنوات.</p>
+  </div>
+</section>
+
+<section id="page-settings" class="page">
+  <div class="page-heading">
+    <small>تحكم بالتجربة</small>
+    <h1>الإعدادات</h1>
+    <p>غيّر شكل التطبيق بالطريقة اللي تناسبك.</p>
+  </div>
+
+  <div class="settings-card">
+    <div class="setting-row">
+      <div><strong>المظهر</strong><small>فاتح أو داكن</small></div>
+      <select id="theme-setting">
+        <option value="dark">داكن</option>
+        <option value="light">فاتح</option>
+      </select>
     </div>
 
-    <section class="content-section">
-      <div class="section-heading">
-        <h2><i class="heading-icon live-icon"></i> المباريات المباشرة</h2>
-        <button class="text-link" data-go="live">عرض الكل ←</button>
-      </div>
-      <div id="home-live-preview" class="matches">
-        <p class="notice">جارٍ تحميل المباريات...</p>
-      </div>
-    </section>
-
-    <section class="content-section">
-      <div class="section-heading">
-        <h2><i class="heading-icon calendar-icon"></i> المباريات القادمة</h2>
-        <button class="text-link" data-go="matches">عرض الكل ←</button>
-      </div>
-      <div id="home-upcoming-preview" class="matches">
-        <p class="notice">جارٍ تحميل المباريات...</p>
-      </div>
-    </section>
-
-    <section class="content-section">
-      <div class="section-heading">
-        <h2><i class="heading-icon news-icon"></i> أحدث الأخبار</h2>
-        <button class="text-link" data-go="news">عرض الكل ←</button>
-      </div>
-      <div id="home-news-preview" class="matches">
-        <p class="notice">افتح قسم الأخبار لمشاهدة آخر الأخبار.</p>
-      </div>
-    </section>
-  </section>
-
-  <!-- المباريات -->
-  <section id="page-matches" class="page">
-    <div class="page-heading">
-      <span class="eyebrow">جدول المواجهات</span>
-      <h1>المباريات</h1>
-      <p>تابع مواعيد مباريات اليوم والأيام القادمة</p>
+    <div class="setting-row">
+      <div><strong>لون التطبيق</strong><small>لون الأزرار والعناصر</small></div>
+      <select id="accent-setting">
+        <option value="purple">بنفسجي</option>
+        <option value="green">أخضر</option>
+        <option value="blue">أزرق</option>
+        <option value="red">أحمر</option>
+      </select>
     </div>
 
-    <nav class="day-tabs">
-      <button class="day-tab" data-day="-1">الأمس</button>
-      <button class="day-tab active" data-day="0">اليوم</button>
-      <button class="day-tab" data-day="1">الغد</button>
-    </nav>
-
-    <div id="date-label" class="date-label"></div>
-    <section id="matches" class="matches">
-      <p class="notice">جارٍ تحميل المباريات...</p>
-    </section>
-    <p class="footer-note">جميع المواعيد حسب توقيت بغداد.</p>
-  </section>
-
-  <!-- البث المباشر -->
-  <section id="page-live" class="page">
-    <div class="page-heading">
-      <span class="eyebrow">شاهد الآن</span>
-      <h1>البث المباشر</h1>
-      <p>المباريات المتاحة للمشاهدة</p>
-    </div>
-    <div id="live-matches" class="matches">
-      <p class="notice">جارٍ تحميل البث...</p>
-    </div>
-  </section>
-
-  <!-- الأخبار -->
-  <section id="page-news" class="page">
-    <div class="page-heading">
-      <span class="eyebrow">آخر المستجدات</span>
-      <h1>أخبار كرة القدم</h1>
-      <p>آخر الأخبار العربية والعالمية</p>
+    <div class="setting-row">
+      <div><strong>حجم الخط</strong><small>تكبير أو تصغير النصوص</small></div>
+      <select id="font-setting">
+        <option value="small">صغير</option>
+        <option value="normal" selected>متوسط</option>
+        <option value="large">كبير</option>
+      </select>
     </div>
 
-    <button id="refresh-news" class="primary refresh-button">
-      تحديث الأخبار ↻
-    </button>
-
-    <div id="news-list" class="matches">
-      <p class="notice">جارٍ تحميل الأخبار...</p>
-    </div>
-  </section>
-
-  <!-- الإعدادات / حول التطبيق -->
-  <section id="page-about" class="page">
-    <div class="page-heading">
-      <span class="eyebrow">معلومات التطبيق</span>
-      <h1>الإعدادات</h1>
-      <p>تعرف على Kora TV وروابط التواصل</p>
+    <div class="setting-row">
+      <div><strong>الخط العريض</strong><small>إبراز النصوص والعناوين</small></div>
+      <label class="switch">
+        <input id="bold-setting" type="checkbox" checked>
+        <span></span>
+      </label>
     </div>
 
-    <div class="about-card">
-      <img src="kora-tv-logo.png" class="about-logo" alt="Kora TV">
-      <h2>Kora TV</h2>
-      <p class="about-description">عالم كرة القدم بين يديك ⚽</p>
+    <button id="reset-settings" class="btn btn-ghost wide">إعادة الإعدادات الافتراضية</button>
+  </div>
 
-      <a class="social-link" href="https://www.tiktok.com/@fd79" target="_blank" rel="noopener noreferrer">
-        <span>👨‍💻</span><span>حساب المطور<small>@fd79</small></span><b>←</b>
-      </a>
-      <a class="social-link" href="https://www.tiktok.com/@kora_tv_2" target="_blank" rel="noopener noreferrer">
-        <span>🎵</span><span>Kora TV على TikTok<small>@kora_tv_2</small></span><b>←</b>
-      </a>
-      <a class="social-link" href="https://www.instagram.com/kora_tv_2/" target="_blank" rel="noopener noreferrer">
-        <span>📸</span><span>Instagram<small>@kora_tv_2</small></span><b>←</b>
-      </a>
-
-      <p class="about-version">Kora TV v1.3<br>تطوير وبرمجة: @fd79<br>© جميع الحقوق محفوظة</p>
-    </div>
-  </section>
+  <div class="settings-card about-card">
+    <strong>Kora TV</strong>
+    <p>تطبيق لمتابعة المباريات والأخبار وتشغيل قوائم IPTV المصرّح بها.</p>
+    <a href="admin.html">لوحة الإدارة ↗</a>
+  </div>
+</section>
 
 </main>
 
 <nav class="bottom-nav">
   <button class="nav-item active" data-page="home">
-    <span>⌂</span><small>الرئيسية</small>
+    <span class="nav-icon">⌂</span><small>الرئيسية</small>
   </button>
+
   <button class="nav-item" data-page="matches">
-    <span>⚽</span><small>المباريات</small>
+    <span class="nav-icon">▤</span><small>المباريات</small>
   </button>
+
+  <button class="nav-item live-nav" data-page="live">
+    <span class="live-orb">▶</span><small>مباشر</small>
+  </button>
+
   <button class="nav-item" data-page="news">
-    <span>▤</span><small>الأخبار</small>
+    <span class="nav-icon">▧</span><small>الأخبار</small>
   </button>
-  <button class="nav-item" data-page="live">
-    <span>▷</span><small>البث المباشر</small>
-  </button>
-  <button class="nav-item" data-page="about">
-    <span>⚙</span><small>الإعدادات</small>
+
+  <button class="nav-item" data-page="settings">
+    <span class="nav-icon">⚙</span><small>الإعدادات</small>
   </button>
 </nav>
 
