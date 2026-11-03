@@ -1,263 +1,103 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#090b12">
-<title>Kora TV</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1"></script>
-<script defer src="config.js"></script>
-<script defer src="app.js"></script>
-<script defer src="iptv.js"></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#10111a">
+  <title>Kora TV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <script src="config.js"></script>
+  <script defer src="app.js"></script>
+  <script defer src="iptv.js"></script>
 </head>
-
 <body>
-
 <header class="topbar">
-  <a class="brand" href="#" data-go="home">
-    <img src="kora-tv-logo.png" alt="">
-    <span>KORA <b>TV</b></span>
-  </a>
+  <a class="brand" href="#" data-page="home"><span class="brand-mark">K</span><span>Kora <b>TV</b></span></a>
   <a class="admin-link" href="admin.html">لوحة الإدارة</a>
 </header>
 
-<main class="app-shell">
+<main class="container">
+  <section id="page-home" class="page active">
+    <div class="hero">
+      <div class="eyebrow">KORA TV • LIVE</div>
+      <h1>كل المباريات<br><span>بمكان واحد</span></h1>
+      <p>تابع جدول المباريات والبث المباشر بسهولة.</p>
+      <button class="primary-btn" type="button" data-page="matches">شوف المباريات</button>
+    </div>
+    <div class="section-head"><h2>مباريات اليوم</h2><button class="text-btn" data-page="matches">عرض الكل</button></div>
+    <div id="home-matches" class="match-list"><div class="notice">جار تحميل المباريات...</div></div>
+  </section>
 
-<section id="page-home" class="page active">
-  <div class="hero">
-    <div class="hero-copy">
-      <span class="eyebrow"><i></i> عالم الكرة بين إيديك</span>
-      <h1>كل المباريات،<br><span>بمكان واحد.</span></h1>
-      <p>تابع مواعيد المباريات والبث المباشر وآخر أخبار كرة القدم.</p>
-      <div class="hero-actions">
-        <button class="btn btn-primary" data-go="matches">شوف المباريات</button>
-        <button class="btn btn-ghost" data-go="live">البث المباشر</button>
+  <section id="page-matches" class="page">
+    <div class="page-heading"><div><span class="eyebrow">FIXTURES</span><h1>المباريات</h1></div></div>
+    <div class="day-tabs">
+      <button type="button" data-day="-1">أمس</button>
+      <button type="button" data-day="0" class="selected">اليوم</button>
+      <button type="button" data-day="1">باچر</button>
+    </div>
+    <div id="matches-list" class="match-list"><div class="notice">جار تحميل المباريات...</div></div>
+  </section>
+
+  <section id="page-live" class="page">
+    <span class="eyebrow">LIVE NOW</span><h1>البث المباشر</h1>
+    <div id="live-list" class="match-list"><div class="notice">جار تحميل المباريات...</div></div>
+  </section>
+
+  <section id="page-news" class="page">
+    <span class="eyebrow">LATEST</span><h1>آخر الأخبار</h1>
+    <div id="news-list" class="news-list"><div class="notice">الأخبار غير متاحة حالياً.</div></div>
+  </section>
+
+  <section id="page-iptv" class="page">
+    <span class="eyebrow">IPTV PLAYER</span><h1>مشغل IPTV</h1>
+    <div class="panel">
+      <div class="switch-tabs">
+        <button type="button" class="selected" data-iptv-tab="m3u">M3U</button>
+        <button type="button" data-iptv-tab="xtream">Xtream</button>
       </div>
+      <div id="iptv-m3u-form" class="iptv-form">
+        <label>رابط قائمة M3U</label><input id="m3u-url" type="url" placeholder="https://example.com/list.m3u">
+        <label>أو الصق محتوى القائمة</label><textarea id="m3u-text" rows="4" placeholder="#EXTM3U..."></textarea>
+        <label class="file-label">أو اختر ملف M3U<input id="m3u-file" type="file" accept=".m3u,.m3u8,text/plain"></label>
+        <button type="button" id="load-m3u" class="primary-btn full">تحميل القائمة</button>
+      </div>
+      <div id="iptv-xtream-form" class="iptv-form hidden">
+        <label>رابط السيرفر</label><input id="xt-server" type="url" placeholder="https://server.com:8080">
+        <label>اسم المستخدم</label><input id="xt-user" autocomplete="username">
+        <label>كلمة المرور</label><input id="xt-pass" type="password" autocomplete="current-password">
+        <button type="button" id="load-xtream" class="primary-btn full">اتصال</button>
+      </div>
+      <p id="iptv-status" class="small-status" aria-live="polite">اختار نوع القائمة حتى تبدأ.</p>
     </div>
-    <div class="hero-mark">
-      <div class="ball-orbit">K</div>
-      <span>FOOTBALL<br>IS HERE</span>
+    <div class="player-wrap"><video id="iptv-video" controls playsinline></video></div>
+    <div class="channel-tools"><input id="channel-search" type="search" placeholder="ابحث عن قناة..."><button type="button" id="show-favorites">المفضلة ☆</button></div>
+    <div id="channel-list" class="channel-list"><div class="notice">حمّل قائمة حتى تظهر القنوات.</div></div>
+  </section>
+
+  <section id="page-settings" class="page">
+    <span class="eyebrow">PREFERENCES</span><h1>الإعدادات</h1>
+    <div class="panel settings-panel">
+      <label class="setting-row"><span>المظهر</span><select id="theme-setting"><option value="dark">داكن</option><option value="light">فاتح</option></select></label>
+      <label class="setting-row"><span>لون التطبيق</span><select id="accent-setting"><option value="#7657f6">بنفسجي</option><option value="#168b69">أخضر</option><option value="#2676db">أزرق</option><option value="#d36b35">برتقالي</option></select></label>
+      <label class="setting-row"><span>حجم الخط</span><select id="font-setting"><option value="15">صغير</option><option value="16" selected>متوسط</option><option value="18">كبير</option></select></label>
+      <label class="setting-row"><span>خط عريض</span><input id="bold-setting" type="checkbox"></label>
     </div>
-  </div>
-
-  <div class="section-title">
-    <div><small>تابع الآن</small><h2>المباريات القادمة</h2></div>
-    <button class="text-btn" data-go="matches">الكل ←</button>
-  </div>
-  <div id="home-upcoming-preview" class="preview-grid">
-    <p class="notice">جارٍ تحميل المباريات...</p>
-  </div>
-
-  <div class="section-title">
-    <div><small>آخر المستجدات</small><h2>أخبار الكرة</h2></div>
-    <button class="text-btn" data-go="news">المزيد ←</button>
-  </div>
-  <div id="home-news-preview" class="news-preview"></div>
-</section>
-
-<section id="page-matches" class="page">
-  <div class="page-heading">
-    <small>جدول المواجهات</small>
-    <h1>المباريات</h1>
-    <p>مواعيد المباريات حسب توقيت بغداد.</p>
-  </div>
-
-  <nav class="day-tabs">
-    <button class="day-tab" data-day="-1">الأمس</button>
-    <button class="day-tab active" data-day="0">اليوم</button>
-    <button class="day-tab" data-day="1">الغد</button>
-  </nav>
-
-  <div id="date-label" class="date-label"></div>
-  <section id="matches" class="matches"></section>
-</section>
-
-<section id="page-live" class="page">
-  <div class="page-heading">
-    <small>شاهد وتابع</small>
-    <h1>البث المباشر</h1>
-    <p>روابط المباريات المتاحة حالياً.</p>
-  </div>
-
-  <div id="live-matches" class="matches"></div>
-
-  <div class="iptv-entry-card">
-    <div class="iptv-entry-icon">▣</div>
-    <div>
-      <strong>مشغل IPTV</strong>
-      <p>شغّل قوائمك الخاصة عبر Xtream أو M3U.</p>
-    </div>
-    <button class="btn btn-primary" data-go="iptv">فتح المشغل</button>
-  </div>
-</section>
-
-<section id="page-news" class="page">
-  <div class="page-heading">
-    <small>من الملاعب</small>
-    <h1>الأخبار</h1>
-    <p>أحدث أخبار كرة القدم.</p>
-  </div>
-
-  <div class="news-toolbar">
-    <span>آخر الأخبار</span>
-    <button id="refresh-news" class="btn btn-ghost">تحديث</button>
-  </div>
-  <div id="news-list" class="news-list"></div>
-</section>
-
-<section id="page-iptv" class="page">
-  <div class="page-heading">
-    <small>مشغل القوائم</small>
-    <h1>IPTV Player</h1>
-    <p>استخدم قائمة أو اشتراك تملك حق الوصول إليه.</p>
-  </div>
-
-  <div class="iptv-tabs">
-    <button class="iptv-tab active" data-iptv-mode="xtream">Xtream Codes</button>
-    <button class="iptv-tab" data-iptv-mode="m3u">M3U</button>
-  </div>
-
-  <div id="xtream-panel" class="panel-card">
-    <h2>إضافة اشتراك Xtream</h2>
-
-    <label>رابط السيرفر
-      <input id="xt-server" type="url" placeholder="https://server.example:port">
-    </label>
-
-    <label>اسم المستخدم
-      <input id="xt-user" type="text" autocomplete="username">
-    </label>
-
-    <label>كلمة المرور
-      <input id="xt-pass" type="password" autocomplete="current-password">
-    </label>
-
-    <button id="xt-connect" class="btn btn-primary wide">اتصال وتحميل القنوات</button>
-    <p id="xt-message" class="form-message"></p>
-  </div>
-
-  <div id="m3u-panel" class="panel-card" hidden>
-    <h2>إضافة قائمة M3U</h2>
-
-    <label>رابط القائمة (اختياري)
-      <input id="m3u-url" type="url" placeholder="https://example.com/list.m3u">
-    </label>
-
-    <label>أو الصق محتوى القائمة
-      <textarea id="m3u-text" rows="5" placeholder="#EXTM3U"></textarea>
-    </label>
-
-    <label class="file-label">أو اختر ملف M3U
-      <input id="m3u-file" type="file" accept=".m3u,.m3u8,text/plain">
-    </label>
-
-    <button id="m3u-load" class="btn btn-primary wide">تحميل القنوات</button>
-    <p id="m3u-message" class="form-message"></p>
-  </div>
-
-  <div class="player-card">
-    <div class="player-top">
-      <strong id="player-title">المشغل</strong>
-      <span id="player-state">جاهز</span>
-    </div>
-    <video id="iptv-video" controls playsinline></video>
-    <p class="player-hint">قد لا تعمل بعض الروابط إذا كان مزوّد القائمة يمنع التشغيل داخل المتصفح أو إذا كان تنسيق البث غير مدعوم.</p>
-  </div>
-
-  <div class="channels-head">
-    <h2>القنوات</h2>
-    <button id="show-favorites" class="text-btn">☆ المفضلة</button>
-  </div>
-
-  <div id="channel-categories" class="category-list"></div>
-  <div id="channel-list" class="channel-list">
-    <p class="notice">أضف قائمة لعرض القنوات.</p>
-  </div>
-</section>
-
-<section id="page-settings" class="page">
-  <div class="page-heading">
-    <small>تحكم بالتجربة</small>
-    <h1>الإعدادات</h1>
-    <p>غيّر شكل التطبيق بالطريقة اللي تناسبك.</p>
-  </div>
-
-  <div class="settings-card">
-    <div class="setting-row">
-      <div><strong>المظهر</strong><small>فاتح أو داكن</small></div>
-      <select id="theme-setting">
-        <option value="dark">داكن</option>
-        <option value="light">فاتح</option>
-      </select>
-    </div>
-
-    <div class="setting-row">
-      <div><strong>لون التطبيق</strong><small>لون الأزرار والعناصر</small></div>
-      <select id="accent-setting">
-        <option value="purple">بنفسجي</option>
-        <option value="green">أخضر</option>
-        <option value="blue">أزرق</option>
-        <option value="red">أحمر</option>
-      </select>
-    </div>
-
-    <div class="setting-row">
-      <div><strong>حجم الخط</strong><small>تكبير أو تصغير النصوص</small></div>
-      <select id="font-setting">
-        <option value="small">صغير</option>
-        <option value="normal" selected>متوسط</option>
-        <option value="large">كبير</option>
-      </select>
-    </div>
-
-    <div class="setting-row">
-      <div><strong>الخط العريض</strong><small>إبراز النصوص والعناوين</small></div>
-      <label class="switch">
-        <input id="bold-setting" type="checkbox" checked>
-        <span></span>
-      </label>
-    </div>
-
-    <button id="reset-settings" class="btn btn-ghost wide">إعادة الإعدادات الافتراضية</button>
-  </div>
-
-  <div class="settings-card about-card">
-    <strong>Kora TV</strong>
-    <p>تطبيق لمتابعة المباريات والأخبار وتشغيل قوائم IPTV المصرّح بها.</p>
-    <a href="admin.html">لوحة الإدارة ↗</a>
-  </div>
-</section>
-
+    <div class="panel about"><h3>عن Kora TV</h3><p>تطبيق لمتابعة المباريات والأخبار وتشغيل قوائم IPTV الخاصة بك.</p></div>
+  </section>
 </main>
 
-<nav class="bottom-nav">
-  <button class="nav-item active" data-page="home">
-    <span class="nav-icon">⌂</span><small>الرئيسية</small>
-  </button>
-
-  <button class="nav-item" data-page="matches">
-    <span class="nav-icon">▤</span><small>المباريات</small>
-  </button>
-
-  <button class="nav-item live-nav" data-page="live">
-    <span class="live-orb">▶</span><small>مباشر</small>
-  </button>
-
-  <button class="nav-item" data-page="news">
-    <span class="nav-icon">▧</span><small>الأخبار</small>
-  </button>
-
-  <button class="nav-item" data-page="settings">
-    <span class="nav-icon">⚙</span><small>الإعدادات</small>
-  </button>
+<nav class="bottom-nav" aria-label="التنقل الرئيسي">
+  <button type="button" data-page="home"><span class="nav-icon">⌂</span><small>الرئيسية</small></button>
+  <button type="button" data-page="matches"><span class="nav-icon">▦</span><small>المباريات</small></button>
+  <button type="button" data-page="live" class="center-nav"><span class="live-dot"></span><small>مباشر</small></button>
+  <button type="button" data-page="news"><span class="nav-icon">▤</span><small>الأخبار</small></button>
+  <button type="button" data-page="iptv"><span class="nav-icon">▣</span><small>IPTV</small></button>
+  <button type="button" data-page="settings"><span class="nav-icon">⚙</span><small>الإعدادات</small></button>
 </nav>
-
 </body>
 </html>
