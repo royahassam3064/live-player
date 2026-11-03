@@ -35,34 +35,42 @@
       z-index: 1;
     }
 
-    .kora-logo {
+    /* شعار Kora TV داخل حدود مساحة البث */
+    #video-frame .kora-logo {
       position: absolute;
       top: 12px;
       right: 12px;
       width: 150px;
-      height: auto;
-      max-height: 55px;
+      height: 48px;
+      max-width: 35%;
+      padding: 4px 8px;
+      box-sizing: border-box;
       object-fit: contain;
-      z-index: 100;
+      background: #000;
+      border-radius: 4px;
+      z-index: 20;
       pointer-events: none;
+      display: block;
     }
 
     .fullscreen-btn {
       position: absolute;
       left: 12px;
       bottom: 12px;
-      z-index: 101;
+      z-index: 30;
       border: 0;
       border-radius: 7px;
       padding: 10px 15px;
-      background: rgba(0, 0, 0, .85);
+      background: rgba(0, 0, 0, .9);
       color: white;
       font-size: 14px;
       font-weight: bold;
       cursor: pointer;
     }
 
-    #video-frame:fullscreen {
+    /* عند ملء الشاشة من زر Kora TV */
+    #video-frame:fullscreen,
+    #video-frame:-webkit-full-screen {
       width: 100%;
       height: 100%;
       max-width: none;
@@ -71,27 +79,24 @@
       background: #000;
     }
 
-    #video-frame:fullscreen iframe {
-      width: 100%;
-      height: 100%;
-    }
-
-    #video-frame:-webkit-full-screen {
-      width: 100%;
-      height: 100%;
-      max-width: none;
-      margin: 0;
-      background: #000;
-    }
-
+    #video-frame:fullscreen iframe,
     #video-frame:-webkit-full-screen iframe {
       width: 100%;
       height: 100%;
     }
 
+    #video-frame:fullscreen .kora-logo,
+    #video-frame:-webkit-full-screen .kora-logo {
+      top: 18px;
+      right: 18px;
+      width: 150px;
+      height: 48px;
+    }
+
     @media (max-width: 500px) {
-      .kora-logo {
+      #video-frame .kora-logo {
         width: 105px;
+        height: 40px;
         top: 8px;
         right: 8px;
       }
@@ -118,7 +123,9 @@
 
     <div class="video-frame" id="video-frame">
 
-      <p class="notice">جارٍ تحميل المشغّل...</p>
+      <p class="notice" id="loading-notice">
+        جارٍ تحميل المشغّل...
+      </p>
 
       <img
         src="kora-tv-logo.png"
@@ -136,7 +143,8 @@
     </div>
 
     <p class="footer-note">
-      يجب أن يسمح مصدر البث بالتضمين داخل المواقع. بعض الروابط لا تعمل داخل إطار iframe.
+      يجب أن يسمح مصدر البث بالتضمين داخل المواقع.
+      بعض الروابط لا تعمل داخل إطار iframe.
     </p>
 
   </main>
@@ -147,12 +155,15 @@
 
     fullscreenBtn.addEventListener("click", async function () {
       try {
-        if (!document.fullscreenElement) {
+        if (!document.fullscreenElement &&
+            !document.webkitFullscreenElement) {
+
           if (player.requestFullscreen) {
             await player.requestFullscreen();
           } else if (player.webkitRequestFullscreen) {
             player.webkitRequestFullscreen();
           }
+
         } else {
           if (document.exitFullscreen) {
             await document.exitFullscreen();
