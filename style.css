@@ -6,21 +6,23 @@
   font-display: swap;
 }
 
+:root {
+  color-scheme: dark;
+  --bg: #090611;
+  --surface: #151020;
+  --surface2: #1d1530;
+  --border: #392451;
+  --text: #f8f5ff;
+  --muted: #aaa0bb;
+  --purple: #8500e8;
+  --purple-light: #bd42ff;
+  --green: #16a36b;
+  --red: #ff304d;
+}
+
 * {
   box-sizing: border-box;
   font-family: "KoraFont", sans-serif;
-}
-
-:root {
-  color-scheme: dark;
-  --bg: #0d111b;
-  --surface: #171e2c;
-  --surface-light: #202a3b;
-  --border: #2b374a;
-  --text: #f4f6fb;
-  --muted: #a7b2c5;
-  --purple: #654de0;
-  --green: #16865a;
 }
 
 html {
@@ -29,10 +31,13 @@ html {
 
 body {
   margin: 0;
-  background: var(--bg);
+  padding: 0;
+  background:
+    radial-gradient(ellipse at 50% -15%, #351052 0, transparent 48%),
+    var(--bg);
   color: var(--text);
   font-size: 14px;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 a {
@@ -51,101 +56,287 @@ button {
 }
 
 button:active {
-  transform: scale(0.97);
+  transform: scale(.97);
 }
 
 /* الشريط العلوي */
 
 .topbar {
+  min-height: 65px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 11px max(12px, calc((100% - 900px) / 2));
-  background: #151c29;
-  border-bottom: 1px solid var(--border);
-  min-height: 56px;
+  padding: 8px 16px;
+  background: rgba(10, 7, 18, .94);
+  border-bottom: 1px solid #38204d;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(15px);
 }
 
 .brand {
   display: flex;
   align-items: center;
-  font-size: 19px;
-  font-weight: 900;
-  letter-spacing: -0.3px;
 }
 
 .brand img {
-  width: 155px;
-  height: auto;
-  display: block;
+  width: 145px;
+  height: 46px;
   object-fit: contain;
 }
 
-.admin-link,
-.secondary {
-  background: var(--surface-light);
-  color: #fff;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  font-size: 13px;
+.top-actions {
+  display: flex;
+  gap: 9px;
 }
 
-/* المحتوى والأقسام */
+.icon-button {
+  width: 39px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #21142e;
+  border: 1px solid #54306f;
+  font-size: 20px;
+}
+
+/* المحتوى */
 
 .container {
-  width: min(900px, 96%);
-  margin: 14px auto;
-  padding-bottom: 95px;
+  width: min(900px, 94%);
+  margin: 15px auto;
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
 }
 
 .page {
   display: none;
-  padding-bottom: 25px;
+  padding-bottom: 20px;
 }
 
 .page.active {
   display: block;
 }
 
-.section-title {
-  font-size: 20px;
-  margin: 12px 0 16px;
+.page-heading {
+  padding: 12px 3px 17px;
 }
 
-.news-subtitle {
+.eyebrow {
+  color: #c36cff;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.page-heading h1 {
+  font-size: 27px;
+  margin: 2px 0;
+}
+
+.page-heading p {
   color: var(--muted);
-  margin-top: -10px;
+  margin: 0;
+  font-size: 13px;
 }
 
-/* أيام المباريات */
+/* الواجهة الرئيسية */
+
+.hero {
+  position: relative;
+  min-height: 230px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: 25px;
+  margin: 9px 0 24px;
+  border: 1px solid #7928ae;
+  border-radius: 23px;
+  background:
+    linear-gradient(105deg, rgba(12, 5, 24, .98), rgba(40, 8, 67, .82)),
+    radial-gradient(circle at 85% 40%, #8b20d7, transparent 40%);
+  box-shadow: 0 10px 35px #4a087333;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 75%;
+}
+
+.hero-tag {
+  display: inline-block;
+  background: #5c0b91;
+  color: white;
+  border-radius: 30px;
+  padding: 5px 13px;
+  font-size: 12px;
+}
+
+.hero h1 {
+  font-size: clamp(27px, 7vw, 39px);
+  line-height: 1.35;
+  margin: 12px 0 4px;
+}
+
+.hero h1 strong {
+  color: #d58aff;
+}
+
+.hero p {
+  color: #d0c1df;
+  font-size: 13px;
+  margin: 5px 0 14px;
+}
+
+.hero-button {
+  background: linear-gradient(100deg, #a000ed, #6900ae);
+  color: white;
+  border: 1px solid #d16aff;
+  border-radius: 30px;
+  padding: 9px 17px;
+  font-weight: bold;
+}
+
+.hero-button span {
+  margin-right: 8px;
+}
+
+.hero-ball {
+  position: absolute;
+  left: 12px;
+  bottom: 8px;
+  font-size: 100px;
+  opacity: .17;
+  transform: rotate(-20deg);
+}
+
+.hero-glow {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  left: -60px;
+  top: -60px;
+  border-radius: 50%;
+  background: #a100ff;
+  filter: blur(85px);
+  opacity: .35;
+}
+
+.welcome-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 3px 22px;
+}
+
+.welcome-row h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.live-indicator {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #d8cbe5;
+  font-size: 11px;
+}
+
+.live-indicator i,
+.status-live i {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 10px var(--red);
+}
+
+/* عناوين الأقسام */
+
+.content-section {
+  margin: 25px 0;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.section-heading h2 {
+  margin: 0;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.heading-icon {
+  display: inline-block;
+  width: 4px;
+  height: 22px;
+  border-radius: 5px;
+  background: var(--purple-light);
+  box-shadow: 0 0 12px #b32aff;
+}
+
+.live-icon {
+  background: #ff304d;
+  box-shadow: 0 0 12px #ff304d;
+}
+
+.calendar-icon {
+  background: #a13bff;
+}
+
+.news-icon {
+  background: #7d6bff;
+}
+
+.text-link {
+  background: transparent;
+  border: 0;
+  color: #c27bff;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* تبويبات الأيام */
 
 .day-tabs {
   display: flex;
-  gap: 6px;
-  margin-bottom: 9px;
+  gap: 8px;
+  margin: 8px 0;
+  padding: 5px;
+  background: #120c1c;
+  border: 1px solid #30203f;
+  border-radius: 13px;
 }
 
 .day-tab {
   flex: 1;
-  background: var(--surface);
-  color: #dce2ed;
-  border: 1px solid var(--border);
-  border-radius: 9px;
   padding: 10px 5px;
-  font-size: 14px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #b8adc6;
+  font-size: 13px;
 }
 
 .day-tab.active {
-  background: var(--purple);
-  border-color: #8b78f5;
   color: white;
+  background: linear-gradient(110deg, #8500d7, #57009a);
+  box-shadow: 0 4px 15px #8200d644;
 }
 
 .date-label {
   text-align: center;
-  color: var(--muted);
-  margin: 9px 0 13px;
+  color: #c2b1d4;
+  margin: 12px 0;
   font-size: 13px;
 }
 
@@ -153,103 +344,185 @@ button:active {
 
 .matches {
   display: grid;
-  gap: 9px;
+  gap: 12px;
 }
 
-.match-card,
-.panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px;
+.match-card {
+  position: relative;
+  overflow: hidden;
+  padding: 13px;
+  border: 1px solid #42265b;
+  border-radius: 17px;
+  background:
+    radial-gradient(ellipse at 50% 100%, #39105b55, transparent 65%),
+    linear-gradient(135deg, #191126, #100c19);
+  box-shadow: 0 5px 18px #0004;
+}
+
+.match-card::after {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  left: -65px;
+  top: -65px;
+  background: #a000ed;
+  filter: blur(65px);
+  opacity: .25;
+  pointer-events: none;
+}
+
+.match-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 .match-time {
-  text-align: center;
-  color: var(--muted);
+  color: #b9a9cc;
   font-size: 12px;
+}
+
+.status {
+  color: #b9a9cc;
+  font-size: 11px;
+}
+
+.status-live {
+  color: #ff5268;
+}
+
+.status-finished {
+  color: #8e83a0;
+}
+
+.status-upcoming {
+  color: #c6a0f5;
+}
+
+.status-paused {
+  color: #ffcc66;
+}
+
+.status-postponed,
+.status-cancelled {
+  color: #ff8996;
+}
+
+.status-live i {
+  margin-left: 4px;
+  vertical-align: middle;
 }
 
 .teams {
   display: grid;
-  grid-template-columns: 1fr 35px 1fr;
+  grid-template-columns: 1fr 45px 1fr;
   align-items: center;
-  gap: 5px;
-  padding: 12px 0;
+  gap: 6px;
+  padding: 13px 0;
 }
 
 .team {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
   text-align: center;
+  gap: 7px;
   min-width: 0;
 }
 
 .team img,
 .logo-placeholder {
-  width: 45px;
-  height: 45px;
+  width: 51px;
+  height: 51px;
   object-fit: contain;
 }
 
 .logo-placeholder {
   display: grid;
   place-items: center;
-  font-size: 29px;
+  font-size: 30px;
 }
 
 .team strong {
   font-size: 13px;
-  font-weight: 800;
   overflow-wrap: anywhere;
+  line-height: 1.5;
 }
 
 .vs {
   text-align: center;
-  color: #8995aa;
+  color: #d18aff;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 14px;
+}
+
+.vs strong {
+  color: white;
+  font-size: 17px;
 }
 
 .match-bottom {
+  border-top: 1px solid #392447;
+  padding-top: 10px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  border-top: 1px solid var(--border);
-  padding-top: 9px;
-}
-
-.status,
-.stream-wait {
-  font-size: 12px;
-  color: var(--muted);
+  justify-content: center;
 }
 
 .watch-btn,
 .primary {
   display: inline-block;
-  background: var(--green);
-  color: white;
   border: 0;
-  border-radius: 8px;
-  padding: 9px 14px;
+  border-radius: 10px;
+  padding: 9px 16px;
+  color: white;
   font-weight: bold;
   font-size: 13px;
   text-align: center;
+  background: linear-gradient(100deg, #9400e9, #6100a6);
 }
 
-.watch-btn:hover,
-.primary:hover {
-  filter: brightness(1.15);
+.watch-btn {
+  width: 100%;
+}
+
+.stream-wait {
+  color: #a99bb8;
+  font-size: 12px;
+}
+
+.compact-card {
+  padding: 11px;
+}
+
+.compact-card .teams {
+  padding: 9px 0;
+}
+
+.compact-card .team img,
+.compact-card .logo-placeholder {
+  width: 42px;
+  height: 42px;
+}
+
+.compact-card .team strong {
+  font-size: 12px;
+}
+
+.empty-card {
+  border: 1px dashed #51356b;
+  border-radius: 14px;
+  background: #140e20;
 }
 
 .notice {
   text-align: center;
   color: var(--muted);
-  padding: 18px 10px;
+  padding: 20px 10px;
+  background: #151020;
+  border: 1px solid #342341;
+  border-radius: 13px;
 }
 
 .error {
@@ -258,83 +531,109 @@ button:active {
 
 .footer-note {
   text-align: center;
-  color: #8792a5;
+  color: #8f829f;
   font-size: 11px;
-  margin: 17px 0;
+  margin: 18px 0;
 }
 
 /* الأخبار */
 
 .news-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 14px;
+  padding: 15px;
+  border: 1px solid #42265b;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #1c1428, #100c19);
 }
 
 .news-card h3 {
   font-size: 15px;
-  margin: 0 0 10px;
   line-height: 1.8;
+  margin: 0 0 9px;
 }
 
 .news-meta {
-  color: var(--muted);
-  font-size: 12px;
-  margin-bottom: 12px;
+  color: #a99bb8;
+  font-size: 11px;
+  margin-bottom: 10px;
 }
 
 .news-link {
   display: inline-block;
-  color: #a99aff;
+  color: #c77bff;
   font-weight: bold;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .refresh-button {
   width: 100%;
-  margin-bottom: 12px;
+  margin: 5px 0 14px;
 }
 
-/* حول Kora TV */
+.primary:disabled {
+  opacity: .5;
+}
+
+/* الإعدادات */
 
 .about-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px 18px;
+  margin: 12px auto;
+  max-width: 480px;
+  padding: 24px 17px;
+  border: 1px solid #49265f;
+  border-radius: 20px;
   text-align: center;
-  max-width: 420px;
-  margin: 15px auto;
+  background: linear-gradient(145deg, #21132f, #100b18);
 }
 
 .about-logo {
-  width: 110px;
-  height: auto;
+  width: 115px;
+  height: 90px;
   object-fit: contain;
 }
 
 .about-card h2 {
-  font-size: 23px;
+  font-size: 24px;
+  margin: 4px 0;
 }
 
 .about-description {
   color: var(--muted);
-  margin-bottom: 20px;
+  margin: 0 0 20px;
 }
 
 .social-link {
-  display: block;
-  background: var(--surface-light);
-  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
   padding: 12px;
-  border-radius: 10px;
   margin-top: 10px;
+  border: 1px solid #422b56;
+  border-radius: 12px;
+  background: #1b1425;
+  text-align: right;
+}
+
+.social-link > span:first-child {
+  font-size: 21px;
+}
+
+.social-link > span:nth-child(2) {
+  flex: 1;
+}
+
+.social-link small {
+  display: block;
+  color: #ad9bbf;
+  font-size: 11px;
+}
+
+.social-link b {
+  color: #c77bff;
 }
 
 .about-version {
-  color: var(--muted);
-  font-size: 12px;
+  color: #a99bb8;
+  font-size: 11px;
   margin-top: 22px;
 }
 
@@ -346,13 +645,13 @@ button:active {
   left: 0;
   right: 0;
   z-index: 9999;
-
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-
-  background: #151c29;
-  border-top: 1px solid var(--border);
-  padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+  grid-template-columns: repeat(5, 1fr);
+  padding: 8px 5px calc(8px + env(safe-area-inset-bottom));
+  background: rgba(13, 8, 20, .97);
+  border-top: 1px solid #45235c;
+  box-shadow: 0 -8px 25px #0007;
+  backdrop-filter: blur(16px);
 }
 
 .nav-item {
@@ -360,32 +659,40 @@ button:active {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-
+  gap: 2px;
+  padding: 5px 1px;
+  border: 0;
   background: transparent;
-  border: none;
-  color: #929db0;
-  padding: 5px 2px;
+  color: #91859e;
 }
 
 .nav-item span {
-  font-size: 21px;
+  font-size: 23px;
+  line-height: 1.3;
 }
 
 .nav-item small {
-  font-size: 11px;
+  font-size: 10px;
 }
 
 .nav-item.active {
-  color: #8d7cff;
-  font-weight: bold;
+  color: #c65aff;
+  text-shadow: 0 0 12px #a000ed88;
 }
 
-/* لوحة الإدارة */
+.nav-item.active span {
+  transform: translateY(-2px);
+}
+
+/* لوحة الإدارة والمشغّل - إبقاء التنسيقات الأساسية */
 
 .panel {
   max-width: 760px;
   margin: 14px auto;
+  padding: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
 }
 
 .panel h1 {
@@ -409,8 +716,8 @@ input {
   width: 100%;
   margin-top: 6px;
   padding: 10px;
-  background: #101520;
-  border: 1px solid #394357;
+  background: #100b18;
+  border: 1px solid #49345c;
   border-radius: 8px;
   color: #fff;
   font-size: 14px;
@@ -418,8 +725,8 @@ input {
 }
 
 input:focus {
-  border-color: var(--purple);
-  box-shadow: 0 0 0 2px #654de033;
+  border-color: var(--purple-light);
+  box-shadow: 0 0 0 2px #a000ed33;
 }
 
 .form-grid {
@@ -444,12 +751,12 @@ input:focus {
   justify-content: space-between;
 }
 
-.secondary,
-.danger,
-.primary {
-  border: 0;
-  cursor: pointer;
-  font-size: 13px;
+.secondary {
+  background: #30213f;
+  color: white;
+  padding: 9px 12px;
+  border: 1px solid #49345c;
+  border-radius: 8px;
 }
 
 .danger {
@@ -487,8 +794,6 @@ hr {
   margin: 17px 0;
 }
 
-/* مشغل الفيديو */
-
 .video-frame {
   position: relative;
   width: 100%;
@@ -506,8 +811,6 @@ hr {
   border: 0;
 }
 
-/* شعار Kora TV داخل المشغل */
-
 .player-kora-logo {
   position: absolute;
   top: 9px;
@@ -517,87 +820,83 @@ hr {
   max-height: 34px;
   object-fit: contain;
   padding: 5px 7px;
-  background: rgba(0, 0, 0, 0.75);
-  border: 1px solid rgba(255, 255, 255, 0.13);
+  background: rgba(0, 0, 0, .75);
+  border: 1px solid rgba(255, 255, 255, .13);
   border-radius: 7px;
   z-index: 10;
   pointer-events: none;
 }
 
-/* تحسين شاشات الموبايل */
+/* الشاشات الصغيرة */
 
 @media (max-width: 560px) {
   .topbar {
-    padding: 9px 12px;
-    min-height: 51px;
-  }
-
-  .brand {
-    font-size: 17px;
+    min-height: 58px;
+    padding: 7px 12px;
   }
 
   .brand img {
-    width: 135px;
+    width: 130px;
+    height: 43px;
   }
 
   .container {
-    width: 97%;
-    margin: 10px auto;
+    width: 94%;
+    margin-top: 10px;
   }
 
-  .match-card,
-  .panel {
-    padding: 10px;
-    border-radius: 10px;
+  .hero {
+    min-height: 205px;
+    padding: 19px;
+    border-radius: 19px;
   }
 
-  .matches {
-    gap: 7px;
+  .hero-content {
+    max-width: 82%;
+  }
+
+  .hero-ball {
+    font-size: 78px;
+    left: -5px;
+  }
+
+  .section-heading h2 {
+    font-size: 15px;
+  }
+
+  .match-card {
+    padding: 11px;
+    border-radius: 14px;
   }
 
   .teams {
-    grid-template-columns: 1fr 30px 1fr;
-    padding: 10px 0;
+    grid-template-columns: 1fr 35px 1fr;
   }
 
   .team img,
   .logo-placeholder {
-    width: 40px;
-    height: 40px;
+    width: 43px;
+    height: 43px;
   }
 
   .team strong {
     font-size: 12px;
   }
 
-  .day-tab {
-    padding: 9px 3px;
-    font-size: 12px;
+  .nav-item span {
+    font-size: 21px;
   }
 
-  .watch-btn,
-  .primary {
-    padding: 8px 11px;
-    font-size: 12px;
+  .nav-item small {
+    font-size: 9px;
   }
 
   .player-kora-logo {
     width: 65px;
     top: 7px;
     right: 7px;
-    padding: 4px 6px;
-  }
-
-  .nav-item span {
-    font-size: 20px;
-  }
-
-  .nav-item small {
-    font-size: 10px;
   }
 }
-
-/* الشاشات الصغيرة جداً */
 
 @media (max-width: 360px) {
   .form-grid {
@@ -615,5 +914,9 @@ hr {
 
   .row-actions {
     width: 100%;
+  }
+
+  .hero h1 {
+    font-size: 25px;
   }
 }
