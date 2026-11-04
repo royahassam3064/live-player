@@ -22,54 +22,49 @@
       margin: 15px auto;
       overflow: hidden;
       background: #000;
-      isolation: auto !important;
+      isolation: isolate;
     }
 
     #video-frame iframe {
       position: absolute !important;
-      inset: 0;
+      inset: 0 !important;
       width: 100% !important;
       height: 100% !important;
-      border: 0;
+      border: 0 !important;
       display: block;
-      z-index: 0 !important;
+      z-index: 1 !important;
+    }
+
+    #video-frame .kora-logo,
+    #video-frame .new-watermark {
+      position: absolute !important;
+      display: block !important;
+      object-fit: contain;
+      background: transparent;
+      border: 0;
+      padding: 0;
+      box-sizing: border-box;
+      pointer-events: none;
+      z-index: 2147483647 !important;
     }
 
     #video-frame .kora-logo {
-      position: absolute !important;
       top: 12px;
       right: 12px;
       width: 120px;
       height: 45px;
       max-width: 35%;
-      object-fit: contain;
-      background: transparent;
-      border: 0;
-      padding: 0;
-      box-sizing: border-box;
-      z-index: 2147483647 !important;
-      pointer-events: none;
-      display: block !important;
     }
 
     #video-frame .new-watermark {
-      position: absolute !important;
       bottom: 12px;
       right: 12px;
       width: 130px;
       height: 45px;
       max-width: 35%;
-      object-fit: contain;
-      background: transparent;
-      border: 0;
-      padding: 0;
-      box-sizing: border-box;
-      z-index: 2147483647 !important;
-      pointer-events: none;
-      display: block !important;
     }
 
-    #video-frame .fullscreen-btn {
+    #fullscreen-btn {
       position: absolute !important;
       left: 12px;
       bottom: 12px;
@@ -86,35 +81,49 @@
 
     #video-frame:fullscreen,
     #video-frame:-webkit-full-screen {
+      position: fixed !important;
+      inset: 0 !important;
       width: 100% !important;
       height: 100% !important;
       max-width: none !important;
       aspect-ratio: auto !important;
       margin: 0 !important;
-      background: #000;
-      overflow: hidden;
+      padding: 0 !important;
+      overflow: hidden !important;
+      background: #000 !important;
+      isolation: isolate !important;
     }
 
     #video-frame:fullscreen iframe,
     #video-frame:-webkit-full-screen iframe {
+      position: absolute !important;
+      inset: 0 !important;
       width: 100% !important;
       height: 100% !important;
+      z-index: 1 !important;
     }
 
     #video-frame:fullscreen .kora-logo,
     #video-frame:-webkit-full-screen .kora-logo {
-      top: 18px;
-      right: 18px;
-      width: 150px;
-      height: 48px;
+      top: 18px !important;
+      right: 18px !important;
+      width: 150px !important;
+      height: 48px !important;
+      z-index: 2147483647 !important;
     }
 
     #video-frame:fullscreen .new-watermark,
     #video-frame:-webkit-full-screen .new-watermark {
-      bottom: 18px;
-      right: 18px;
-      width: 150px;
-      height: 48px;
+      bottom: 18px !important;
+      right: 18px !important;
+      width: 150px !important;
+      height: 48px !important;
+      z-index: 2147483647 !important;
+    }
+
+    #video-frame:fullscreen #fullscreen-btn,
+    #video-frame:-webkit-full-screen #fullscreen-btn {
+      z-index: 2147483647 !important;
     }
 
     @media (max-width: 500px) {
@@ -132,7 +141,7 @@
         right: 8px;
       }
 
-      #video-frame .fullscreen-btn {
+      #fullscreen-btn {
         left: 8px;
         bottom: 8px;
         padding: 8px 11px;
@@ -172,7 +181,6 @@
 
       <button
         type="button"
-        class="fullscreen-btn"
         id="fullscreen-btn">
         ⛶ ملء الشاشة
       </button>
@@ -187,48 +195,48 @@
   </main>
 
   <script>
-    const player = document.getElementById("video-frame");
-    const fullscreenBtn = document.getElementById("fullscreen-btn");
+    (() => {
+      const player = document.getElementById("video-frame");
+      const button = document.getElementById("fullscreen-btn");
 
-    fullscreenBtn.addEventListener("click", async function (event) {
-      event.preventDefault();
-      event.stopPropagation();
+      button.addEventListener("click", async () => {
+        try {
+          if (
+            document.fullscreenElement ||
+            document.webkitFullscreenElement
+          ) {
+            if (document.exitFullscreen) {
+              await document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+              document.webkitExitFullscreen();
+            }
+          } else {
+            if (player.requestFullscreen) {
+              await player.requestFullscreen();
+            } else if (player.webkitRequestFullscreen) {
+              player.webkitRequestFullscreen();
+            } else {
+              alert("المتصفح لا يدعم ملء الشاشة بهذه الطريقة.");
+            }
+          }
+        } catch (error) {
+          console.error("Fullscreen error:", error);
+        }
+      });
 
-      try {
-        const isFullscreen =
+      function updateButton() {
+        const active =
           document.fullscreenElement ||
           document.webkitFullscreenElement;
 
-        if (!isFullscreen) {
-          if (player.requestFullscreen) {
-            await player.requestFullscreen();
-          } else if (player.webkitRequestFullscreen) {
-            player.webkitRequestFullscreen();
-          }
-        } else {
-          if (document.exitFullscreen) {
-            await document.exitFullscreen();
-          } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-          }
-        }
-      } catch (error) {
-        console.error("Fullscreen error:", error);
+        button.textContent = active
+          ? "⛶ خروج من ملء الشاشة"
+          : "⛶ ملء الشاشة";
       }
-    });
 
-    function updateFullscreenButton() {
-      const isFullscreen =
-        !!document.fullscreenElement ||
-        !!document.webkitFullscreenElement;
-
-      fullscreenBtn.textContent = isFullscreen
-        ? "⛶ خروج من ملء الشاشة"
-        : "⛶ ملء الشاشة";
-    }
-
-    document.addEventListener("fullscreenchange", updateFullscreenButton);
-    document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
+      document.addEventListener("fullscreenchange", updateButton);
+      document.addEventListener("webkitfullscreenchange", updateButton);
+    })();
   </script>
 
 </body>
