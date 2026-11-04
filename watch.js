@@ -75,10 +75,11 @@
     iframe.frameBorder = "0";
     iframe.scrolling = "no";
 
-    iframe.allow =
-      "autoplay; fullscreen; picture-in-picture";
+    // منع المشغل الداخلي من أخذ ملء الشاشة
+    // حتى تبقى الشعارات الخارجية ظاهرة
+    iframe.allow = "autoplay; picture-in-picture";
+    iframe.removeAttribute("allowfullscreen");
 
-    iframe.allowFullscreen = true;
     iframe.title = "مشغل البث";
 
     iframe.style.position = "absolute";
@@ -87,11 +88,9 @@
     iframe.style.height = "100%";
     iframe.style.zIndex = "1";
 
-    // يبقى الشعار وزر ملء الشاشة فوق إطار البث
     frame.insertBefore(
       iframe,
-      frame.querySelector(".kora-logo") ||
-      frame.querySelector(".fullscreen-btn")
+      frame.querySelector(".kora-logo")
     );
   }
 
