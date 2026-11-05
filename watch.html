@@ -25,6 +25,22 @@
       isolation: isolate;
     }
 
+    /* تحريك الشعارات إلى مساحة الفيديو الفعلية بوضع ملء الشاشة */
+#video-frame:fullscreen .kora-logo,
+#video-frame:-webkit-full-screen .kora-logo {
+  top: 14% !important;
+  right: 15% !important;
+  width: 120px !important;
+  height: 45px !important;
+}
+
+#video-frame:fullscreen .new-watermark,
+#video-frame:-webkit-full-screen .new-watermark {
+  bottom: 9% !important;
+  right: 15% !important;
+  width: 130px !important;
+  height: 45px !important;
+}
     #video-frame iframe {
       position: absolute !important;
       inset: 0 !important;
