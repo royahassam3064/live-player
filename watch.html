@@ -1,18 +1,11 @@
 <!doctype html>
+
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#000">
-  <title>مشاهدة البث - Kora TV</title>
-
-  <link rel="stylesheet" href="style.css">
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="config.js"></script>
-  <script defer src="watch.js"></script>
-
-  <style>
+  <title>مشاهدة البث - Kora TV</title>  <link rel="stylesheet" href="style.css">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script defer src="config.js"></script>  <script defer src="watch.js"></script>  <style>
     #video-frame {
       position: relative !important;
       width: 640px;
@@ -25,22 +18,6 @@
       isolation: isolate;
     }
 
-    /* تحريك الشعارات إلى مساحة الفيديو الفعلية بوضع ملء الشاشة */
-#video-frame:fullscreen .kora-logo,
-#video-frame:-webkit-full-screen .kora-logo {
-  top: 14% !important;
-  right: 15% !important;
-  width: 120px !important;
-  height: 45px !important;
-}
-
-#video-frame:fullscreen .new-watermark,
-#video-frame:-webkit-full-screen .new-watermark {
-  bottom: 9% !important;
-  right: 15% !important;
-  width: 130px !important;
-  height: 45px !important;
-}
     #video-frame iframe {
       position: absolute !important;
       inset: 0 !important;
@@ -78,6 +55,18 @@
       width: 130px;
       height: 45px;
       max-width: 35%;
+    }
+
+    /* غطاء الشعار */
+    #video-frame .sir-cover {
+      position: absolute !important;
+      top: 12px;
+      left: 12px;
+      width: 125px;
+      height: 45px;
+      background: #000;
+      z-index: 2147483646 !important;
+      pointer-events: none;
     }
 
     #fullscreen-btn {
@@ -119,6 +108,11 @@
       z-index: 1 !important;
     }
 
+    #video-frame:fullscreen .sir-cover,
+    #video-frame:-webkit-full-screen .sir-cover {
+      z-index: 2147483646 !important;
+    }
+
     #video-frame:fullscreen .kora-logo,
     #video-frame:-webkit-full-screen .kora-logo {
       top: 18px !important;
@@ -157,60 +151,58 @@
         right: 8px;
       }
 
+      #video-frame .sir-cover {
+        top: 8px;
+        left: 8px;
+        width: 100px;
+        height: 36px;
+      }
+
       #fullscreen-btn {
         left: 8px;
         bottom: 8px;
         padding: 8px 11px;
       }
     }
-  </style>
-</head>
-
-<body class="watch-page">
-
-  <header class="topbar">
+  </style></head><body class="watch-page">  <header class="topbar">
     <a class="admin-link" href="index.html">رجوع للمباريات</a>
     <div class="brand">البث المباشر</div>
-  </header>
+  </header>  <main class="container"><h1 id="watch-title">جارٍ تحميل البث...</h1>
 
-  <main class="container">
+<div class="video-frame" id="video-frame">
 
-    <h1 id="watch-title">جارٍ تحميل البث...</h1>
+  <p class="notice" id="loading-notice">
+    جارٍ تحميل المشغّل...
+  </p>
 
-    <div class="video-frame" id="video-frame">
+  <img
+    src="kora-tv-logo.png"
+    class="kora-logo"
+    alt="Kora TV"
+  >
 
-      <p class="notice" id="loading-notice">
-        جارٍ تحميل المشغّل...
-      </p>
+  <img
+    src="https://i.postimg.cc/jSmhKgmX/lv-0-20261103200323.jpg"
+    class="new-watermark"
+    alt="Watermark"
+  >
 
-      <img
-        src="kora-tv-logo.png"
-        class="kora-logo"
-        alt="Kora TV"
-      >
+  <div class="sir-cover"></div>
 
-      <img
-        src="https://i.postimg.cc/jSmhKgmX/lv-0-20261103200323.jpg"
-        class="new-watermark"
-        alt="Watermark"
-      >
+  <button
+    type="button"
+    id="fullscreen-btn">
+    ⛶ ملء الشاشة
+  </button>
 
-      <button
-        type="button"
-        id="fullscreen-btn">
-        ⛶ ملء الشاشة
-      </button>
+</div>
 
-    </div>
+<p class="footer-note">
+  يجب أن يسمح مصدر البث بالتضمين داخل المواقع.
+  بعض الروابط لا تعمل داخل إطار iframe.
+</p>
 
-    <p class="footer-note">
-      يجب أن يسمح مصدر البث بالتضمين داخل المواقع.
-      بعض الروابط لا تعمل داخل إطار iframe.
-    </p>
-
-  </main>
-
-  <script>
+  </main>  <script>
     (() => {
       const player = document.getElementById("video-frame");
       const button = document.getElementById("fullscreen-btn");
@@ -253,7 +245,5 @@
       document.addEventListener("fullscreenchange", updateButton);
       document.addEventListener("webkitfullscreenchange", updateButton);
     })();
-  </script>
-
-</body>
+  </script></body>
 </html>
