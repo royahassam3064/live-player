@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#000">  <title>مشاهدة البث - Kora TV</title>  <link rel="stylesheet" href="style.css">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script defer src="config.js"></script>  <script defer src="watch.js"></script>  <style>
-    /* إطار المشغل */
     #video-frame {
       position: relative;
       width: 640px;
@@ -17,7 +16,6 @@
       isolation: isolate;
     }
 
-    /* إطار البث */
     #video-frame iframe {
       position: absolute;
       inset: 0;
@@ -36,8 +34,11 @@
       width: 150px;
       height: 46px;
       background: #000;
-      z-index: 10;
+      z-index: 20;
       pointer-events: none;
+      display: block;
+      visibility: visible;
+      opacity: 1;
     }
 
     /* زر ملء الشاشة */
@@ -56,7 +57,7 @@
       cursor: pointer;
     }
 
-    /* وضع ملء الشاشة */
+    /* ملء شاشة إطار الموقع */
     #video-frame:fullscreen,
     #video-frame:-webkit-full-screen {
       position: fixed;
@@ -72,7 +73,6 @@
       isolation: isolate;
     }
 
-    /* المشغل داخل ملء الشاشة */
     #video-frame:fullscreen iframe,
     #video-frame:-webkit-full-screen iframe {
       position: absolute;
@@ -83,23 +83,25 @@
       z-index: 1;
     }
 
-    /* المستطيل الأسود في ملء الشاشة */
     #video-frame:fullscreen .right-black-cover,
     #video-frame:-webkit-full-screen .right-black-cover {
+      position: absolute;
       top: 7.2%;
       right: 18px;
       width: 150px;
       height: 46px;
-      z-index: 10;
+      background: #000;
+      z-index: 20;
+      display: block;
+      visibility: visible;
+      opacity: 1;
     }
 
-    /* زر ملء الشاشة */
     #video-frame:fullscreen #fullscreen-btn,
     #video-frame:-webkit-full-screen #fullscreen-btn {
       z-index: 30;
     }
 
-    /* الهواتف */
     @media (max-width: 500px) {
       #video-frame .right-black-cover {
         top: 7.2%;
@@ -114,28 +116,25 @@
         padding: 8px 11px;
       }
     }
-  </style></head><body class="watch-page">  <!-- الشريط العلوي -->  <header class="topbar">
+  </style></head><body class="watch-page">  <header class="topbar">
     <a class="admin-link" href="index.html">
       رجوع للمباريات
     </a><div class="brand">
   البث المباشر
 </div>
 
-  </header>  <!-- محتوى الصفحة -->  <main class="container"><h1 id="watch-title">
+  </header>  <main class="container"><h1 id="watch-title">
   جارٍ تحميل البث...
 </h1>
 
-<!-- إطار الفيديو -->
 <div class="video-frame" id="video-frame">
 
   <p class="notice" id="loading-notice">
     جارٍ تحميل المشغّل...
   </p>
 
-  <!-- المستطيل الأسود -->
   <div class="right-black-cover"></div>
 
-  <!-- زر ملء الشاشة -->
   <button type="button" id="fullscreen-btn">
     ⛶ ملء الشاشة
   </button>
@@ -147,7 +146,7 @@
   بعض الروابط لا تعمل داخل إطار iframe.
 </p>
 
-  </main>  <!-- التحكم بملء الشاشة -->  <script>
+  </main>  <script>
     (() => {
       "use strict";
 
@@ -156,30 +155,25 @@
 
       button.addEventListener("click", async () => {
         try {
-          const isFullscreen =
+          const active =
             document.fullscreenElement ||
             document.webkitFullscreenElement;
 
-          if (isFullscreen) {
-
+          if (active) {
             if (document.exitFullscreen) {
               await document.exitFullscreen();
             } else if (document.webkitExitFullscreen) {
               document.webkitExitFullscreen();
             }
-
           } else {
-
             if (player.requestFullscreen) {
               await player.requestFullscreen();
             } else if (player.webkitRequestFullscreen) {
               player.webkitRequestFullscreen();
             } else {
-              alert("المتصفح لا يدعم ملء الشاشة بهذه الطريقة.");
+              alert("المتصفح لا يدعم ملء الشاشة.");
             }
-
           }
-
         } catch (error) {
           console.error("Fullscreen error:", error);
         }
@@ -195,16 +189,8 @@
           : "⛶ ملء الشاشة";
       }
 
-      document.addEventListener(
-        "fullscreenchange",
-        updateButton
-      );
-
-      document.addEventListener(
-        "webkitfullscreenchange",
-        updateButton
-      );
-
+      document.addEventListener("fullscreenchange", updateButton);
+      document.addEventListener("webkitfullscreenchange", updateButton);
     })();
   </script></body>
 </html>
