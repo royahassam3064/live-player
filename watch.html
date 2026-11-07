@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#000">
+  <title>مشاهدة المباراة - Kora TV</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="config.js"></script>
+  <script defer src="watch.js"></script>
+  <style>
+    #player-shell {
+      width: 100%;
+      margin: 15px auto;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    #video-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+    }
+    #video-frame iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+    #player-shell:fullscreen,
+    #player-shell:-webkit-full-screen {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      border-radius: 0;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+    }
+    #player-shell:fullscreen #video-frame,
+    #player-shell:-webkit-full-screen #video-frame {
+      flex: 1;
+      min-height: 0;
+      aspect-ratio: auto;
+    }
+    .player-toolbar {
+      display: flex;
+      justify-content: center;
+      padding: 10px;
+      background: #10131b;
+    }
+    #fullscreen-btn {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 24px;
+      background: #5b42c5;
+      color: #fff;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body class="watch-page">
+  <header class="topbar">
+    <a class="admin-link" href="index.html">رجوع للمباريات</a>
+    <div class="brand">مشاهدة المباراة</div>
+  </header>
+
+  <main class="container">
+    <h1 id="watch-title">جارٍ تحميل المباراة...</h1>
+    <div id="player-shell">
+      <div id="video-frame">
+        <p class="notice" id="loading-notice">جارٍ تحميل المشغّل...</p>
+      </div>
+      <div class="player-toolbar">
+        <button type="button" id="fullscreen-btn">⛶ ملء الشاشة</button>
+      </div>
+    </div>
+    <p class="footer-note">يعتمد تشغيل الفيديو على دعم مصدر البث للتضمين داخل المواقع.</p>
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+      const shell = document.getElementById("player-shell");
+      const button = document.getElementById("fullscreen-btn");
+
+      function isFullscreen() {
+        return Boolean(document.fullscreenElement || document.webkitFullscreenElement);
+      }
+
+      async function toggleFullscreen() {
+        try {
+          if (isFullscreen()) {
+            if (document.exitFullscreen) await document.exitFullscreen();
+            else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+          } else {
+            if (shell.requestFullscreen) await shell.requestFullscreen();
+            else if (shell.webkitRequestFullscreen) shell.webkitRequestFullscreen();
+            else alert("المتصفح لا يدعم ملء الشاشة.");
+          }
+        } catch (error) {
+          console.error("Fullscreen error:", error);
+        }
+      }
+
+      function updateButton() {
+        button.textContent = isFullscreen()
+          ? "⛶ خروج من ملء الشاشة"
+          : "⛶ ملء الشاشة";
+      }
+
+      button.addEventListener("click", toggleFullscreen);
+      document.addEventListener("fullscreenchange", updateButton);
+      document.addEventListener("webkitfullscreenchange", updateButton);
+    })();
+  </script>
+</body>
+</html>
