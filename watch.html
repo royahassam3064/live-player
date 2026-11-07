@@ -1,13 +1,12 @@
 <!doctype html>
 
-<html lang="ar" dir="rtl">
-<head>
+<html lang="ar" dir="rtl"><head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#000">
-  <title>مشاهدة البث - Kora TV</title>  <link rel="stylesheet" href="style.css">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script defer src="config.js"></script>  <script defer src="watch.js"></script>  <style>
+  <meta name="theme-color" content="#000">  <title>مشاهدة البث - Kora TV</title>  <link rel="stylesheet" href="style.css">  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script defer src="config.js"></script>  <script defer src="watch.js"></script>  <style>
+    /* إطار المشغل */
     #video-frame {
-      position: relative !important;
+      position: relative;
       width: 640px;
       max-width: 100%;
       aspect-ratio: 16 / 9;
@@ -18,53 +17,35 @@
       isolation: isolate;
     }
 
+    /* إطار البث */
     #video-frame iframe {
-      position: absolute !important;
-      inset: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      border: 0 !important;
-      display: block;
-      z-index: 1 !important;
-    }
-
-    /* المستطيل الأسود أعلى يسار الفيديو */
-    #video-frame .right-black-cover {
-      position: absolute !important;
-      top: 7.2% !important;
-      right: 12px !important;
-      width: 150px !important;
-      height: 46px !important;
-      background: #000 !important;
-      z-index: 10 !important;
-      pointer-events: none !important;
-    }
-
-    /* العلامة المائية السفلية */
-    #video-frame .new-watermark {
-      position: absolute !important;
-      display: block !important;
-      object-fit: contain;
-      background: transparent;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       border: 0;
-      padding: 0;
-      box-sizing: border-box;
-      pointer-events: none;
-      z-index: 20 !important;
+      display: block;
+      z-index: 1;
+    }
 
-      bottom: 12px;
+    /* المستطيل الأسود */
+    #video-frame .right-black-cover {
+      position: absolute;
+      top: 7.2%;
       right: 12px;
-      width: 130px;
-      height: 45px;
-      max-width: 35%;
+      width: 150px;
+      height: 46px;
+      background: #000;
+      z-index: 10;
+      pointer-events: none;
     }
 
     /* زر ملء الشاشة */
     #fullscreen-btn {
-      position: absolute !important;
+      position: absolute;
       right: 12px;
       bottom: 12px;
-      z-index: 30 !important;
+      z-index: 30;
       border: 0;
       border-radius: 7px;
       padding: 10px 15px;
@@ -78,64 +59,53 @@
     /* وضع ملء الشاشة */
     #video-frame:fullscreen,
     #video-frame:-webkit-full-screen {
-      position: fixed !important;
-      inset: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      max-width: none !important;
-      aspect-ratio: auto !important;
-      margin: 0 !important;
-      padding: 0 !important;
-      overflow: hidden !important;
-      background: #000 !important;
-      isolation: isolate !important;
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      aspect-ratio: auto;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: #000;
+      isolation: isolate;
     }
 
+    /* المشغل داخل ملء الشاشة */
     #video-frame:fullscreen iframe,
     #video-frame:-webkit-full-screen iframe {
-      position: absolute !important;
-      inset: 0 !important;
-      width: 100% !important;
-      height: 100% !important;
-      z-index: 1 !important;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      z-index: 1;
     }
 
+    /* المستطيل الأسود في ملء الشاشة */
     #video-frame:fullscreen .right-black-cover,
     #video-frame:-webkit-full-screen .right-black-cover {
-      top: 7.2% !important;
-      right: 18px !important;
-      width: 150px !important;
-      height: 46px !important;
-      z-index: 10 !important;
+      top: 7.2%;
+      right: 18px;
+      width: 150px;
+      height: 46px;
+      z-index: 10;
     }
 
-    #video-frame:fullscreen .new-watermark,
-    #video-frame:-webkit-full-screen .new-watermark {
-      bottom: 18px !important;
-      right: 18px !important;
-      width: 150px !important;
-      height: 48px !important;
-      z-index: 20 !important;
-    }
-
+    /* زر ملء الشاشة */
     #video-frame:fullscreen #fullscreen-btn,
     #video-frame:-webkit-full-screen #fullscreen-btn {
-      z-index: 30 !important;
+      z-index: 30;
     }
 
+    /* الهواتف */
     @media (max-width: 500px) {
       #video-frame .right-black-cover {
-        top: 7.2% !important;
-        right: 8px !important;
-        width: 100px !important;
-        height: 36px !important;
-      }
-
-      #video-frame .new-watermark {
-        width: 105px;
-        height: 38px;
-        bottom: 8px;
+        top: 7.2%;
         right: 8px;
+        width: 100px;
+        height: 36px;
       }
 
       #fullscreen-btn {
@@ -144,11 +114,18 @@
         padding: 8px 11px;
       }
     }
-  </style></head><body class="watch-page">  <header class="topbar">
-    <a class="admin-link" href="index.html">رجوع للمباريات</a>
-    <div class="brand">البث المباشر</div>
-  </header>  <main class="container"><h1 id="watch-title">جارٍ تحميل البث...</h1>
+  </style></head><body class="watch-page">  <!-- الشريط العلوي -->  <header class="topbar">
+    <a class="admin-link" href="index.html">
+      رجوع للمباريات
+    </a><div class="brand">
+  البث المباشر
+</div>
 
+  </header>  <!-- محتوى الصفحة -->  <main class="container"><h1 id="watch-title">
+  جارٍ تحميل البث...
+</h1>
+
+<!-- إطار الفيديو -->
 <div class="video-frame" id="video-frame">
 
   <p class="notice" id="loading-notice">
@@ -157,13 +134,6 @@
 
   <!-- المستطيل الأسود -->
   <div class="right-black-cover"></div>
-
-  <!-- العلامة المائية -->
-  <img
-    src="https://i.postimg.cc/jSmhKgmX/lv-0-20261103200323.jpg"
-    class="new-watermark"
-    alt="Watermark"
-  >
 
   <!-- زر ملء الشاشة -->
   <button type="button" id="fullscreen-btn">
@@ -177,23 +147,29 @@
   بعض الروابط لا تعمل داخل إطار iframe.
 </p>
 
-  </main>  <script>
+  </main>  <!-- التحكم بملء الشاشة -->  <script>
     (() => {
+      "use strict";
+
       const player = document.getElementById("video-frame");
       const button = document.getElementById("fullscreen-btn");
 
       button.addEventListener("click", async () => {
         try {
-          if (
+          const isFullscreen =
             document.fullscreenElement ||
-            document.webkitFullscreenElement
-          ) {
+            document.webkitFullscreenElement;
+
+          if (isFullscreen) {
+
             if (document.exitFullscreen) {
               await document.exitFullscreen();
             } else if (document.webkitExitFullscreen) {
               document.webkitExitFullscreen();
             }
+
           } else {
+
             if (player.requestFullscreen) {
               await player.requestFullscreen();
             } else if (player.webkitRequestFullscreen) {
@@ -201,7 +177,9 @@
             } else {
               alert("المتصفح لا يدعم ملء الشاشة بهذه الطريقة.");
             }
+
           }
+
         } catch (error) {
           console.error("Fullscreen error:", error);
         }
@@ -217,8 +195,16 @@
           : "⛶ ملء الشاشة";
       }
 
-      document.addEventListener("fullscreenchange", updateButton);
-      document.addEventListener("webkitfullscreenchange", updateButton);
+      document.addEventListener(
+        "fullscreenchange",
+        updateButton
+      );
+
+      document.addEventListener(
+        "webkitfullscreenchange",
+        updateButton
+      );
+
     })();
   </script></body>
 </html>
