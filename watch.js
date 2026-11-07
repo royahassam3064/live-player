@@ -1,114 +1,119 @@
 (() => {
-  const client = window.supabase.createClient(
-    window.SUPABASE_URL,
-    window.SUPABASE_PUBLISHABLE_KEY
-  );
+"use strict";
 
-  const params = new URLSearchParams(location.search);
-  const id = params.get("id");
+const client = window.supabase.createClient(
+window.SUPABASE_URL,
+window.SUPABASE_PUBLISHABLE_KEY
+);
 
-  const title = document.getElementById("watch-title");
-  const frame = document.getElementById("video-frame");
+const params = new URLSearchParams(location.search);
+const id = params.get("id");
 
-  function safeUrl(raw) {
-    try {
-      const url = new URL(raw);
+const title = document.getElementById("watch-title");
+const frame = document.getElementById("video-frame");
 
-      if (url.protocol !== "https:") {
-        return null;
-      }
+function safeUrl(raw) {
+try {
+const url = new URL(raw);
 
-      return url.href;
-
-    } catch {
-      return null;
-    }
+  if (url.protocol !== "https:") {
+    return null;
   }
 
-  async function load() {
+  return url.href;
+} catch {
+  return null;
+}
 
-    if (!id) {
-      title.textContent = "رابط المباراة غير صحيح";
-      showNotice("لم يتم تحديد مباراة.");
-      return;
-    }
+}
 
-    const { data, error } = await client
-      .from("matches")
-      .select("home_team,away_team,stream_url")
-      .eq("id", id)
-      .single();
+async function load() {
+if (!id) {
+title.textContent = "رابط المباراة غير صحيح";
+showNotice("لم يتم تحديد مباراة.");
+return;
+}
 
-    if (error || !data) {
-      title.textContent = "تعذر العثور على المباراة";
-      showNotice("تعذر تحميل بيانات المباراة.");
-      return;
-    }
+const { data, error } = await client
+  .from("matches")
+  .select("home_team,away_team,stream_url")
+  .eq("id", id)
+  .single();
 
-    title.textContent =
-      `${data.home_team} × ${data.away_team}`;
+if (error || !data) {
+  title.textContent = "تعذر العثور على المباراة";
+  showNotice("تعذر تحميل بيانات المباراة.");
+  return;
+}
 
-    const url = safeUrl(data.stream_url || "");
+title.textContent = `${data.home_team} × ${data.away_team}`;
 
-    if (!url) {
-      showNotice("رابط البث غير متوفر أو غير صالح.");
-      return;
-    }
+const url = safeUrl(data.stream_url || "");
 
-    const oldIframe = frame.querySelector("iframe");
+if (!url) {
+  showNotice("رابط البث غير متوفر أو غير صالح.");
+  return;
+}
 
-    if (oldIframe) {
-      oldIframe.remove();
-    }
+const oldIframe = frame.querySelector("iframe");
 
-    const notice = document.getElementById("loading-notice");
+if (oldIframe) {
+  oldIframe.remove();
+}
 
-    if (notice) {
-      notice.remove();
-    }
+const notice = document.getElementById("loading-notice");
 
-    const iframe = document.createElement("iframe");
+if (notice) {
+  notice.remove();
+}
 
-    iframe.src = url;
-    iframe.width = "640";
-    iframe.height = "360";
-    iframe.frameBorder = "0";
-    iframe.scrolling = "no";
+const iframe = document.createElement("iframe");
 
-    // منع المشغل الداخلي من أخذ ملء الشاشة
-    // حتى تبقى الشعارات الخارجية ظاهرة
-    iframe.allow = "autoplay; picture-in-picture";
-    iframe.removeAttribute("allowfullscreen");
+iframe.src = url;
+iframe.width = "640";
+iframe.height = "360";
+iframe.frameBorder = "0";
+iframe.scrolling = "no";
+iframe.title = "مشغل البث";
 
-    iframe.title = "مشغل البث";
+// السماح للمشغل بملء الشاشة
+iframe.allow = "autoplay; fullscreen; picture-in-picture";
+iframe.allowFullscreen = true;
+iframe.setAttribute("allowfullscreen", "");
 
-    iframe.style.position = "absolute";
-    iframe.style.inset = "0";
-    iframe.style.width = "100%";
-    iframe.style.height = "100%";
-    iframe.style.zIndex = "1";
+// ضبط الإطار داخل مساحة المشغل
+iframe.style.position = "absolute";
+iframe.style.inset = "0";
+iframe.style.width = "100%";
+iframe.style.height = "100%";
+iframe.style.border = "0";
+iframe.style.zIndex = "1";
 
-    frame.insertBefore(
-      iframe,
-      frame.querySelector(".kora-logo")
-    );
-  }
+const logo = frame.querySelector(".kora-logo");
 
-  function showNotice(message) {
+if (logo) {
+  frame.insertBefore(iframe, logo);
+} else {
+  frame.appendChild(iframe);
+}
 
-    const oldNotice = frame.querySelector(".notice");
+}
 
-    if (oldNotice) {
-      oldNotice.remove();
-    }
+function showNotice(message) {
+const oldNotice = frame.querySelector(".notice");
 
-    const notice = document.createElement("p");
+if (oldNotice) {
+  oldNotice.remove();
+}
 
-    notice.className = "notice";
-    notice.textContent = message;
+const notice = document.createElement("p");
 
-    frame.prepend(notice);
-  }
+notice.className = "notice";
+notice.textContent = message;
 
-  load();
+frame.prepend(notice);
+
+}
+
+load();
 })();
