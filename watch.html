@@ -28,7 +28,19 @@
       z-index: 1 !important;
     }
 
-    #video-frame .kora-logo,
+    /* المستطيل الأسود أعلى يسار الفيديو */
+    #video-frame .right-black-cover {
+      position: absolute !important;
+      top: 7.2% !important;
+      right: 12px !important;
+      width: 150px !important;
+      height: 46px !important;
+      background: #000 !important;
+      z-index: 10 !important;
+      pointer-events: none !important;
+    }
+
+    /* العلامة المائية السفلية */
     #video-frame .new-watermark {
       position: absolute !important;
       display: block !important;
@@ -38,18 +50,8 @@
       padding: 0;
       box-sizing: border-box;
       pointer-events: none;
-      z-index: 2147483647 !important;
-    }
+      z-index: 20 !important;
 
-    #video-frame .kora-logo {
-      top: 12px;
-      right: 12px;
-      width: 120px;
-      height: 45px;
-      max-width: 35%;
-    }
-
-    #video-frame .new-watermark {
       bottom: 12px;
       right: 12px;
       width: 130px;
@@ -57,23 +59,12 @@
       max-width: 35%;
     }
 
-    /* غطاء الشعار */
-    #video-frame .sir-cover {
-      position: absolute !important;
-      top: 12px;
-      left: 12px;
-      width: 125px;
-      height: 45px;
-      background: #000;
-      z-index: 2147483646 !important;
-      pointer-events: none;
-    }
-
+    /* زر ملء الشاشة */
     #fullscreen-btn {
       position: absolute !important;
-      left: 12px;
+      right: 12px;
       bottom: 12px;
-      z-index: 2147483647 !important;
+      z-index: 30 !important;
       border: 0;
       border-radius: 7px;
       padding: 10px 15px;
@@ -84,6 +75,7 @@
       cursor: pointer;
     }
 
+    /* وضع ملء الشاشة */
     #video-frame:fullscreen,
     #video-frame:-webkit-full-screen {
       position: fixed !important;
@@ -108,18 +100,13 @@
       z-index: 1 !important;
     }
 
-    #video-frame:fullscreen .sir-cover,
-    #video-frame:-webkit-full-screen .sir-cover {
-      z-index: 2147483646 !important;
-    }
-
-    #video-frame:fullscreen .kora-logo,
-    #video-frame:-webkit-full-screen .kora-logo {
-      top: 18px !important;
+    #video-frame:fullscreen .right-black-cover,
+    #video-frame:-webkit-full-screen .right-black-cover {
+      top: 7.2% !important;
       right: 18px !important;
       width: 150px !important;
-      height: 48px !important;
-      z-index: 2147483647 !important;
+      height: 46px !important;
+      z-index: 10 !important;
     }
 
     #video-frame:fullscreen .new-watermark,
@@ -128,20 +115,20 @@
       right: 18px !important;
       width: 150px !important;
       height: 48px !important;
-      z-index: 2147483647 !important;
+      z-index: 20 !important;
     }
 
     #video-frame:fullscreen #fullscreen-btn,
     #video-frame:-webkit-full-screen #fullscreen-btn {
-      z-index: 2147483647 !important;
+      z-index: 30 !important;
     }
 
     @media (max-width: 500px) {
-      #video-frame .kora-logo {
-        width: 95px;
-        height: 36px;
-        top: 8px;
-        right: 8px;
+      #video-frame .right-black-cover {
+        top: 7.2% !important;
+        right: 8px !important;
+        width: 100px !important;
+        height: 36px !important;
       }
 
       #video-frame .new-watermark {
@@ -151,15 +138,8 @@
         right: 8px;
       }
 
-      #video-frame .sir-cover {
-        top: 8px;
-        left: 8px;
-        width: 100px;
-        height: 36px;
-      }
-
       #fullscreen-btn {
-        left: 8px;
+        right: 8px;
         bottom: 8px;
         padding: 8px 11px;
       }
@@ -175,23 +155,18 @@
     جارٍ تحميل المشغّل...
   </p>
 
-  <img
-    src="kora-tv-logo.png"
-    class="kora-logo"
-    alt="Kora TV"
-  >
+  <!-- المستطيل الأسود -->
+  <div class="right-black-cover"></div>
 
+  <!-- العلامة المائية -->
   <img
     src="https://i.postimg.cc/jSmhKgmX/lv-0-20261103200323.jpg"
     class="new-watermark"
     alt="Watermark"
   >
 
-  <div class="sir-cover"></div>
-
-  <button
-    type="button"
-    id="fullscreen-btn">
+  <!-- زر ملء الشاشة -->
+  <button type="button" id="fullscreen-btn">
     ⛶ ملء الشاشة
   </button>
 
