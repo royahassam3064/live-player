@@ -1,216 +1,418 @@
 <!doctype html>
+
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#080808">
+  <meta name="theme-color" content="#090909">  <title>إدارة KORA TV VIP</title>  <link rel="stylesheet" href="style.css">  <style>
+    body {
+      background: #090909 !important;
+      color: #f5f5f5 !important;
+      font-family: inherit;
+    }
 
-  <title>إدارة المباريات - KORA TV VIP</title>
+    .topbar {
+      background: #111 !important;
+      border-bottom: 1px solid #b99745 !important;
+      color: #e8c66b !important;
+    }
 
-  <link rel="stylesheet" href="style.css">
+    .brand {
+      color: #e8c66b !important;
+      font-weight: 800;
+    }
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="config.js"></script>
-  <script defer src="admin.js"></script>
-</head>
+    .admin-link {
+      color: #e8c66b !important;
+      text-decoration: none;
+    }
 
-<body>
+    .container {
+      width: min(1050px, 94%);
+      margin: 25px auto;
+    }
 
-  <header class="topbar">
-    <div class="brand">⚙️ إدارة KORA TV VIP</div>
-    <a class="admin-link" href="index.html">عرض التطبيق</a>
-  </header>
+    .panel {
+      background: #151515 !important;
+      color: #f5f5f5 !important;
+      border: 1px solid #333 !important;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 20px #0005;
+    }
 
-  <main class="container">
+    .panel h1,
+    .panel h2,
+    .panel h3 {
+      color: #e8c66b !important;
+    }
 
-    <!-- تسجيل الدخول -->
-    <section id="login-panel" class="panel">
+    .panel-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
 
-      <h1>تسجيل دخول الإدارة</h1>
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      color: #eee !important;
+      margin-bottom: 15px;
+    }
 
-      <label>
-        البريد الإلكتروني
-        <input
-          id="email"
-          type="email"
-          autocomplete="username"
-          required
-        >
-      </label>
+    input,
+    select {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid #444 !important;
+      border-radius: 9px;
+      background: #202020 !important;
+      color: #fff !important;
+      outline: none;
+      box-sizing: border-box;
+    }
 
-      <label>
-        كلمة المرور
-        <input
-          id="password"
-          type="password"
-          autocomplete="current-password"
-          required
-        >
-      </label>
+    input:focus,
+    select:focus {
+      border-color: #d7b456 !important;
+      box-shadow: 0 0 0 2px #d7b45622;
+    }
 
-      <button id="login-btn" class="primary" type="button">
-        دخول
+    input::placeholder {
+      color: #999 !important;
+    }
+
+    button {
+      border: 0;
+      border-radius: 9px;
+      padding: 11px 18px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: .2s;
+    }
+
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    button.primary {
+      background: #c5a34d !important;
+      color: #111 !important;
+    }
+
+    button.secondary {
+      background: #333 !important;
+      color: #fff !important;
+      border: 1px solid #555;
+    }
+
+    button.danger {
+      background: #8d2929 !important;
+      color: #fff !important;
+    }
+
+    button:hover {
+      filter: brightness(1.12);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .form-actions,
+    .row-actions {
+      display: flex;
+      gap: 9px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .admin-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      background: #202020 !important;
+      border: 1px solid #393939;
+      border-radius: 11px;
+      padding: 14px;
+      margin: 10px 0;
+      color: #fff !important;
+    }
+
+    .admin-row strong {
+      display: block;
+      color: #e8c66b !important;
+      margin-bottom: 7px;
+    }
+
+    .admin-row small {
+      display: block;
+      color: #bbb !important;
+      margin-top: 5px;
+      overflow-wrap: anywhere;
+    }
+
+    .message {
+      color: #e8c66b !important;
+      min-height: 20px;
+      overflow-wrap: anywhere;
+    }
+
+    .notice {
+      color: #ccc !important;
+      background: #202020 !important;
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .error {
+      color: #ff7777 !important;
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid #383838;
+      margin: 25px 0;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    @media (max-width: 650px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-grid .full {
+        grid-column: auto;
+      }
+
+      .admin-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .row-actions {
+        width: 100%;
+      }
+
+      .row-actions button {
+        flex: 1;
+      }
+    }
+  </style>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script defer src="config.js"></script>  <script defer src="admin.js"></script></head><body><header class="topbar">
+  <div class="brand">⚙️ إدارة KORA TV VIP</div>
+  <a class="admin-link" href="index.html">عرض التطبيق</a>
+</header><main class="container">  <!-- تسجيل الدخول -->  <section id="login-panel" class="panel"><h1>تسجيل دخول الإدارة</h1>
+
+<label>
+  البريد الإلكتروني
+  <input id="email" type="email" autocomplete="username" required>
+</label>
+
+<label>
+  كلمة المرور
+  <input id="password" type="password" autocomplete="current-password" required>
+</label>
+
+<button id="login-btn" class="primary" type="button">
+  دخول
+</button>
+
+<p id="login-message" class="message"></p>
+
+  </section>  <!-- لوحة الإدارة -->  <section id="admin-panel" class="panel" hidden><div class="panel-heading">
+  <h1>لوحة التحكم</h1>
+
+  <button id="logout-btn" class="secondary" type="button">
+    تسجيل الخروج
+  </button>
+</div>
+
+<hr>
+
+<!-- استيراد المباريات -->
+<section class="panel">
+
+  <h2>استيراد المباريات تلقائياً</h2>
+
+  <p>اجلب المباريات من خدمة Football Data API.</p>
+
+  <button id="fetch-matches-btn" class="primary" type="button">
+    تحديث المباريات
+  </button>
+
+  <p id="api-message" class="message"></p>
+
+  <div id="api-matches"></div>
+
+</section>
+
+<hr>
+
+<!-- إدارة القنوات -->
+<section class="panel">
+
+  <h2>إدارة القنوات</h2>
+
+  <p>أضف روابط مشغّلات القنوات التي تملك تصريحاً باستخدامها.</p>
+
+  <form id="channel-form">
+
+    <label>
+      اسم القناة
+      <input
+        id="channel-name"
+        type="text"
+        maxlength="100"
+        placeholder="مثلاً: قناتي"
+        required
+      >
+    </label>
+
+    <label>
+      رابط المشغّل
+      <input
+        id="channel-stream-url"
+        type="url"
+        placeholder="https://..."
+        required
+      >
+    </label>
+
+    <div class="form-actions">
+
+      <button id="save-channel-btn" class="primary" type="submit">
+        حفظ القناة
       </button>
 
-      <p id="login-message" class="message"></p>
+      <button
+        id="cancel-channel-edit"
+        class="secondary"
+        type="button"
+        hidden
+      >
+        إلغاء التعديل
+      </button>
 
-    </section>
+    </div>
 
-    <!-- لوحة الإدارة -->
-    <section id="admin-panel" class="panel" hidden>
+    <p id="channel-message" class="message"></p>
 
-      <div class="panel-heading">
-        <h1>لوحة التحكم</h1>
+  </form>
 
-        <button id="logout-btn" class="secondary" type="button">
-          تسجيل الخروج
-        </button>
-      </div>
+  <hr>
 
-      <!-- استيراد المباريات -->
-      <section class="panel">
+  <h3>القنوات المحفوظة</h3>
 
-        <h2>📡 استيراد المباريات تلقائياً</h2>
+  <div id="admin-channels">
+    <p class="notice">جارٍ التحميل...</p>
+  </div>
 
-        <p>اجلب المباريات القادمة من Football Data API.</p>
+</section>
 
-        <button
-          id="fetch-matches-btn"
-          class="primary"
-          type="button"
-        >
-          تحديث المباريات
-        </button>
+<hr>
 
-        <p id="api-message" class="message"></p>
+<!-- إضافة وتعديل مباراة -->
+<h2 id="form-title">إضافة مباراة</h2>
 
-        <div id="api-matches"></div>
+<form id="match-form">
 
-      </section>
+  <input id="match-id" type="hidden">
 
-      <hr>
+  <div class="form-grid">
 
-      <!-- إضافة وتعديل مباراة -->
-      <h2 id="form-title">إضافة مباراة</h2>
+    <label>
+      الفريق الأول
+      <input id="home-team" required maxlength="80">
+    </label>
 
-      <form id="match-form">
+    <label>
+      الفريق الثاني
+      <input id="away-team" required maxlength="80">
+    </label>
 
-        <input id="match-id" type="hidden">
+    <label>
+      البطولة
+      <input id="competition" maxlength="120">
+    </label>
 
-        <div class="form-grid">
+    <label>
+      موعد المباراة (توقيت بغداد)
+      <input id="match-time" type="datetime-local" required>
+    </label>
 
-          <label>
-            الفريق الأول
-            <input
-              id="home-team"
-              required
-              maxlength="80"
-            >
-          </label>
+    <label>
+      رابط شعار الفريق الأول
+      <input id="home-logo" type="url" placeholder="https://...">
+    </label>
 
-          <label>
-            الفريق الثاني
-            <input
-              id="away-team"
-              required
-              maxlength="80"
-            >
-          </label>
+    <label>
+      رابط شعار الفريق الثاني
+      <input id="away-logo" type="url" placeholder="https://...">
+    </label>
 
-          <label>
-            البطولة
-            <input
-              id="competition"
-              maxlength="120"
-            >
-          </label>
+    <label>
+      القناة الناقلة
+      <select id="channel">
+        <option value="">بدون قناة</option>
+        <option value="beIN Sports 1">beIN Sports 1</option>
+        <option value="beIN Sports 2">beIN Sports 2</option>
+        <option value="beIN Sports 3">beIN Sports 3</option>
+        <option value="beIN Sports 4">beIN Sports 4</option>
+        <option value="beIN Sports 5">beIN Sports 5</option>
+      </select>
+    </label>
 
-          <label>
-            موعد المباراة (توقيت بغداد)
-            <input
-              id="match-time"
-              type="datetime-local"
-              required
-            >
-          </label>
+    <label class="full">
+      رابط البث الخاص بالمباراة
+      <input id="stream-url" type="url" placeholder="https://...">
+    </label>
 
-          <label>
-            رابط شعار الفريق الأول
-            <input
-              id="home-logo"
-              type="url"
-              placeholder="https://..."
-            >
-          </label>
+  </div>
 
-          <label>
-            رابط شعار الفريق الثاني
-            <input
-              id="away-logo"
-              type="url"
-              placeholder="https://..."
-            >
-          </label>
+  <div class="form-actions">
 
-          <!-- اختيار القناة -->
-          <label>
-            القناة الناقلة
+    <button class="primary" type="submit">
+      حفظ المباراة
+    </button>
 
-            <select id="channel">
-              <option value="">بدون قناة</option>
-              <option value="beIN Sports 1">beIN Sports 1</option>
-              <option value="beIN Sports 2">beIN Sports 2</option>
-              <option value="beIN Sports 3">beIN Sports 3</option>
-              <option value="beIN Sports 4">beIN Sports 4</option>
-              <option value="beIN Sports 5">beIN Sports 5</option>
-            </select>
-          </label>
+    <button
+      class="secondary"
+      type="button"
+      id="cancel-edit"
+      hidden
+    >
+      إلغاء التعديل
+    </button>
 
-          <label class="full">
-            رابط البث
+  </div>
 
-            <input
-              id="stream-url"
-              type="url"
-              placeholder="https://..."
-            >
-          </label>
+  <p id="form-message" class="message"></p>
 
-        </div>
+</form>
 
-        <div class="form-actions">
+<hr>
 
-          <button class="primary" type="submit">
-            حفظ المباراة
-          </button>
+<h2>المباريات المضافة</h2>
 
-          <button
-            class="secondary"
-            type="button"
-            id="cancel-edit"
-            hidden
-          >
-            إلغاء التعديل
-          </button>
+<div id="admin-matches">
+  <p class="notice">جارٍ التحميل...</p>
+</div>
 
-        </div>
-
-        <p id="form-message" class="message"></p>
-
-      </form>
-
-      <hr>
-
-      <!-- المباريات -->
-      <h2>المباريات المضافة</h2>
-
-      <div id="admin-matches">
-        <p class="notice">جارٍ التحميل...</p>
-      </div>
-
-    </section>
-
-  </main>
-
-</body>
+  </section></main></body>
 </html>
