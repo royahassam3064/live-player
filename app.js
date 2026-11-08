@@ -56,11 +56,11 @@ const BREAK_STATUSES = [
 
 function safeText(value) {
 return String(value ?? "").replace(/[&<>"']/g, ch => ({
-"&": "&",
-"<": "<",
-">": ">",
-'"': """,
-"'": "'"
+"&": "&amp;",
+"<": "&lt;",
+">": "&gt;",
+'"': "&quot;",
+"'": "&#39;"
 }[ch]));
 }
 
@@ -75,7 +75,6 @@ return ["https:", "http:"].includes(url.protocol)
 } catch {
 return "";
 }
-
 }
 
 function baghdadDate(offset = 0) {
@@ -91,7 +90,6 @@ const [year, month, day] = parts.split("-").map(Number);
 return new Date(
 Date.UTC(year, month - 1, day + offset, 12)
 ).toISOString().slice(0, 10);
-
 }
 
 function formatMatchTime(value) {
@@ -109,7 +107,6 @@ hour: "numeric",
 minute: "2-digit",
 hour12: true
 }).format(date);
-
 }
 
 function normalizeTeamName(value) {
@@ -209,7 +206,6 @@ label: "موعد المباراة",
 css: "status-label",
 live: false
 };
-
 }
 
 function getMinute(match, statusInfo) {
@@ -234,12 +230,11 @@ officialMinute !== ""
 const number = Number(officialMinute);
 
 if (Number.isFinite(number) && number >= 0) {
-return "${Math.floor(number)}′";
+return `${Math.floor(number)}′`;
 }
 }
 
 return "";
-
 }
 
 // =========================
@@ -250,28 +245,26 @@ function logoHtml(url, name) {
 const safeUrl = safeHttpUrl(url);
 
 if (!safeUrl) {
-return "<span class="team-logo-fallback">⚽</span>";
+return `<span class="team-logo-fallback">⚽</span>`;
 }
 
 return `
+<div class="team-logo-wrap">
 <img
 src="${safeText(safeUrl)}"
 alt="${safeText(name)}"
 loading="lazy"
 onerror="
 this.style.display='none';
-this.nextElementSibling.style.display='grid'
+this.nextElementSibling.style.display='grid';
 "
-
-«»
-
+>
 <span
 class="team-logo-fallback"
 style="display:none"
-
-«⚽</span>
-`;»
-
+>⚽</span>
+</div>
+`;
 }
 
 // =========================
@@ -282,7 +275,7 @@ function showPage(name) {
 document.querySelectorAll(".page").forEach(page => {
 page.classList.toggle(
 "active",
-page.id === "page-${name}"
+page.id === `page-${name}`
 );
 });
 
@@ -308,6 +301,9 @@ if (name === "channels") {
 renderChannels();
 }
 
+if (name === "matches") {
+renderMatches();
+}
 }
 
 function openChannelPlayer(channel) {
@@ -320,11 +316,11 @@ if (!found) return;
 selectedChannel = channel;
 
 window.location.href =
-"watch.html?channel=${encodeURIComponent(channel)}";
-
+`watch.html?channel=${encodeURIComponent(channel)}`;
 }
 
 function initNavigation() {
+
 document.addEventListener("click", event => {
 const button = event.target.closest("[data-page]");
 
@@ -343,34 +339,38 @@ showPage(page);
 document.querySelectorAll(
 ".day-tabs [data-day]"
 ).forEach(button => {
+
 button.addEventListener("click", () => {
+
 selectedDay = Number(button.dataset.day);
 
 document.querySelectorAll(
-  ".day-tabs [data-day]"
+".day-tabs [data-day]"
 ).forEach(tab => {
-  tab.classList.toggle("active", tab === button);
-  tab.classList.toggle("selected", tab === button);
+tab.classList.toggle("active", tab === button);
+tab.classList.toggle("selected", tab === button);
 });
 
 renderMatches();
 
 });
+
 });
 
-// الضغط على بطاقة القناة يفتح المشغل مباشرة
+// الضغط على بطاقة القناة
 document.addEventListener("click", event => {
+
 const button = event.target.closest("[data-channel]");
 
 if (!button) return;
 
-const channel = button.dataset.channel;
+openChannelPlayer(button.dataset.channel);
 
-openChannelPlayer(channel);
 });
 
 // فتح قناة المباراة
 document.addEventListener("click", event => {
+
 const button = event.target.closest("[data-open-channel]");
 
 if (!button) return;
@@ -378,6 +378,7 @@ if (!button) return;
 event.preventDefault();
 
 openChannelPlayer(button.dataset.openChannel);
+
 });
 
 }
@@ -387,6 +388,7 @@ openChannelPlayer(button.dataset.openChannel);
 // =========================
 
 function matchCard(match) {
+
 const homeName = match.home_team || "الفريق الأول";
 const awayName = match.away_team || "الفريق الثاني";
 
@@ -405,8 +407,12 @@ match.away_score !== undefined &&
 match.away_score !== "";
 
 const scoreHtml = hasScore
-? "<strong class="score" dir="ltr"> ${safeText(match.home_score)} - ${safeText(match.away_score)} </strong>"
-: "<span class="vs">VS</span>";
+? `
+<strong class="score" dir="ltr">
+${safeText(match.home_score)} - ${safeText(match.away_score)}
+</strong>
+`
+: `<span class="vs">VS</span>`;
 
 const time = formatMatchTime(match.match_time);
 
@@ -422,89 +428,77 @@ const hasChannel = CHANNELS.some(
 item => item.name === channel
 );
 
-// يظهر زر المشاهدة للمباراة المباشرة المرتبطة بقناة
 const showStream =
 hasChannel &&
 statusInfo.live &&
 !statusInfo.finished;
 
 return `
+<article class="match-card">
 
-  <article class="match-card"><div class="match-meta">
+<div class="match-meta">
 
-  <span>${competition}</span>
+<span>${competition}</span>
 
-  <span class="match-time-label">
-    ${safeText(time)}
-  </span>
+<span class="match-time-label">
+${safeText(time)}
+</span>
 
-  <span class="${statusInfo.css}">
-    ${safeText(statusInfo.label)}
-  </span>
+<span class="${statusInfo.css}">
+${safeText(statusInfo.label)}
+</span>
 
-  ${
-    minute
-      ? `
-        <span class="match-minute">
-          ${safeText(minute)}
-        </span>
-      `
-      : ""
-  }
+${minute ? `
+<span class="match-minute">
+${safeText(minute)}
+</span>
+` : ""}
 
 </div>
-
 
 <div class="teams">
 
-  <div class="team">
-    ${logoHtml(match.home_logo, homeName)}
-    <b>${home}</b>
-  </div>
+<div class="team">
+${logoHtml(match.home_logo, homeName)}
+<b>${home}</b>
+</div>
 
+<div class="match-middle">
+${scoreHtml}
+</div>
 
-  <div class="match-middle">
-    ${scoreHtml}
-  </div>
-
-
-  <div class="team">
-    ${logoHtml(match.away_logo, awayName)}
-    <b>${away}</b>
-  </div>
+<div class="team">
+${logoHtml(match.away_logo, awayName)}
+<b>${away}</b>
+</div>
 
 </div>
 
+${showStream ? `
+<a
+class="watch-btn"
+href="watch.html?channel=${encodeURIComponent(channel)}"
+>
+مشاهدة البث
+</a>
+` : ""}
 
-${
-  showStream
-    ? `
-      <a
-        class="watch-btn"
-        href="watch.html?channel=${encodeURIComponent(channel)}"
-      >
-        مشاهدة البث
-      </a>
-    `
-    : ""
+</article>
+`;
 }
-
-  </article>
-`;}
 
 // =========================
 // فلترة المباريات حسب اليوم
 // =========================
 
 function isSameBaghdadDay(match, targetDate) {
+
 if (!match.match_time) return false;
 
 const date = new Date(match.match_time);
 
 if (Number.isNaN(date.getTime())) {
-return (
-String(match.match_time).slice(0, 10) === targetDate
-);
+return String(match.match_time).slice(0, 10) === targetDate;
 }
 
 return new Intl.DateTimeFormat("en-CA", {
@@ -517,6 +511,7 @@ day: "2-digit"
 }
 
 function renderMatches() {
+
 const targetDate = baghdadDate(selectedDay);
 
 const dayMatches = allMatches
@@ -532,7 +527,7 @@ new Date(b.match_time || 0)
 
 const html = dayMatches.length
 ? dayMatches.map(matchCard).join("")
-: "<div class="notice"> ماكو مباريات بهذا اليوم حالياً. </div>";
+: `<div class="notice">ماكو مباريات بهذا اليوم حالياً.</div>`;
 
 if ($("matches-list")) {
 $("matches-list").innerHTML = html;
@@ -540,6 +535,7 @@ $("matches-list").innerHTML = html;
 
 // مباريات الرئيسية
 if ($("home-matches")) {
+
 const todayMatches = allMatches
 .filter(match =>
 isSameBaghdadDay(match, baghdadDate(0))
@@ -548,7 +544,8 @@ isSameBaghdadDay(match, baghdadDate(0))
 
 $("home-matches").innerHTML = todayMatches.length
 ? todayMatches.map(matchCard).join("")
-: "<div class="notice"> ماكو مباريات اليوم حالياً. </div>";
+: `<div class="notice">ماكو مباريات اليوم حالياً.</div>`;
+
 }
 
 if ($("page-channels")?.classList.contains("active")) {
@@ -562,13 +559,13 @@ renderChannels();
 // =========================
 
 function renderChannels() {
+
 const channelsBox = $("channels-list");
 const matchesBox = $("channel-matches");
 const infoBox = $("selected-channel-info");
 
 if (!channelsBox) return;
 
-// إزالة قائمة المباريات ومعلومات القناة القديمة
 if (matchesBox) {
 matchesBox.innerHTML = "";
 }
@@ -577,8 +574,8 @@ if (infoBox) {
 infoBox.innerHTML = "";
 }
 
-// بطاقات القنوات
 channelsBox.innerHTML = CHANNELS.map(channel => {
+
 return `
 <button
 type="button"
@@ -586,20 +583,20 @@ class="channel-button"
 data-channel="${safeText(channel.name)}"
 >
 
-  <img
-    class="channel-logo"
-    src="${safeText(channel.logo)}"
-    alt="${safeText(channel.name)}"
-    loading="lazy"
-  >
+<img
+class="channel-logo"
+src="${safeText(channel.logo)}"
+alt="${safeText(channel.name)}"
+loading="lazy"
+>
 
-  <span class="channel-name">
-    ${safeText(channel.name)}
-  </span>
+<span class="channel-name">
+${safeText(channel.name)}
+</span>
 
 </button>
-
 `;
+
 }).join("");
 
 }
@@ -609,6 +606,7 @@ data-channel="${safeText(channel.name)}"
 // =========================
 
 async function loadMatches() {
+
 const home = $("home-matches");
 const list = $("matches-list");
 
@@ -617,15 +615,22 @@ if (
 !window.SUPABASE_URL ||
 !window.SUPABASE_PUBLISHABLE_KEY
 ) {
-const message = "<div class="notice"> تأكد من إعدادات config.js واتصال Supabase. </div>";
+
+const message = `
+<div class="notice">
+تأكد من إعدادات config.js واتصال Supabase.
+</div>
+`;
 
 if (home) home.innerHTML = message;
 if (list) list.innerHTML = message;
 
 return;
+
 }
 
 try {
+
 supabaseClient = window.supabase.createClient(
 window.SUPABASE_URL,
 window.SUPABASE_PUBLISHABLE_KEY
@@ -647,12 +652,18 @@ renderMatches();
 renderChannels();
 
 } catch (error) {
+
 console.error("Kora TV matches:", error);
 
-const message = "<div class="notice"> تعذر تحميل المباريات. تحقق من الإنترنت أو إعدادات Supabase ثم حدّث الصفحة. </div>";
+const message = `
+<div class="notice">
+تعذر تحميل المباريات. تحقق من الإنترنت أو إعدادات Supabase ثم حدّث الصفحة.
+</div>
+`;
 
 if (home) home.innerHTML = message;
 if (list) list.innerHTML = message;
+
 }
 
 }
@@ -662,6 +673,7 @@ if (list) list.innerHTML = message;
 // =========================
 
 async function refreshImportedMatches() {
+
 if (!supabaseClient || refreshBusy) return;
 
 const hasImported = allMatches.some(
@@ -673,6 +685,7 @@ if (!hasImported) return;
 refreshBusy = true;
 
 try {
+
 const { data, error } =
 await supabaseClient.functions.invoke(
 "football-matches",
@@ -695,91 +708,87 @@ match
 );
 
 allMatches = allMatches.map(match => {
+
 if (!match.external_match_id) {
 return match;
 }
 
 const apiMatch = apiMap.get(
-  String(match.external_match_id)
+String(match.external_match_id)
 );
 
 if (!apiMatch) return match;
 
-
 const score = apiMatch.score?.fullTime || {};
 
-let apiHomeScore =
-  score.home ??
-  apiMatch.home_score ??
-  null;
+const apiHomeScore =
+score.home ??
+apiMatch.home_score ??
+null;
 
-let apiAwayScore =
-  score.away ??
-  apiMatch.away_score ??
-  null;
+const apiAwayScore =
+score.away ??
+apiMatch.away_score ??
+null;
 
-
-// تحديد ترتيب النتيجة بمقارنة أسماء الفرق
+// مقارنة أسماء الفرق لتصحيح ترتيب النتيجة
 const databaseHome = normalizeTeamName(
-  match.home_team
+match.home_team
 );
 
 const databaseAway = normalizeTeamName(
-  match.away_team
+match.away_team
 );
 
 const apiHome = normalizeTeamName(
-  apiMatch.homeTeam?.name ||
-  apiMatch.home_team ||
-  ""
+apiMatch.homeTeam?.name ||
+apiMatch.home_team ||
+""
 );
 
 const apiAway = normalizeTeamName(
-  apiMatch.awayTeam?.name ||
-  apiMatch.away_team ||
-  ""
+apiMatch.awayTeam?.name ||
+apiMatch.away_team ||
+""
 );
-
 
 let finalHomeScore = apiHomeScore;
 let finalAwayScore = apiAwayScore;
 
+if (
+databaseHome &&
+databaseAway &&
+apiHome &&
+apiAway
+) {
 
 if (
-  databaseHome &&
-  databaseAway &&
-  apiHome &&
-  apiAway
+databaseHome === apiAway &&
+databaseAway === apiHome
 ) {
-  if (
-    databaseHome === apiAway &&
-    databaseAway === apiHome
-  ) {
-    finalHomeScore = apiAwayScore;
-    finalAwayScore = apiHomeScore;
-  }
+finalHomeScore = apiAwayScore;
+finalAwayScore = apiHomeScore;
 }
 
+}
 
 return {
-  ...match,
+...match,
 
-  match_status:
-    apiMatch.status || match.match_status,
+match_status:
+apiMatch.status || match.match_status,
 
-  home_score:
-    finalHomeScore ??
-    match.home_score,
+home_score:
+finalHomeScore ?? match.home_score,
 
-  away_score:
-    finalAwayScore ??
-    match.away_score,
+away_score:
+finalAwayScore ?? match.away_score,
 
-  minute:
-    apiMatch.minute ??
-    apiMatch.elapsed ??
-    apiMatch.minuteElapsed ??
-    match.minute
+minute:
+apiMatch.minute ??
+apiMatch.elapsed ??
+apiMatch.minuteElapsed ??
+match.minute
 };
 
 });
@@ -787,10 +796,13 @@ return {
 renderMatches();
 
 } catch (error) {
+
 console.warn("Kora TV live update:", error);
 
 } finally {
+
 refreshBusy = false;
+
 }
 
 }
@@ -800,11 +812,13 @@ refreshBusy = false;
 // =========================
 
 async function loadNews() {
+
 const box = $("news-list");
 
 if (!box || !supabaseClient) return;
 
 try {
+
 const { data, error } =
 await supabaseClient.functions.invoke(
 "football-news"
@@ -818,37 +832,45 @@ const articles = Array.isArray(data)
 
 box.innerHTML = articles.length
 ? articles.slice(0, 20).map(item => {
+
 const url = safeHttpUrl(item.url);
 
-    return `
-      <a
-        class="news-card"
-        href="${safeText(url || "#")}"
-        target="_blank"
-        rel="noopener"
-      >
+return `
+<a
+class="news-card"
+href="${safeText(url || "#")}"
+target="_blank"
+rel="noopener"
+>
 
-        <b>
-          ${safeText(item.title || "خبر رياضي")}
-        </b>
+<b>
+${safeText(item.title || "خبر رياضي")}
+</b>
 
-        <span>
-          ${safeText(item.description || "")}
-        </span>
+<span>
+${safeText(item.description || "")}
+</span>
 
-      </a>
-    `;
-  }).join("")
+</a>
+`;
+
+}).join("")
 : `
-  <div class="notice">
-    ماكو أخبار متاحة حالياً.
-  </div>
+<div class="notice">
+ماكو أخبار متاحة حالياً.
+</div>
 `;
 
 } catch (error) {
+
 console.warn("Kora TV news:", error);
 
-box.innerHTML = "<div class="notice"> الأخبار غير متاحة حالياً. </div>";
+box.innerHTML = `
+<div class="notice">
+الأخبار غير متاحة حالياً.
+</div>
+`;
+
 }
 
 }
@@ -858,6 +880,7 @@ box.innerHTML = "<div class="notice"> الأخبار غير متاحة حالي�
 // =========================
 
 function initSettings() {
+
 const root = document.documentElement;
 
 const font = $("font-setting");
@@ -872,6 +895,7 @@ bold.checked =
 localStorage.getItem("kora_bold") === "true";
 
 function apply() {
+
 root.dataset.theme = "dark";
 
 root.style.setProperty(
@@ -898,6 +922,7 @@ localStorage.setItem(
 "kora_bold",
 String(bold.checked)
 );
+
 }
 
 font.addEventListener("change", apply);
@@ -914,6 +939,7 @@ apply();
 document.addEventListener(
 "DOMContentLoaded",
 async () => {
+
 initNavigation();
 
 initSettings();
@@ -926,18 +952,22 @@ await refreshImportedMatches();
 
 // تحديث النتائج كل دقيقتين
 setInterval(() => {
+
 if (!document.hidden) {
 refreshImportedMatches();
 }
+
 }, 120000);
 
 // تحديث عند الرجوع للتطبيق
 document.addEventListener(
 "visibilitychange",
 () => {
+
 if (!document.hidden) {
 refreshImportedMatches();
 }
+
 }
 );
 
@@ -945,8 +975,8 @@ refreshImportedMatches();
 setInterval(() => {
 renderMatches();
 }, 60000);
-}
 
+}
 );
 
 })();
