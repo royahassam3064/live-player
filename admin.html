@@ -3,102 +3,214 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10131b">
-  <title>إدارة المباريات - Kora TV</title>
+  <meta name="theme-color" content="#080808">
+
+  <title>إدارة المباريات - KORA TV VIP</title>
+
   <link rel="stylesheet" href="style.css">
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="config.js"></script>
   <script defer src="admin.js"></script>
 </head>
+
 <body>
+
   <header class="topbar">
-    <div class="brand">⚙️ إدارة Kora TV</div>
-    <a class="admin-link" href="index.html">عرض الموقع</a>
+    <div class="brand">⚙️ إدارة KORA TV VIP</div>
+    <a class="admin-link" href="index.html">عرض التطبيق</a>
   </header>
 
   <main class="container">
+
+    <!-- تسجيل الدخول -->
     <section id="login-panel" class="panel">
+
       <h1>تسجيل دخول الإدارة</h1>
-      <label>البريد الإلكتروني
-        <input id="email" type="email" autocomplete="username">
+
+      <label>
+        البريد الإلكتروني
+        <input
+          id="email"
+          type="email"
+          autocomplete="username"
+          required
+        >
       </label>
-      <label>كلمة المرور
-        <input id="password" type="password" autocomplete="current-password">
+
+      <label>
+        كلمة المرور
+        <input
+          id="password"
+          type="password"
+          autocomplete="current-password"
+          required
+        >
       </label>
-      <button id="login-btn" class="primary">دخول</button>
+
+      <button id="login-btn" class="primary" type="button">
+        دخول
+      </button>
+
       <p id="login-message" class="message"></p>
+
     </section>
 
+    <!-- لوحة الإدارة -->
     <section id="admin-panel" class="panel" hidden>
+
       <div class="panel-heading">
         <h1>لوحة التحكم</h1>
-        <button id="logout-btn" class="secondary">تسجيل الخروج</button>
+
+        <button id="logout-btn" class="secondary" type="button">
+          تسجيل الخروج
+        </button>
       </div>
 
+      <!-- استيراد المباريات -->
       <section class="panel">
+
         <h2>📡 استيراد المباريات تلقائياً</h2>
+
         <p>اجلب المباريات القادمة من Football Data API.</p>
-        <button id="fetch-matches-btn" class="primary">
+
+        <button
+          id="fetch-matches-btn"
+          class="primary"
+          type="button"
+        >
           تحديث المباريات
         </button>
+
         <p id="api-message" class="message"></p>
+
         <div id="api-matches"></div>
+
       </section>
 
       <hr>
 
+      <!-- إضافة وتعديل مباراة -->
       <h2 id="form-title">إضافة مباراة</h2>
 
       <form id="match-form">
+
         <input id="match-id" type="hidden">
 
         <div class="form-grid">
-          <label>الفريق الأول
-            <input id="home-team" required maxlength="80">
+
+          <label>
+            الفريق الأول
+            <input
+              id="home-team"
+              required
+              maxlength="80"
+            >
           </label>
 
-          <label>الفريق الثاني
-            <input id="away-team" required maxlength="80">
+          <label>
+            الفريق الثاني
+            <input
+              id="away-team"
+              required
+              maxlength="80"
+            >
           </label>
 
-          <label>البطولة
-            <input id="competition" maxlength="120">
+          <label>
+            البطولة
+            <input
+              id="competition"
+              maxlength="120"
+            >
           </label>
 
-          <label>موعد المباراة (توقيت بغداد)
-            <input id="match-time" type="datetime-local" required>
+          <label>
+            موعد المباراة (توقيت بغداد)
+            <input
+              id="match-time"
+              type="datetime-local"
+              required
+            >
           </label>
 
-          <label>رابط شعار الفريق الأول
-            <input id="home-logo" type="url">
+          <label>
+            رابط شعار الفريق الأول
+            <input
+              id="home-logo"
+              type="url"
+              placeholder="https://..."
+            >
           </label>
 
-          <label>رابط شعار الفريق الثاني
-            <input id="away-logo" type="url">
+          <label>
+            رابط شعار الفريق الثاني
+            <input
+              id="away-logo"
+              type="url"
+              placeholder="https://..."
+            >
           </label>
 
-          <label class="full">رابط البث
-            <input id="stream-url" type="url" placeholder="https://...">
+          <!-- اختيار القناة -->
+          <label>
+            القناة الناقلة
+
+            <select id="channel">
+              <option value="">بدون قناة</option>
+              <option value="beIN Sports 1">beIN Sports 1</option>
+              <option value="beIN Sports 2">beIN Sports 2</option>
+              <option value="beIN Sports 3">beIN Sports 3</option>
+              <option value="beIN Sports 4">beIN Sports 4</option>
+              <option value="beIN Sports 5">beIN Sports 5</option>
+            </select>
           </label>
+
+          <label class="full">
+            رابط البث
+
+            <input
+              id="stream-url"
+              type="url"
+              placeholder="https://..."
+            >
+          </label>
+
         </div>
 
         <div class="form-actions">
-          <button class="primary" type="submit">حفظ المباراة</button>
-          <button class="secondary" type="button" id="cancel-edit" hidden>
+
+          <button class="primary" type="submit">
+            حفظ المباراة
+          </button>
+
+          <button
+            class="secondary"
+            type="button"
+            id="cancel-edit"
+            hidden
+          >
             إلغاء التعديل
           </button>
+
         </div>
 
         <p id="form-message" class="message"></p>
+
       </form>
 
       <hr>
 
+      <!-- المباريات -->
       <h2>المباريات المضافة</h2>
+
       <div id="admin-matches">
         <p class="notice">جارٍ التحميل...</p>
       </div>
+
     </section>
+
   </main>
+
 </body>
 </html>
