@@ -1,1088 +1,971 @@
 /* =========================
-   KORA TV VIP
-   BLACK & GOLD DESIGN
+KORA TV VIP
+BLACK & GOLD DESIGN
 ========================= */
 
 :root {
-  --bg: #080808;
-  --surface: #111111;
-  --surface-2: #191919;
-  --surface-3: #222222;
+--bg: #080808;
+--surface: #111111;
+--surface-2: #191919;
+--surface-3: #222222;
 
-  --gold: #d6ad45;
-  --gold-light: #f1d27a;
-  --gold-dark: #927126;
+--gold: #d6ad45;
+--gold-light: #f1d27a;
+--gold-dark: #927126;
 
-  --text: #f5f5f5;
-  --muted: #999999;
+--text: #f5f5f5;
+--muted: #999999;
 
-  --border: rgba(214, 173, 69, 0.2);
+--border: rgba(214, 173, 69, 0.2);
 
-  --green: #19a66a;
-  --red: #e34d4d;
+--green: #19a66a;
+--red: #e34d4d;
 
-  --base-font: 16px;
+--base-font: 16px;
 
-  font-size: var(--base-font);
+font-size: var(--base-font);
 }
 
-
-/* =========================
-   RESET
-========================= */
+/* RESET */
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
-}
+  }
 
 html {
-  scroll-behavior: smooth;
+scroll-behavior: smooth;
 }
 
 body {
-  min-height: 100vh;
-  padding-bottom: 100px;
+min-height: 100vh;
+padding-bottom: 100px;
 
-  background: var(--bg);
-  color: var(--text);
+background: var(--bg);
+color: var(--text);
 
-  font-family:
-    "Tajawal",
-    "Cairo",
-    Arial,
-    sans-serif;
+font-family:
+"Noto Sans Arabic",
+"Tajawal",
+"Cairo",
+Tahoma,
+Arial,
+sans-serif;
 
-  font-size: var(--base-font);
-  direction: rtl;
+font-size: var(--base-font);
+direction: rtl;
 }
 
 button,
 input,
 select {
-  font: inherit;
+font: inherit;
 }
 
 button {
-  cursor: pointer;
+cursor: pointer;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+color: inherit;
+text-decoration: none;
 }
 
 img {
-  max-width: 100%;
+max-width: 100%;
 }
 
 .heavy-text {
-  font-weight: 700;
+font-weight: 700;
 }
 
-
-/* =========================
-   TOPBAR
-========================= */
+/* TOPBAR */
 
 .topbar {
-  height: 72px;
+height: 72px;
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+display: flex;
+align-items: center;
+justify-content: space-between;
 
-  padding: 0 5%;
+padding: 0 5%;
 
-  background: #0d0d0d;
+background: #0d0d0d;
+border-bottom: 1px solid var(--border);
 
-  border-bottom: 1px solid var(--border);
-
-  position: sticky;
-  top: 0;
-  z-index: 100;
+position: sticky;
+top: 0;
+z-index: 100;
 }
 
 .brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
+display: inline-flex;
+align-items: center;
+gap: 5px;
 
-  font-size: 25px;
-  font-weight: 900;
-  letter-spacing: 1px;
+font-size: 25px;
+font-weight: 900;
+letter-spacing: 1px;
 
-  color: #ffffff;
+color: #ffffff;
 }
 
 .brand span {
-  background: linear-gradient(
-    120deg,
-    #fff0b3,
-    #d6ad45,
-    #987126
-  );
+background: linear-gradient(
+120deg,
+#fff0b3,
+#d6ad45,
+#987126
+);
 
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+-webkit-background-clip: text;
+background-clip: text;
+color: transparent;
 }
 
 .brand b {
-  color: var(--gold-light);
+color: var(--gold-light);
 }
 
 .admin-link {
-  padding: 10px 16px;
+padding: 10px 16px;
 
-  border: 1px solid var(--border);
-  border-radius: 10px;
+border: 1px solid var(--border);
+border-radius: 10px;
 
-  color: var(--gold-light);
+color: var(--gold-light);
 
-  font-size: 13px;
-  font-weight: 700;
+font-size: 13px;
+font-weight: 700;
 
-  transition: 0.2s;
+transition: 0.2s;
 }
 
 .admin-link:hover {
-  background: var(--gold);
-  color: #111;
+background: var(--gold);
+color: #111;
 }
 
-
-/* =========================
-   MAIN
-========================= */
+/* MAIN */
 
 .main-container {
-  width: min(1100px, 94%);
-  margin: 25px auto;
+width: min(1100px, 94%);
+margin: 25px auto;
 }
 
 .page {
-  display: none;
-  animation: pageAppear 0.25s ease;
+display: none;
+animation: pageAppear 0.25s ease;
 }
 
 .page.active {
-  display: block;
+display: block;
 }
 
 @keyframes pageAppear {
-  from {
-    opacity: 0;
-    transform: translateY(7px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+from {
+opacity: 0;
+transform: translateY(7px);
 }
 
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
 
-/* =========================
-   HERO
-========================= */
+/* HERO */
 
 .hero {
-  min-height: 260px;
+min-height: 260px;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+display: flex;
+align-items: center;
+justify-content: center;
 
-  text-align: center;
+text-align: center;
 
-  padding: 35px 20px;
+padding: 35px 20px;
 
-  background:
-    radial-gradient(
-      circle at 50% 0%,
-      rgba(214, 173, 69, 0.17),
-      transparent 65%
-    ),
-    linear-gradient(
-      145deg,
-      #1a1710,
-      #0d0d0d 65%
-    );
+background:
+radial-gradient(
+circle at 50% 0%,
+rgba(214, 173, 69, 0.17),
+transparent 65%
+),
+linear-gradient(
+145deg,
+#1a1710,
+#0d0d0d 65%
+);
 
-  border: 1px solid var(--border);
-  border-radius: 20px;
+border: 1px solid var(--border);
+border-radius: 20px;
 
-  overflow: hidden;
+overflow: hidden;
 }
 
 .hero-content {
-  width: 100%;
+width: 100%;
 }
 
 .hero-label {
-  color: var(--gold);
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 4px;
+color: var(--gold);
+font-size: 12px;
+font-weight: 800;
+letter-spacing: 4px;
 }
 
 .hero h1 {
-  margin: 15px 0;
+margin: 15px 0;
 
-  font-size: clamp(38px, 8vw, 65px);
-  font-weight: 1000;
-  letter-spacing: 2px;
+font-size: clamp(38px, 8vw, 65px);
+font-weight: 1000;
+letter-spacing: 2px;
 
-  color: #ffffff;
+color: #ffffff;
 }
 
 .hero h1 span {
-  color: var(--gold);
+color: var(--gold);
 }
 
 .hero p {
-  color: var(--muted);
-  font-size: 15px;
-  margin-bottom: 25px;
+color: var(--muted);
+font-size: 15px;
+margin-bottom: 25px;
 }
 
 .primary-button {
-  border: 0;
-  border-radius: 12px;
+border: 0;
+border-radius: 12px;
 
-  padding: 13px 28px;
+padding: 13px 28px;
 
-  background: linear-gradient(
-    120deg,
-    var(--gold-light),
-    var(--gold-dark)
-  );
+background: linear-gradient(
+120deg,
+var(--gold-light),
+var(--gold-dark)
+);
 
-  color: #111111;
+color: #111111;
+font-weight: 900;
 
-  font-weight: 900;
-
-  transition: 0.2s;
+transition: 0.2s;
 }
 
 .primary-button:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
+transform: translateY(-2px);
+filter: brightness(1.1);
 }
 
-
-/* =========================
-   SECTION HEADINGS
-========================= */
+/* SECTION HEADINGS */
 
 .section-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+display: flex;
+align-items: center;
+justify-content: space-between;
 
-  gap: 10px;
-
-  margin: 30px 0 18px;
+gap: 10px;
+margin: 30px 0 18px;
 }
 
 .section-heading h2 {
-  font-size: 21px;
-  font-weight: 900;
-  color: var(--text);
+font-size: 21px;
+font-weight: 900;
+color: var(--text);
 }
 
 .section-heading > span {
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 1.5px;
-  color: var(--gold);
+font-size: 10px;
+font-weight: 800;
+letter-spacing: 1.5px;
+color: var(--gold);
 }
 
-
-/* =========================
-   DAY TABS
-========================= */
+/* DAY TABS */
 
 .day-tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 10px;
 
-  margin-bottom: 20px;
+margin-bottom: 20px;
 }
 
 .day-tab {
-  padding: 12px 8px;
+padding: 12px 8px;
 
-  background: var(--surface);
-  color: var(--muted);
+background: var(--surface);
+color: var(--muted);
 
-  border: 1px solid var(--border);
-  border-radius: 10px;
+border: 1px solid var(--border);
+border-radius: 10px;
 
-  font-weight: 800;
-
-  transition: 0.2s;
+font-weight: 800;
+transition: 0.2s;
 }
 
 .day-tab.active,
 .day-tab.selected {
-  background: var(--gold);
-  color: #111111;
-
-  border-color: var(--gold);
+background: var(--gold);
+color: #111111;
+border-color: var(--gold);
 }
 
-
-/* =========================
-   MATCHES
-========================= */
+/* MATCHES */
 
 .matches-list {
-  display: grid;
-  gap: 14px;
+display: grid;
+gap: 14px;
 }
 
 .match-card {
-  padding: 17px;
+padding: 17px;
 
-  background: linear-gradient(
-    145deg,
-    #171717,
-    #101010
-  );
+background: linear-gradient(
+145deg,
+#171717,
+#101010
+);
 
-  border: 1px solid var(--border);
-  border-radius: 16px;
+border: 1px solid var(--border);
+border-radius: 16px;
 
-  transition: 0.2s;
+transition: 0.2s;
 }
 
 .match-card:hover {
-  border-color: rgba(214, 173, 69, 0.55);
+border-color: rgba(214, 173, 69, 0.55);
 }
 
 .match-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+display: flex;
+align-items: center;
+justify-content: space-between;
 
-  flex-wrap: wrap;
-  gap: 8px;
+flex-wrap: wrap;
+gap: 8px;
 
-  margin-bottom: 20px;
+margin-bottom: 20px;
 
-  color: var(--muted);
-  font-size: 12px;
+color: var(--muted);
+font-size: 12px;
 }
 
 .match-time-label {
-  color: var(--gold-light);
-  font-weight: 700;
+color: var(--gold-light);
+font-weight: 700;
 }
 
 .status-label,
 .live-label,
 .finished-label,
 .break-label {
-  padding: 5px 9px;
-  border-radius: 20px;
+padding: 5px 9px;
+border-radius: 20px;
 
-  font-size: 11px;
-  font-weight: 800;
+font-size: 11px;
+font-weight: 800;
 }
 
 .status-label {
-  color: #cccccc;
-  background: #292929;
+color: #cccccc;
+background: #292929;
 }
 
 .live-label {
-  color: #ffffff;
-  background: #b92323;
+color: #ffffff;
+background: #b92323;
 }
 
 .break-label {
-  color: #111111;
-  background: var(--gold);
+color: #111111;
+background: var(--gold);
 }
 
 .finished-label {
-  color: #cccccc;
-  background: #333333;
+color: #cccccc;
+background: #333333;
 }
 
 .match-minute {
-  color: #ff7777;
-  font-weight: 900;
+color: #ff7777;
+font-weight: 900;
 }
 
-.teams {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+/* TEAMS AND SCORES */
 
-  align-items: center;
-  gap: 10px;
+.teams {
+display: grid;
+grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+
+align-items: center;
+gap: 10px;
+
+direction: ltr;
 }
 
 .team {
-  min-width: 0;
+min-width: 0;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+display: flex;
+flex-direction: column;
+align-items: center;
 
-  gap: 9px;
+gap: 9px;
 
-  text-align: center;
+text-align: center;
+direction: rtl;
 }
 
 .team img {
-  width: 48px;
-  height: 48px;
+width: 48px;
+height: 48px;
 
-  object-fit: contain;
+object-fit: contain;
 }
 
 .team b {
-  max-width: 100%;
+max-width: 100%;
 
-  font-size: 13px;
-  line-height: 1.5;
+font-size: 13px;
+line-height: 1.5;
 
-  overflow-wrap: anywhere;
+overflow-wrap: anywhere;
 }
 
 .team-logo-fallback {
-  width: 48px;
-  height: 48px;
+width: 48px;
+height: 48px;
 
-  display: grid;
-  place-items: center;
+display: grid;
+place-items: center;
 
-  background: var(--surface-3);
-  border-radius: 50%;
+background: var(--surface-3);
+border-radius: 50%;
 
-  font-size: 22px;
+font-size: 22px;
 }
 
 .match-middle {
-  min-width: 55px;
-  text-align: center;
+min-width: 55px;
+text-align: center;
+direction: ltr;
 }
 
 .score {
-  color: var(--gold-light);
-  font-size: 23px;
-  font-weight: 1000;
+color: var(--gold-light);
+font-size: 23px;
+font-weight: 1000;
+direction: ltr;
+unicode-bidi: isolate;
 }
 
 .vs {
-  color: var(--muted);
-  font-size: 15px;
-  font-weight: 900;
+color: var(--muted);
+font-size: 15px;
+font-weight: 900;
 }
 
-
-/* =========================
-   MATCH CHANNEL BUTTON
-========================= */
+/* MATCH CHANNEL BUTTON */
 
 .match-channel {
-  width: 100%;
+width: 100%;
 
-  margin-top: 18px;
-  padding: 10px;
+margin-top: 18px;
+padding: 10px;
 
-  border: 1px solid var(--border);
-  border-radius: 9px;
+border: 1px solid var(--border);
+border-radius: 9px;
 
-  background: rgba(214, 173, 69, 0.07);
+background: rgba(214, 173, 69, 0.07);
+color: var(--gold-light);
 
-  color: var(--gold-light);
+font-size: 13px;
+font-weight: 900;
 
-  font-size: 13px;
-  font-weight: 900;
-
-  text-align: center;
+text-align: center;
 }
 
 .match-channel:hover {
-  background: rgba(214, 173, 69, 0.15);
+background: rgba(214, 173, 69, 0.15);
 }
 
-
-/* =========================
-   WATCH BUTTON
-========================= */
+/* WATCH BUTTON */
 
 .watch-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+display: flex;
+align-items: center;
+justify-content: center;
 
-  width: 100%;
+width: 100%;
 
-  margin-top: 12px;
-  padding: 13px;
+margin-top: 12px;
+padding: 13px;
 
-  background: linear-gradient(
-    120deg,
-    #1c9b63,
-    #117248
-  );
+background: linear-gradient(
+120deg,
+#1c9b63,
+#117248
+);
 
-  color: #ffffff;
+color: #ffffff;
+border-radius: 10px;
 
-  border-radius: 10px;
+font-size: 14px;
+font-weight: 900;
 
-  font-size: 14px;
-  font-weight: 900;
-
-  transition: 0.2s;
+transition: 0.2s;
 }
 
 .watch-btn:hover {
-  filter: brightness(1.15);
-  transform: translateY(-1px);
+filter: brightness(1.15);
+transform: translateY(-1px);
 }
 
-
-/* =========================
-   CHANNELS
-========================= */
+/* CHANNELS */
 
 .channels-list {
-  display: grid;
+display: grid;
 
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(145px, 1fr)
-  );
+grid-template-columns: repeat(
+auto-fit,
+minmax(145px, 1fr)
+);
 
-  gap: 13px;
+gap: 13px;
 }
 
 .channel-button {
-  min-height: 145px;
+min-height: 145px;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
 
-  gap: 13px;
+gap: 13px;
+padding: 15px;
 
-  padding: 15px;
+background: linear-gradient(
+145deg,
+#191919,
+#101010
+);
 
-  background: linear-gradient(
-    145deg,
-    #191919,
-    #101010
-  );
+border: 1px solid var(--border);
+border-radius: 15px;
 
-  border: 1px solid var(--border);
-  border-radius: 15px;
-
-  color: var(--text);
-
-  transition: 0.2s;
+color: var(--text);
+transition: 0.2s;
 }
 
-.channel-button:hover {
-  transform: translateY(-3px);
-  border-color: var(--gold);
+.channel-button:hover,
+.channel-button:focus-visible {
+transform: translateY(-3px);
+border-color: var(--gold);
+outline: none;
 }
 
-.channel-button.selected {
-  border: 2px solid var(--gold);
-
-  background: rgba(214, 173, 69, 0.1);
-
-  box-shadow:
-    0 0 18px rgba(214, 173, 69, 0.09);
+.channel-button:active {
+transform: scale(0.97);
 }
 
 .channel-logo {
-  width: 100%;
-  max-width: 120px;
-  height: 65px;
+width: 100%;
+max-width: 135px;
+height: 75px;
 
-  object-fit: contain;
+object-fit: contain;
 }
 
 .channel-name {
-  font-size: 14px;
-  font-weight: 1000;
+font-size: 15px;
+font-weight: 1000;
 
-  color: var(--gold-light);
-  text-align: center;
+color: var(--gold-light);
+text-align: center;
 }
 
+/* HIDE OLD CHANNEL DETAILS */
 
-/* =========================
-   SELECTED CHANNEL
-========================= */
-
-.channel-details {
-  margin-top: 25px;
+#channel-matches,
+#selected-channel-info {
+display: none !important;
 }
 
-.selected-channel-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  padding: 25px 15px;
-  margin-bottom: 20px;
-
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(214, 173, 69, 0.13),
-      transparent 75%
-    ),
-    var(--surface);
-
-  border: 1px solid var(--border);
-  border-radius: 16px;
-
-  text-align: center;
-}
-
-.selected-channel-logo {
-  width: min(230px, 70%);
-  height: 110px;
-
-  object-fit: contain;
-
-  margin-bottom: 15px;
-}
-
-.selected-channel-card h2 {
-  font-size: 24px;
-  font-weight: 1000;
-  color: var(--gold-light);
-}
-
-.selected-channel-card span {
-  margin-top: 8px;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-
-/* =========================
-   NEWS
-========================= */
+/* NEWS */
 
 .news-list {
-  display: grid;
-  gap: 12px;
+display: grid;
+gap: 12px;
 }
 
 .news-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+display: flex;
+flex-direction: column;
+gap: 10px;
 
-  padding: 17px;
+padding: 17px;
 
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 13px;
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 13px;
 
-  transition: 0.2s;
+transition: 0.2s;
 }
 
 .news-card:hover {
-  border-color: var(--gold);
+border-color: var(--gold);
 }
 
 .news-card b {
-  color: var(--gold-light);
-  font-size: 15px;
+color: var(--gold-light);
+font-size: 15px;
 }
 
 .news-card span {
-  color: var(--muted);
-  font-size: 13px;
-  line-height: 1.8;
+color: var(--muted);
+font-size: 13px;
+line-height: 1.8;
 }
 
-
-/* =========================
-   SETTINGS
-========================= */
+/* SETTINGS */
 
 .settings-card {
-  padding: 10px 17px;
+padding: 10px 17px;
 
-  background: var(--surface);
+background: var(--surface);
 
-  border: 1px solid var(--border);
-  border-radius: 15px;
+border: 1px solid var(--border);
+border-radius: 15px;
 }
 
 .setting-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+display: flex;
+align-items: center;
+justify-content: space-between;
 
-  gap: 15px;
-
-  padding: 17px 0;
+gap: 15px;
+padding: 17px 0;
 }
 
 .setting-row + .setting-row {
-  border-top: 1px solid var(--border);
+border-top: 1px solid var(--border);
 }
 
 .setting-row h3 {
-  font-size: 15px;
-  margin-bottom: 5px;
+font-size: 15px;
+margin-bottom: 5px;
 }
 
 .setting-row p {
-  color: var(--muted);
-  font-size: 12px;
+color: var(--muted);
+font-size: 12px;
 }
 
 .setting-row select {
-  padding: 9px;
+padding: 9px;
 
-  background: var(--surface-3);
-  color: var(--gold-light);
+background: var(--surface-3);
+color: var(--gold-light);
 
-  border: 1px solid var(--border);
-  border-radius: 8px;
+border: 1px solid var(--border);
+border-radius: 8px;
 
-  outline: none;
+outline: none;
 }
 
 .setting-row input {
-  width: 20px;
-  height: 20px;
+width: 20px;
+height: 20px;
 
-  accent-color: var(--gold);
+accent-color: var(--gold);
 }
 
 .about-card {
-  margin-top: 18px;
-  padding: 20px;
+margin-top: 18px;
+padding: 20px;
 
-  text-align: center;
+text-align: center;
 
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 15px;
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 15px;
 }
 
 .about-card h3 {
-  color: var(--gold-light);
-  margin-bottom: 10px;
+color: var(--gold-light);
+margin-bottom: 10px;
 }
 
 .about-card p {
-  color: var(--muted);
-  font-size: 13px;
-  margin-bottom: 12px;
+color: var(--muted);
+font-size: 13px;
+margin-bottom: 12px;
 }
 
 .about-card span {
-  color: var(--gold);
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: 2px;
+color: var(--gold);
+font-size: 10px;
+font-weight: 900;
+letter-spacing: 2px;
 }
 
-
-/* =========================
-   NOTICE
-========================= */
+/* NOTICE */
 
 .notice {
-  padding: 25px 15px;
+padding: 25px 15px;
 
-  text-align: center;
+text-align: center;
 
-  background: var(--surface);
+background: var(--surface);
 
-  border: 1px dashed var(--border);
-  border-radius: 13px;
+border: 1px dashed var(--border);
+border-radius: 13px;
 
-  color: var(--muted);
+color: var(--muted);
 
-  font-size: 14px;
-  line-height: 1.8;
+font-size: 14px;
+line-height: 1.8;
 }
 
-
-/* =========================
-   BOTTOM NAVIGATION
-========================= */
+/* BOTTOM NAVIGATION */
 
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  right: 0;
-  left: 0;
+position: fixed;
+bottom: 0;
+right: 0;
+left: 0;
 
-  z-index: 200;
+z-index: 200;
 
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+display: grid;
+grid-template-columns: repeat(5, 1fr);
 
-  align-items: center;
+align-items: center;
 
-  min-height: 75px;
+min-height: 75px;
 
-  padding: 8px 5px calc(8px + env(safe-area-inset-bottom));
+padding: 8px 5px calc(8px + env(safe-area-inset-bottom));
 
-  background: rgba(12, 12, 12, 0.97);
+background: rgba(12, 12, 12, 0.97);
+border-top: 1px solid var(--border);
 
-  border-top: 1px solid var(--border);
-
-  backdrop-filter: blur(15px);
+backdrop-filter: blur(15px);
 }
 
 .nav-item {
-  min-width: 0;
+min-width: 0;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
 
-  gap: 5px;
+gap: 5px;
+padding: 5px 2px;
 
-  padding: 5px 2px;
+background: transparent;
+border: 0;
 
-  background: transparent;
-  border: 0;
+color: #777777;
 
-  color: #777777;
+font-size: 10px;
+font-weight: 800;
 
-  font-size: 10px;
-  font-weight: 800;
-
-  transition: 0.2s;
+transition: 0.2s;
 }
 
 .nav-icon {
-  width: 23px;
-  height: 23px;
+width: 23px;
+height: 23px;
 
-  display: grid;
-  place-items: center;
+display: grid;
+place-items: center;
 }
 
 .nav-icon svg {
-  width: 23px;
-  height: 23px;
+width: 23px;
+height: 23px;
 
-  display: block;
-
-  stroke: currentColor;
+display: block;
+stroke: currentColor;
 }
 
 .nav-item.active {
-  color: var(--gold-light);
+color: var(--gold-light);
 }
 
 .nav-item.active .nav-icon {
-  filter: drop-shadow(
-    0 0 5px rgba(214, 173, 69, 0.3)
-  );
+filter: drop-shadow(
+0 0 5px rgba(214, 173, 69, 0.3)
+);
 }
 
-/* زر المباريات بالوسط */
 .nav-item[data-page="matches"] {
-  color: var(--gold);
+color: var(--gold);
 }
 
 .nav-item[data-page="matches"].active {
-  color: var(--gold-light);
+color: var(--gold-light);
 }
 
-
-/* =========================
-   WATCH PAGE
-========================= */
+/* WATCH PAGE */
 
 .player-container {
-  width: min(1000px, 95%);
-  margin: 25px auto;
+width: min(1000px, 95%);
+margin: 25px auto;
 }
 
 .video-container {
-  position: relative;
+position: relative;
 
-  width: 100%;
-  aspect-ratio: 16 / 9;
+width: 100%;
+aspect-ratio: 16 / 9;
 
-  background: #000000;
+background: #000000;
 
-  border: 1px solid var(--border);
-  border-radius: 14px;
+border: 1px solid var(--border);
+border-radius: 14px;
 
-  overflow: hidden;
+overflow: hidden;
 }
 
 .video-container video,
 .video-container iframe {
-  width: 100%;
-  height: 100%;
+width: 100%;
+height: 100%;
 
-  display: block;
+display: block;
+border: 0;
 
-  border: 0;
-
-  background: #000000;
+background: #000000;
 }
 
 .video-container:fullscreen {
-  width: 100%;
-  height: 100%;
+width: 100%;
+height: 100%;
 
-  aspect-ratio: auto;
+aspect-ratio: auto;
 
-  border: 0;
-  border-radius: 0;
+border: 0;
+border-radius: 0;
 }
 
 .video-container:fullscreen video,
 .video-container:fullscreen iframe {
-  width: 100%;
-  height: 100%;
+width: 100%;
+height: 100%;
 }
 
-
-/* =========================
-   RESPONSIVE
-========================= */
+/* RESPONSIVE */
 
 @media (max-width: 600px) {
-
-  .topbar {
-    height: 64px;
-    padding: 0 4%;
-  }
-
-  .brand {
-    font-size: 22px;
-  }
-
-  .admin-link {
-    padding: 8px 11px;
-    font-size: 11px;
-  }
-
-  .main-container {
-    width: 94%;
-    margin-top: 16px;
-  }
-
-  .hero {
-    min-height: 230px;
-    border-radius: 16px;
-  }
-
-  .hero p {
-    font-size: 13px;
-  }
-
-  .section-heading h2 {
-    font-size: 18px;
-  }
-
-  .match-card {
-    padding: 13px;
-  }
-
-  .team img,
-  .team-logo-fallback {
-    width: 42px;
-    height: 42px;
-  }
-
-  .team b {
-    font-size: 12px;
-  }
-
-  .score {
-    font-size: 20px;
-  }
-
-  .channels-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .channel-button {
-    min-height: 125px;
-    padding: 12px 7px;
-  }
-
-  .channel-logo {
-    height: 55px;
-    max-width: 105px;
-  }
-
-  .channel-name {
-    font-size: 12px;
-  }
-
-  .selected-channel-logo {
-    height: 90px;
-  }
-
-  .selected-channel-card h2 {
-    font-size: 21px;
-  }
-
-  .bottom-nav {
-    min-height: 70px;
-  }
-
-  .nav-item {
-    font-size: 9px;
-  }
-
-  .nav-icon,
-  .nav-icon svg {
-    width: 21px;
-    height: 21px;
-  }
-
+.topbar {
+height: 64px;
+padding: 0 4%;
 }
 
+.brand {
+font-size: 22px;
+}
 
-/* =========================
-   SMALL SCREENS
-========================= */
+.admin-link {
+padding: 8px 11px;
+font-size: 11px;
+}
+
+.main-container {
+width: 94%;
+margin-top: 16px;
+}
+
+.hero {
+min-height: 230px;
+border-radius: 16px;
+}
+
+.hero p {
+font-size: 13px;
+}
+
+.section-heading h2 {
+font-size: 18px;
+}
+
+.match-card {
+padding: 13px;
+}
+
+.team img,
+.team-logo-fallback {
+width: 42px;
+height: 42px;
+}
+
+.team b {
+font-size: 12px;
+}
+
+.score {
+font-size: 20px;
+}
+
+.channels-list {
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap: 10px;
+}
+
+.channel-button {
+min-height: 135px;
+padding: 12px 7px;
+}
+
+.channel-logo {
+height: 65px;
+max-width: 115px;
+}
+
+.channel-name {
+font-size: 13px;
+}
+
+.bottom-nav {
+min-height: 70px;
+}
+
+.nav-item {
+font-size: 9px;
+}
+
+.nav-icon,
+.nav-icon svg {
+width: 21px;
+height: 21px;
+}
+}
+
+/* SMALL SCREENS */
 
 @media (max-width: 360px) {
+.nav-item {
+font-size: 8px;
+}
 
-  .nav-item {
-    font-size: 8px;
-  }
+.nav-icon,
+.nav-icon svg {
+width: 19px;
+height: 19px;
+}
 
-  .nav-icon,
-  .nav-icon svg {
-    width: 19px;
-    height: 19px;
-  }
+.match-meta {
+font-size: 10px;
+}
 
-  .match-meta {
-    font-size: 10px;
-  }
-
-  .team b {
-    font-size: 11px;
-  }
-
+.team b {
+font-size: 11px;
+}
 }
