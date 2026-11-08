@@ -5,38 +5,34 @@
 
   let allMatches = [];
   let selectedDay = 0;
+  let selectedChannel = "beIN Sports 1";
   let supabaseClient = null;
   let refreshBusy = false;
 
   const TIME_ZONE = "Asia/Baghdad";
 
+  const CHANNELS = [
+    "beIN Sports 1",
+    "beIN Sports 2",
+    "beIN Sports 3",
+    "beIN Sports 4",
+    "beIN Sports 5"
+  ];
+
   const FINISHED_STATUSES = [
-    "FINISHED",
-    "FT",
-    "AET",
-    "PEN",
-    "AFTER_EXTRA_TIME",
-    "FULL_TIME",
-    "ENDED",
-    "COMPLETE",
-    "COMPLETED"
+    "FINISHED", "FT", "AET", "PEN",
+    "AFTER_EXTRA_TIME", "FULL_TIME",
+    "ENDED", "COMPLETE", "COMPLETED"
   ];
 
   const LIVE_STATUSES = [
-    "IN_PLAY",
-    "LIVE",
-    "1H",
-    "2H",
-    "EXTRA_TIME",
-    "PENALTY_SHOOTOUT"
+    "IN_PLAY", "LIVE", "1H", "2H",
+    "EXTRA_TIME", "PENALTY_SHOOTOUT"
   ];
 
   const BREAK_STATUSES = [
-    "PAUSED",
-    "BREAK",
-    "HALF_TIME",
-    "HALFTIME",
-    "HT"
+    "PAUSED", "BREAK", "HALF_TIME",
+    "HALFTIME", "HT"
   ];
 
   function safeText(value) {
@@ -49,6 +45,17 @@
     }[ch]));
   }
 
+  function safeHttpUrl(value) {
+    try {
+      const url = new URL(value);
+      return ["https:", "http:"].includes(url.protocol)
+        ? url.href
+        : "";
+    } catch {
+      return "";
+    }
+  }
+
   function baghdadDate(offset = 0) {
     const parts = new Intl.DateTimeFormat("en-CA", {
       timeZone: TIME_ZONE,
@@ -59,11 +66,9 @@
 
     const [year, month, day] = parts.split("-").map(Number);
 
-    const shifted = new Date(
+    return new Date(
       Date.UTC(year, month - 1, day + offset, 12)
-    );
-
-    return shifted.toISOString().slice(0, 10);
+    ).toISOString().slice(0, 10);
   }
 
   function formatMatchTime(value) {
@@ -83,71 +88,18 @@
     }).format(date);
   }
 
-  function showPage(name) {
-    document.querySelectorAll(".page").forEach(page => {
-      page.classList.toggle(
-        "active",
-        page.id === `page-${name}`
-      );
-    });
-
-    document.querySelectorAll(".bottom-nav [data-page]").forEach(button => {
-      button.classList.toggle(
-        "active",
-        button.dataset.page === name
-      );
-    });
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-    if (name === "news") {
-      loadNews();
-    }
-  }
-
-  function initNavigation() {
-    document.addEventListener("click", event => {
-      const button = event.target.closest("[data-page]");
-
-      if (!button) return;
-
-      const page = button.dataset.page;
-
-      if (!page) return;
-
-      event.preventDefault();
-      showPage(page);
-    });
-
-    document.querySelectorAll(".day-tabs [data-day]").forEach(button => {
-      button.addEventListener("click", () => {
-        selectedDay = Number(button.dataset.day);
-
-        document.querySelectorAll(".day-tabs [data-day]").forEach(tab => {
-          tab.classList.toggle("selected", tab === button);
-        });
-
-        renderMatches();
-      });
-    });
+  function getRawStatus(match) {
+    return String(
+      match.match_status || match.status || ""
+    ).toUpperCase();
   }
 
   function isFinished(match) {
-    const status = String(
-      match.match_status || ""
-    ).toUpperCase();
-
-    return FINISHED_STATUSES.includes(status);
+    return FINISHED_STATUSES.includes(getRawStatus(match));
   }
 
   function getStatus(match) {
-    const status = String(
-      match.match_status || ""
-    ).toUpperCase();
-
+    const status = getRawStatus(match);
     const start = new Date(match.match_time).getTime();
     const now = Date.now();
 
@@ -164,7 +116,7 @@
       return {
         label: "استراحة",
         css: "break-label",
-        live: false,
+        live: true,
         paused: true
       };
     }
@@ -205,7 +157,8 @@
       return {
         label: "حُسمت إدارياً",
         css: "finished-label",
-        live: false
+        live: false,
+        finished: true
       };
     }
 
@@ -294,13 +247,15 @@
   }
 
   function logoHtml(url, name) {
-    if (!url) {
+    const safeUrl = safeHttpUrl(url);
+
+    if (!safeUrl) {
       return `<span class="team-logo-fallback">⚽</span>`;
     }
 
     return `
       <img
-        src="${safeText(url)}"
+        src="${safeText(safeUrl)}"
         alt="${safeText(name)}"
         loading="lazy"
         onerror="
@@ -313,6 +268,117 @@
         style="display:none"
       >⚽</span>
     `;
+  }
+
+  // إنشاء صفحة القنوات تلقائياً إذا لم تكن موجودة في HTML
+  function ensureChannelsPage() {
+    let page = $("page-channels");
+
+    if (!page) {
+      page = document.createElement("section");
+      page.id = "page-channels";
+      page.className = "page";
+
+      page.innerHTML = `
+        <div class="section-heading">
+          <h2>القنوات الناقلة</h2>
+          <p>اختر القناة لمشاهدة المباريات التابعة لها.</p>
+        </div>
+
+        <div id="channel-buttons" class="channel-buttons"></div>
+
+        <div id="channels-list" class="matches-list"></div>
+      `;
+
+      const newsPage = $("page-news");
+
+      if (newsPage && newsPage.parentNode) {
+        newsPage.parentNode.insertBefore(page, newsPage);
+      } else {
+        const container = document.querySelector("main") ||
+          document.querySelector(".container") ||
+          document.body;
+
+        container.appendChild(page);
+      }
+    }
+
+    const nav = document.querySelector(".bottom-nav");
+
+    if (nav && !nav.querySelector('[data-page="channels"]')) {
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.dataset.page = "channels";
+      button.className = "nav-item";
+      button.innerHTML = `
+        <span>📺</span>
+        <span>القنوات</span>
+      `;
+
+      nav.appendChild(button);
+      nav.classList.add("has-channels");
+    }
+  }
+
+  function showPage(name) {
+    document.querySelectorAll(".page").forEach(page => {
+      page.classList.toggle(
+        "active",
+        page.id === `page-${name}`
+      );
+    });
+
+    document.querySelectorAll(".bottom-nav [data-page]").forEach(button => {
+      button.classList.toggle(
+        "active",
+        button.dataset.page === name
+      );
+    });
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+    if (name === "news") {
+      loadNews();
+    }
+
+    if (name === "channels") {
+      renderChannels();
+    }
+  }
+
+  function initNavigation() {
+    document.addEventListener("click", event => {
+      const button = event.target.closest("[data-page]");
+
+      if (!button) return;
+
+      const page = button.dataset.page;
+
+      if (!page) return;
+
+      event.preventDefault();
+      showPage(page);
+    });
+
+    document.querySelectorAll(".day-tabs [data-day]").forEach(button => {
+      button.addEventListener("click", () => {
+        selectedDay = Number(button.dataset.day);
+
+        document.querySelectorAll(".day-tabs [data-day]").forEach(tab => {
+          tab.classList.toggle("selected", tab === button);
+        });
+
+        renderMatches();
+      });
+    });
+  }
+
+  function isMatchLive(match) {
+    return getStatus(match).live;
   }
 
   function matchCard(match) {
@@ -333,7 +399,7 @@
 
     const scoreHtml = hasScore
       ? `
-        <strong class="score">
+        <strong class="score" dir="ltr">
           ${safeText(match.home_score)}
           -
           ${safeText(match.away_score)}
@@ -347,18 +413,15 @@
       match.competition || "مباراة"
     );
 
-    const start = new Date(match.match_time).getTime();
-    const now = Date.now();
+    const channel = String(match.channel || "").trim();
 
-    const finished = isFinished(match);
+    const hasChannel = CHANNELS.includes(channel);
 
+    // زر المشاهدة يظهر فقط أثناء المباراة أو الاستراحة
     const showStream =
-      Boolean(match.stream_url) &&
-      !finished &&
-      !statusInfo.finished &&
-      !Number.isNaN(start) &&
-      now >= start - 3600000 &&
-      now <= start + 4 * 3600000;
+      Boolean(safeHttpUrl(match.stream_url)) &&
+      statusInfo.live &&
+      !statusInfo.finished;
 
     return `
       <article class="match-card">
@@ -383,35 +446,33 @@
 
         </div>
 
-
         <div class="teams">
 
           <div class="team">
-
             ${logoHtml(match.home_logo, homeName)}
-
             <b>${home}</b>
-
           </div>
-
 
           <div class="match-middle">
-
             ${scoreHtml}
-
           </div>
 
-
           <div class="team">
-
             ${logoHtml(match.away_logo, awayName)}
-
             <b>${away}</b>
-
           </div>
 
         </div>
 
+        ${
+          hasChannel
+            ? `
+              <div class="match-channel">
+                📺 ${safeText(channel)}
+              </div>
+            `
+            : ""
+        }
 
         ${
           showStream
@@ -420,53 +481,14 @@
                 class="watch-btn"
                 href="watch.html?id=${encodeURIComponent(match.id)}"
               >
-                مشاهدة البث المباشر
+                مشاهدة البث
               </a>
             `
-            : (
-                match.stream_url && !finished
-                  ? `
-                    <div class="stream-notice">
-                      سيظهر زر البث قبل المباراة بساعة
-                    </div>
-                  `
-                  : ""
-              )
+            : ""
         }
 
       </article>
     `;
-  }
-
-  function isMatchLive(match) {
-    const status = String(
-      match.match_status || ""
-    ).toUpperCase();
-
-    if (isFinished(match)) return false;
-
-    if (
-      LIVE_STATUSES.includes(status) ||
-      BREAK_STATUSES.includes(status)
-    ) {
-      return true;
-    }
-
-    if (
-      !status ||
-      status === "TIMED" ||
-      status === "SCHEDULED"
-    ) {
-      const start = new Date(match.match_time).getTime();
-
-      return (
-        !Number.isNaN(start) &&
-        Date.now() >= start &&
-        Date.now() <= start + 150 * 60000
-      );
-    }
-
-    return false;
   }
 
   function isSameBaghdadDay(match, targetDate) {
@@ -539,6 +561,54 @@
           </div>
         `;
     }
+
+    if ($("page-channels")?.classList.contains("active")) {
+      renderChannels();
+    }
+  }
+
+  // رسم القنوات
+  function renderChannels() {
+    const buttonsBox = $("channel-buttons");
+    const listBox = $("channels-list");
+
+    if (!buttonsBox || !listBox) return;
+
+    buttonsBox.innerHTML = CHANNELS.map(channel => `
+      <button
+        type="button"
+        class="channel-button ${
+          selectedChannel === channel ? "selected" : ""
+        }"
+        data-channel="${safeText(channel)}"
+      >
+        ${safeText(channel)}
+      </button>
+    `).join("");
+
+    buttonsBox.querySelectorAll("[data-channel]").forEach(button => {
+      button.addEventListener("click", () => {
+        selectedChannel = button.dataset.channel;
+        renderChannels();
+      });
+    });
+
+    const channelMatches = allMatches
+      .filter(match =>
+        String(match.channel || "").trim() === selectedChannel
+      )
+      .sort((a, b) =>
+        new Date(a.match_time || 0) -
+        new Date(b.match_time || 0)
+      );
+
+    listBox.innerHTML = channelMatches.length
+      ? channelMatches.map(matchCard).join("")
+      : `
+        <div class="notice">
+          ماكو مباريات مضافة على ${safeText(selectedChannel)} حالياً.
+        </div>
+      `;
   }
 
   async function loadMatches() {
@@ -696,22 +766,26 @@
         : (data?.articles || data?.news || []);
 
       box.innerHTML = articles.length
-        ? articles.slice(0, 20).map(item => `
-            <a
-              class="news-card"
-              href="${safeText(item.url || "#")}"
-              target="_blank"
-              rel="noopener"
-            >
-              <b>
-                ${safeText(item.title || "خبر رياضي")}
-              </b>
+        ? articles.slice(0, 20).map(item => {
+            const url = safeHttpUrl(item.url);
 
-              <span>
-                ${safeText(item.description || "")}
-              </span>
-            </a>
-          `).join("")
+            return `
+              <a
+                class="news-card"
+                href="${safeText(url || "#")}"
+                target="_blank"
+                rel="noopener"
+              >
+                <b>
+                  ${safeText(item.title || "خبر رياضي")}
+                </b>
+
+                <span>
+                  ${safeText(item.description || "")}
+                </span>
+              </a>
+            `;
+          }).join("")
         : `
           <div class="notice">
             ماكو أخبار متاحة حالياً.
@@ -781,6 +855,7 @@
   document.addEventListener(
     "DOMContentLoaded",
     async () => {
+      ensureChannelsPage();
 
       initNavigation();
       initSettings();
@@ -789,14 +864,12 @@
       await loadNews();
       await refreshImportedMatches();
 
-      // تحديث بيانات المباريات كل دقيقتين.
       setInterval(() => {
         if (!document.hidden) {
           refreshImportedMatches();
         }
       }, 120000);
 
-      // تحديث عند الرجوع إلى الموقع.
       document.addEventListener(
         "visibilitychange",
         () => {
@@ -806,9 +879,7 @@
         }
       );
 
-      // تحديث الدقيقة المعروضة كل دقيقة.
       setInterval(renderMatches, 60000);
-
     }
   );
 
