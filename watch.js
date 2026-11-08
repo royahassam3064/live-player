@@ -4,7 +4,10 @@
   const title = document.getElementById("watch-title");
   const frame = document.getElementById("video-frame");
 
-  let client = null;
+  const params = new URLSearchParams(window.location.search);
+
+  const matchId = params.get("id");
+  const channelName = params.get("channel");
 
   const FINISHED_STATUSES = [
     "FINISHED",
@@ -40,6 +43,7 @@
     frame.innerHTML = "";
 
     const notice = document.createElement("div");
+
     notice.className = "watch-loading";
     notice.textContent = message;
 
@@ -69,17 +73,107 @@
     return FINISHED_STATUSES.includes(status);
   }
 
-  async function loadMatch() {
-    const id = new URLSearchParams(
-      window.location.search
-    ).get("id");
+  function playStream(rawUrl, streamTitle) {
+    const url = safeUrl(rawUrl);
 
-    if (!id) {
-      title.textContent = "رابط المباراة غير صحيح";
-      showNotice("لم يتم تحديد مباراة.");
+    if (!url) {
+      showNotice("رابط بث القناة غير متوفر أو غير صالح.");
       return;
     }
 
+    title.textContent = streamTitle;
+
+    const iframe = document.createElement("iframe");
+
+    iframe.src = url;
+    iframe.title = streamTitle;
+    iframe.loading = "eager";
+
+    iframe.allow =
+      "autoplay; fullscreen; picture-in-picture";
+
+    iframe.allowFullscreen = true;
+
+    iframe.setAttribute("allowfullscreen", "");
+
+    iframe.referrerPolicy =
+      "strict-origin-when-cross-origin";
+
+    frame.innerHTML = "";
+    frame.appendChild(iframe);
+  }
+
+  async function loadChannel(name) {
+    title.textContent = name;
+
+    const { data, error } = await client
+      .from("tv_channels")
+      .select("channel_name, stream_url")
+      .eq("channel_name", name)
+      .single();
+
+    if (error || !data) {
+      throw error || new Error("Channel not found");
+    }
+
+    playStream(
+      data.stream_url,
+      data.channel_name
+    );
+  }
+
+  async function loadMatch(id) {
+    const { data, error } = await client
+      .from("matches")
+      .select(`
+        home_team,
+        away_team,
+        channel,
+        stream_url,
+        match_status,
+        status
+      `)
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      throw error || new Error("Match not found");
+    }
+
+    const matchTitle =
+      `${data.home_team || "الفريق الأول"} × ${data.away_team || "الفريق الثاني"}`;
+
+    title.textContent = matchTitle;
+
+    if (isFinished(data)) {
+      showNotice("انتهت المباراة.");
+      return;
+    }
+
+    // إذا المباراة مرتبطة بقناة، نشغّل بث القناة
+    if (data.channel) {
+      const { data: channelData, error: channelError } =
+        await client
+          .from("tv_channels")
+          .select("channel_name, stream_url")
+          .eq("channel_name", data.channel)
+          .single();
+
+      if (!channelError && channelData?.stream_url) {
+        playStream(
+          channelData.stream_url,
+          data.channel
+        );
+
+        return;
+      }
+    }
+
+    // رابط المباراة القديم كخيار احتياطي
+    playStream(data.stream_url, matchTitle);
+  }
+
+  async function init() {
     if (
       !window.supabase ||
       !window.SUPABASE_URL ||
@@ -90,70 +184,37 @@
       return;
     }
 
+    if (!matchId && !channelName) {
+      title.textContent = "المشغّل";
+      showNotice("لم يتم تحديد قناة أو مباراة.");
+      return;
+    }
+
     try {
       client = window.supabase.createClient(
         window.SUPABASE_URL,
         window.SUPABASE_PUBLISHABLE_KEY
       );
 
-      const { data, error } = await client
-        .from("matches")
-        .select(`
-          home_team,
-          away_team,
-          stream_url,
-          match_status,
-          status
-        `)
-        .eq("id", id)
-        .single();
-
-      if (error || !data) {
-        throw error || new Error("Match not found");
+      if (channelName) {
+        await loadChannel(channelName);
+      } else {
+        await loadMatch(matchId);
       }
-
-      title.textContent =
-        `${data.home_team || "الفريق الأول"} × ${data.away_team || "الفريق الثاني"}`;
-
-      if (isFinished(data)) {
-        showNotice("انتهت المباراة.");
-        return;
-      }
-
-      const url = safeUrl(data.stream_url || "");
-
-      if (!url) {
-        showNotice("رابط البث غير متوفر أو غير صالح.");
-        return;
-      }
-
-      const iframe = document.createElement("iframe");
-
-      iframe.src = url;
-      iframe.title = "مشاهدة المباراة";
-      iframe.loading = "eager";
-      iframe.allow =
-        "autoplay; fullscreen; picture-in-picture";
-      iframe.allowFullscreen = true;
-
-      iframe.setAttribute("allowfullscreen", "");
-      iframe.referrerPolicy =
-        "strict-origin-when-cross-origin";
-
-      frame.innerHTML = "";
-      frame.appendChild(iframe);
 
     } catch (error) {
-      console.error("Kora TV player error:", error);
+      console.error("KORA TV player:", error);
 
-      title.textContent = "تعذر تحميل المباراة";
+      title.textContent = "تعذر تشغيل البث";
 
       showNotice(
-        "حدث خطأ أثناء تحميل المباراة. تحقق من الإنترنت أو إعدادات Supabase."
+        "تعذر تحميل القناة. تحقق من رابط البث واتصال الإنترنت."
       );
     }
   }
 
-  loadMatch();
+  let client = null;
+
+  init();
 
 })();
