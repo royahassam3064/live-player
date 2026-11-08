@@ -1,286 +1,397 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#080808">
 
   <title>KORA TV VIP</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="style.css">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
   <script src="config.js"></script>
-  <script defer src="app.js"></script>
+  <script src="app.js" defer></script>
 </head>
 
 <body>
 
-<header class="topbar">
+  <!-- الشريط العلوي -->
+  <header class="topbar">
 
-  <a class="brand" href="#" data-page="home">
-    <img
-      src="kora-tv-logo.png"
-      alt="KORA TV"
-      class="brand-logo"
-    >
+    <a class="brand" href="#" data-page="home">
+      <span>KORA <b>TV</b></span>
+    </a>
 
-    <span>KORA <b>TV VIP</b></span>
-  </a>
+    <a class="admin-link" href="admin.html">
+      لوحة الإدارة
+    </a>
 
-  <a class="admin-link" href="admin.html">
-    لوحة الإدارة
-  </a>
-
-</header>
+  </header>
 
 
-<main class="container">
-
-  <!-- الصفحة الرئيسية -->
-  <section id="page-home" class="page active">
-
-    <div class="hero">
-
-      <div class="eyebrow">KORA TV VIP</div>
-
-      <h1>
-        كل المباريات
-        <br>
-        <span>بمكان واحد</span>
-      </h1>
-
-      <p>
-        تابع مبارياتك المفضلة وشاهد البث المباشر بسهولة.
-      </p>
-
-      <button
-        class="primary-btn"
-        type="button"
-        data-page="matches"
-      >
-        مشاهدة المباريات
-      </button>
-
-    </div>
+  <!-- محتوى التطبيق -->
+  <main class="main-container">
 
 
-    <div class="section-head">
+    <!-- الرئيسية -->
+    <section id="page-home" class="page active">
 
-      <h2>مباريات اليوم</h2>
+      <div class="hero">
 
-      <button
-        class="text-btn"
-        type="button"
-        data-page="matches"
-      >
-        عرض الكل
-      </button>
+        <div class="hero-content">
 
-    </div>
+          <span class="hero-label">WELCOME TO</span>
 
-    <div id="home-matches" class="match-list">
+          <h1>
+            KORA <span>TV</span>
+          </h1>
 
-      <div class="notice">
-        جار تحميل المباريات...
+          <p>
+            عالم المباريات والقنوات الرياضية بين يديك
+          </p>
+
+          <button
+            class="primary-button"
+            data-page="matches"
+            type="button">
+            استعرض المباريات
+          </button>
+
+        </div>
+
       </div>
 
-    </div>
 
-  </section>
-
-
-
-  <!-- صفحة المباريات -->
-  <section id="page-matches" class="page">
-
-    <div class="page-heading">
-
-      <div>
-        <span class="eyebrow">FIXTURES</span>
-        <h1>المباريات</h1>
+      <div class="section-heading">
+        <h2>مباريات اليوم</h2>
+        <span>LIVE & MATCHES</span>
       </div>
 
-    </div>
+      <div id="home-matches" class="matches-list"></div>
+
+    </section>
 
 
-    <div class="day-tabs">
 
-      <button type="button" data-day="-1">
-        أمس
-      </button>
+    <!-- القنوات -->
+    <section id="page-channels" class="page">
 
-      <button
-        type="button"
-        data-day="0"
-        class="selected"
-      >
-        اليوم
-      </button>
-
-      <button type="button" data-day="1">
-        باچر
-      </button>
-
-    </div>
-
-
-    <div id="matches-list" class="match-list">
-
-      <div class="notice">
-        جار تحميل المباريات...
+      <div class="section-heading">
+        <h2>القنوات الرياضية</h2>
+        <span>SPORTS CHANNELS</span>
       </div>
 
-    </div>
+      <div id="channels-list" class="channels-list"></div>
 
-  </section>
+      <div id="channel-details" class="channel-details">
 
+        <div id="selected-channel-info"></div>
 
+        <div id="channel-matches" class="matches-list"></div>
 
-  <!-- صفحة الأخبار -->
-  <section id="page-news" class="page">
-
-    <span class="eyebrow">LATEST NEWS</span>
-
-    <h1>آخر الأخبار</h1>
-
-    <div id="news-list" class="news-list">
-
-      <div class="notice">
-        جار تحميل الأخبار...
       </div>
 
-    </div>
-
-  </section>
+    </section>
 
 
 
-  <!-- صفحة الإعدادات -->
-  <section id="page-settings" class="page">
+    <!-- المباريات -->
+    <section id="page-matches" class="page">
 
-    <span class="eyebrow">PREFERENCES</span>
-
-    <h1>الإعدادات</h1>
-
-
-    <div class="panel settings-panel">
-
-      <label class="setting-row">
-
-        <span>حجم الخط</span>
-
-        <select id="font-setting">
-
-          <option value="15">صغير</option>
-
-          <option value="16" selected>
-            متوسط
-          </option>
-
-          <option value="18">
-            كبير
-          </option>
-
-        </select>
-
-      </label>
+      <div class="section-heading">
+        <h2>المباريات</h2>
+        <span>MATCH CENTER</span>
+      </div>
 
 
-      <label class="setting-row">
+      <div class="day-tabs">
 
-        <span>خط عريض</span>
+        <button class="day-tab" data-day="-1" type="button">
+          الأمس
+        </button>
 
-        <input
-          id="bold-setting"
-          type="checkbox"
-        >
+        <button class="day-tab active" data-day="0" type="button">
+          اليوم
+        </button>
 
-      </label>
+        <button class="day-tab" data-day="1" type="button">
+          غداً
+        </button>
 
-    </div>
+      </div>
 
 
-    <div class="panel about">
+      <div id="matches-list" class="matches-list"></div>
 
-      <h3>KORA TV VIP</h3>
-
-      <p>
-        تطبيق لمتابعة المباريات والأخبار الرياضية
-        ومشاهدة البث المباشر.
-      </p>
-
-      <p>
-        جميع الحقوق محفوظة لـ KORA TV.
-      </p>
-
-    </div>
-
-  </section>
-
-</main>
+    </section>
 
 
 
-<!-- شريط التنقل السفلي -->
-<nav class="bottom-nav" aria-label="التنقل الرئيسي">
+    <!-- الأخبار -->
+    <section id="page-news" class="page">
 
-  <button
-    type="button"
-    data-page="home"
-    class="active"
-  >
+      <div class="section-heading">
+        <h2>الأخبار الرياضية</h2>
+        <span>SPORT NEWS</span>
+      </div>
 
-    <span class="nav-icon">⌂</span>
+      <div id="news-list" class="news-list"></div>
 
-    <small>الرئيسية</small>
-
-  </button>
+    </section>
 
 
-  <button
-    type="button"
-    data-page="matches"
-  >
 
-    <span class="nav-icon">▦</span>
+    <!-- الإعدادات -->
+    <section id="page-settings" class="page">
 
-    <small>المباريات</small>
-
-  </button>
+      <div class="section-heading">
+        <h2>الإعدادات</h2>
+        <span>SETTINGS</span>
+      </div>
 
 
-  <button
-    type="button"
-    data-page="news"
-  >
+      <div class="settings-card">
 
-    <span class="nav-icon">▤</span>
+        <div class="setting-row">
 
-    <small>الأخبار</small>
+          <div>
+            <h3>حجم الخط</h3>
+            <p>تغيير حجم النص داخل التطبيق</p>
+          </div>
 
-  </button>
+          <select id="font-setting">
+            <option value="14">صغير</option>
+            <option value="16" selected>متوسط</option>
+            <option value="18">كبير</option>
+            <option value="20">كبير جداً</option>
+          </select>
+
+        </div>
 
 
-  <button
-    type="button"
-    data-page="settings"
-  >
+        <div class="setting-row">
 
-    <span class="nav-icon">⚙</span>
+          <div>
+            <h3>الخط العريض</h3>
+            <p>تفعيل أو إيقاف الخط العريض</p>
+          </div>
 
-    <small>الإعدادات</small>
+          <input
+            type="checkbox"
+            id="bold-setting">
 
-  </button>
+        </div>
 
-</nav>
+      </div>
+
+
+      <div class="about-card">
+
+        <h3>KORA TV VIP</h3>
+
+        <p>
+          تطبيق لمتابعة المباريات والقنوات الرياضية.
+        </p>
+
+        <span>VERSION 1.0</span>
+
+      </div>
+
+    </section>
+
+
+  </main>
+
+
+
+  <!-- شريط التنقل السفلي -->
+  <nav class="bottom-nav">
+
+
+    <!-- الرئيسية -->
+    <button
+      class="nav-item active"
+      data-page="home"
+      type="button">
+
+      <span class="nav-icon">
+
+        <svg viewBox="0 0 24 24" fill="none">
+          <path
+            d="M3 10.5L12 3L21 10.5V20C21 20.55 20.55 21 20 21H4C3.45 21 3 20.55 3 20V10.5Z"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"/>
+
+          <path
+            d="M9 21V13H15V21"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"/>
+        </svg>
+
+      </span>
+
+      <span>الرئيسية</span>
+
+    </button>
+
+
+
+    <!-- القنوات -->
+    <button
+      class="nav-item"
+      data-page="channels"
+      type="button">
+
+      <span class="nav-icon">
+
+        <svg viewBox="0 0 24 24" fill="none">
+
+          <rect
+            x="3"
+            y="6"
+            width="18"
+            height="13"
+            rx="2"
+            stroke="currentColor"
+            stroke-width="1.8"/>
+
+          <path
+            d="M8 3L12 6L16 3"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"/>
+
+          <path
+            d="M8 22H16"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"/>
+
+        </svg>
+
+      </span>
+
+      <span>القنوات</span>
+
+    </button>
+
+
+
+    <!-- المباريات بالوسط -->
+    <button
+      class="nav-item"
+      data-page="matches"
+      type="button">
+
+      <span class="nav-icon">
+
+        <svg viewBox="0 0 24 24" fill="none">
+
+          <circle
+            cx="12"
+            cy="12"
+            r="9"
+            stroke="currentColor"
+            stroke-width="1.8"/>
+
+          <path
+            d="M12 3L15 8L12 11L9 8L12 3Z"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linejoin="round"/>
+
+          <path
+            d="M3.5 9L9 8L10 14L5 17"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linejoin="round"/>
+
+          <path
+            d="M20.5 9L15 8L14 14L19 17"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linejoin="round"/>
+
+        </svg>
+
+      </span>
+
+      <span>المباريات</span>
+
+    </button>
+
+
+
+    <!-- الأخبار -->
+    <button
+      class="nav-item"
+      data-page="news"
+      type="button">
+
+      <span class="nav-icon">
+
+        <svg viewBox="0 0 24 24" fill="none">
+
+          <path
+            d="M4 4H20V20H4V4Z"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"/>
+
+          <path
+            d="M8 8H16M8 12H16M8 16H13"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"/>
+
+        </svg>
+
+      </span>
+
+      <span>الأخبار</span>
+
+    </button>
+
+
+
+    <!-- الإعدادات -->
+    <button
+      class="nav-item"
+      data-page="settings"
+      type="button">
+
+      <span class="nav-icon">
+
+        <svg viewBox="0 0 24 24" fill="none">
+
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+            stroke="currentColor"
+            stroke-width="1.8"/>
+
+          <path
+            d="M19.4 15A1.7 1.7 0 0 0 19.7 17L19.8 17.1L17.1 19.8L17 19.7A1.7 1.7 0 0 0 15 19.4A1.7 1.7 0 0 0 14 21V21H10V21A1.7 1.7 0 0 0 9 19.4A1.7 1.7 0 0 0 7 19.7L6.9 19.8L4.2 17.1L4.3 17A1.7 1.7 0 0 0 4.6 15A1.7 1.7 0 0 0 3 14H3V10H3A1.7 1.7 0 0 0 4.6 9A1.7 1.7 0 0 0 4.3 7L4.2 6.9L6.9 4.2L7 4.3A1.7 1.7 0 0 0 9 4.6A1.7 1.7 0 0 0 10 3V3H14V3A1.7 1.7 0 0 0 15 4.6A1.7 1.7 0 0 0 17 4.3L17.1 4.2L19.8 6.9L19.7 7A1.7 1.7 0 0 0 19.4 9A1.7 1.7 0 0 0 21 10H21V14H21A1.7 1.7 0 0 0 19.4 15Z"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linejoin="round"/>
+
+        </svg>
+
+      </span>
+
+      <span>الإعدادات</span>
+
+    </button>
+
+
+  </nav>
+
 
 </body>
 </html>
