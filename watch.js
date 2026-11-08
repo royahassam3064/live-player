@@ -1,6 +1,8 @@
 (() => {
   "use strict";
 
+  let client = null;
+
   const title = document.getElementById("watch-title");
   const frame = document.getElementById("video-frame");
 
@@ -22,9 +24,19 @@
     "AWARDED"
   ];
 
+  function setTitle(text) {
+    if (title) {
+      title.textContent = text;
+    }
+  }
+
   function safeUrl(raw) {
     try {
-      const url = new URL(raw);
+      if (!raw || typeof raw !== "string") {
+        return null;
+      }
+
+      const url = new URL(raw.trim());
 
       if (
         url.protocol !== "https:" &&
@@ -34,12 +46,15 @@
       }
 
       return url.href;
+
     } catch {
       return null;
     }
   }
 
   function showNotice(message) {
+    if (!frame) return;
+
     frame.innerHTML = "";
 
     const notice = document.createElement("div");
@@ -53,12 +68,12 @@
       justify-content:center;
       width:100%;
       height:100%;
-      min-height:200px;
+      min-height:220px;
       padding:20px;
       color:#f1d27a;
       background:#080808;
       text-align:center;
-      font-size:14px;
+      font-size:15px;
       line-height:1.9;
     `;
 
@@ -68,7 +83,7 @@
   function isFinished(data) {
     const status = String(
       data.match_status || data.status || ""
-    ).toUpperCase();
+    ).toUpperCase().trim();
 
     return FINISHED_STATUSES.includes(status);
   }
@@ -77,20 +92,25 @@
     const url = safeUrl(rawUrl);
 
     if (!url) {
+      setTitle(streamTitle || "المشغّل");
       showNotice("رابط بث القناة غير متوفر أو غير صالح.");
       return;
     }
 
-    title.textContent = streamTitle;
+    setTitle(streamTitle);
+
+    if (!frame) return;
+
+    frame.innerHTML = "";
 
     const iframe = document.createElement("iframe");
 
     iframe.src = url;
-    iframe.title = streamTitle;
+    iframe.title = streamTitle || "KORA TV Player";
     iframe.loading = "eager";
 
     iframe.allow =
-      "autoplay; fullscreen; picture-in-picture";
+      "autoplay; fullscreen; picture-in-picture; encrypted-media";
 
     iframe.allowFullscreen = true;
 
@@ -99,22 +119,47 @@
     iframe.referrerPolicy =
       "strict-origin-when-cross-origin";
 
-    frame.innerHTML = "";
+    iframe.style.cssText = `
+      display:block;
+      width:100%;
+      height:100%;
+      min-height:220px;
+      border:0;
+      background:#000;
+    `;
+
     frame.appendChild(iframe);
   }
 
-  async function loadChannel(name) {
-    title.textContent = name;
+  async function getChannel(name) {
+    const cleanName = String(name || "").trim();
+
+    if (!cleanName) {
+      throw new Error("Channel name is empty");
+    }
 
     const { data, error } = await client
       .from("tv_channels")
       .select("channel_name, stream_url")
-      .eq("channel_name", name)
-      .single();
+      .eq("channel_name", cleanName)
+      .maybeSingle();
 
-    if (error || !data) {
-      throw error || new Error("Channel not found");
+    if (error) {
+      throw error;
     }
+
+    if (!data) {
+      throw new Error("Channel not found");
+    }
+
+    return data;
+  }
+
+  async function loadChannel(name) {
+    setTitle(name || "القنوات");
+    showNotice("جاري تحميل القناة...");
+
+    const data = await getChannel(name);
 
     playStream(
       data.stream_url,
@@ -123,6 +168,8 @@
   }
 
   async function loadMatch(id) {
+    showNotice("جاري تحميل المباراة...");
+
     const { data, error } = await client
       .from("matches")
       .select(`
@@ -134,58 +181,73 @@
         status
       `)
       .eq("id", id)
-      .single();
+      .maybeSingle();
 
-    if (error || !data) {
-      throw error || new Error("Match not found");
+    if (error) {
+      throw error;
+    }
+
+    if (!data) {
+      throw new Error("Match not found");
     }
 
     const matchTitle =
       `${data.home_team || "الفريق الأول"} × ${data.away_team || "الفريق الثاني"}`;
 
-    title.textContent = matchTitle;
+    setTitle(matchTitle);
 
     if (isFinished(data)) {
       showNotice("انتهت المباراة.");
       return;
     }
 
-    // إذا المباراة مرتبطة بقناة، نشغّل بث القناة
-    if (data.channel) {
-      const { data: channelData, error: channelError } =
-        await client
-          .from("tv_channels")
-          .select("channel_name, stream_url")
-          .eq("channel_name", data.channel)
-          .single();
+    // تشغيل القناة المرتبطة بالمباراة
+    if (data.channel && data.channel.trim()) {
+      try {
+        const channelData = await getChannel(data.channel);
 
-      if (!channelError && channelData?.stream_url) {
-        playStream(
-          channelData.stream_url,
-          data.channel
+        if (channelData.stream_url) {
+          playStream(
+            channelData.stream_url,
+            channelData.channel_name
+          );
+
+          return;
+        }
+
+      } catch (error) {
+        console.warn(
+          "تعذر تحميل القناة المرتبطة بالمباراة:",
+          error
         );
-
-        return;
       }
     }
 
-    // رابط المباراة القديم كخيار احتياطي
-    playStream(data.stream_url, matchTitle);
+    // استخدام رابط المباراة إذا لم يتوفر رابط القناة
+    playStream(
+      data.stream_url,
+      matchTitle
+    );
   }
 
   async function init() {
+    if (!title || !frame) {
+      console.error("KORA TV: watch.html elements are missing.");
+      return;
+    }
+
     if (
       !window.supabase ||
       !window.SUPABASE_URL ||
       !window.SUPABASE_PUBLISHABLE_KEY
     ) {
-      title.textContent = "خطأ في الاتصال";
+      setTitle("خطأ في الاتصال");
       showNotice("تعذر الاتصال بإعدادات التطبيق.");
       return;
     }
 
     if (!matchId && !channelName) {
-      title.textContent = "المشغّل";
+      setTitle("المشغّل");
       showNotice("لم يتم تحديد قناة أو مباراة.");
       return;
     }
@@ -205,15 +267,13 @@
     } catch (error) {
       console.error("KORA TV player:", error);
 
-      title.textContent = "تعذر تشغيل البث";
+      setTitle("تعذر تشغيل البث");
 
       showNotice(
-        "تعذر تحميل القناة. تحقق من رابط البث واتصال الإنترنت."
+        "تعذر تحميل القناة. تحقق من وجودها ورابط البث واتصال الإنترنت."
       );
     }
   }
-
-  let client = null;
 
   init();
 
