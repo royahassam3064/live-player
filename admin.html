@@ -1,204 +1,206 @@
-<!doctype html>
-
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#090909">  <title>إدارة KORA TV VIP</title>  <link rel="stylesheet" href="style.css">  <style>
+  <meta name="theme-color" content="#080808">
+
+  <title>إدارة KORA TV VIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      background: #090909 !important;
-      color: #f5f5f5 !important;
+      margin: 0;
+      background: #080808;
+      color: #f5f5f5;
+      font-family: "Cairo", sans-serif;
+    }
+
+    button, input, select {
       font-family: inherit;
     }
 
     .topbar {
-      background: #111 !important;
-      border-bottom: 1px solid #b99745 !important;
-      color: #e8c66b !important;
+      background: #111;
+      border-bottom: 1px solid #292929;
+      padding: 17px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
     }
 
-    .brand {
-      color: #e8c66b !important;
-      font-weight: 800;
+    .topbar h2 {
+      margin: 0;
+      color: #d7b45a;
+      font-size: 19px;
     }
 
-    .admin-link {
-      color: #e8c66b !important;
+    a {
+      color: #d7b45a;
       text-decoration: none;
     }
 
     .container {
-      width: min(1050px, 94%);
+      width: min(950px, 94%);
       margin: 25px auto;
     }
 
     .panel {
-      background: #151515 !important;
-      color: #f5f5f5 !important;
-      border: 1px solid #333 !important;
-      border-radius: 14px;
+      background: #141414;
+      border: 1px solid #292929;
+      border-radius: 13px;
       padding: 20px;
       margin-bottom: 20px;
-      box-shadow: 0 5px 20px #0005;
     }
 
-    .panel h1,
-    .panel h2,
-    .panel h3 {
-      color: #e8c66b !important;
+    h1, h2, h3 {
+      margin-top: 0;
     }
 
-    .panel-heading {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
+    h1 {
+      font-size: 23px;
+    }
+
+    h2 {
+      color: #d7b45a;
+      font-size: 19px;
+    }
+
+    h3 {
+      font-size: 16px;
+    }
+
+    p {
+      color: #aaa;
     }
 
     label {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      color: #eee !important;
-      margin-bottom: 15px;
+      display: block;
+      margin: 13px 0;
+      color: #ddd;
+      font-size: 14px;
     }
 
-    input,
-    select {
+    input, select {
+      display: block;
       width: 100%;
-      min-height: 44px;
-      padding: 10px 12px;
-      border: 1px solid #444 !important;
-      border-radius: 9px;
-      background: #202020 !important;
-      color: #fff !important;
+      margin-top: 7px;
+      padding: 13px;
+      background: #090909;
+      border: 1px solid #353535;
+      border-radius: 8px;
+      color: white;
       outline: none;
-      box-sizing: border-box;
     }
 
-    input:focus,
-    select:focus {
-      border-color: #d7b456 !important;
-      box-shadow: 0 0 0 2px #d7b45622;
-    }
-
-    input::placeholder {
-      color: #999 !important;
+    input:focus, select:focus {
+      border-color: #d7b45a;
     }
 
     button {
       border: 0;
-      border-radius: 9px;
+      border-radius: 8px;
       padding: 11px 18px;
       cursor: pointer;
       font-weight: 700;
-      transition: .2s;
     }
 
     button:disabled {
-      opacity: .5;
+      opacity: .55;
       cursor: not-allowed;
     }
 
-    button.primary {
-      background: #c5a34d !important;
-      color: #111 !important;
+    .primary {
+      background: #d7b45a;
+      color: #111;
     }
 
-    button.secondary {
-      background: #333 !important;
-      color: #fff !important;
-      border: 1px solid #555;
+    .secondary {
+      background: #303030;
+      color: white;
     }
 
-    button.danger {
-      background: #8d2929 !important;
-      color: #fff !important;
+    .danger {
+      background: #a52d2d;
+      color: white;
     }
 
-    button:hover {
-      filter: brightness(1.12);
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-    }
-
-    .form-grid .full {
-      grid-column: 1 / -1;
-    }
-
-    .form-actions,
-    .row-actions {
+    .form-actions, .row-actions {
       display: flex;
       gap: 9px;
       flex-wrap: wrap;
-      align-items: center;
+      margin-top: 12px;
+    }
+
+    .message {
+      min-height: 22px;
+      color: #d7b45a;
+      font-size: 13px;
+    }
+
+    .notice {
+      color: #aaa;
+      font-size: 14px;
+    }
+
+    .error {
+      color: #ff7777;
     }
 
     .admin-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 15px;
-      background: #202020 !important;
-      border: 1px solid #393939;
-      border-radius: 11px;
-      padding: 14px;
+      gap: 12px;
+      background: #0c0c0c;
+      border: 1px solid #292929;
+      border-radius: 9px;
+      padding: 13px;
       margin: 10px 0;
-      color: #fff !important;
     }
 
     .admin-row strong {
       display: block;
-      color: #e8c66b !important;
-      margin-bottom: 7px;
+      color: #fff;
     }
 
     .admin-row small {
       display: block;
-      color: #bbb !important;
+      color: #999;
       margin-top: 5px;
-      overflow-wrap: anywhere;
     }
 
-    .message {
-      color: #e8c66b !important;
-      min-height: 20px;
-      overflow-wrap: anywhere;
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px 15px;
     }
 
-    .notice {
-      color: #ccc !important;
-      background: #202020 !important;
-      padding: 12px;
-      border-radius: 8px;
-    }
-
-    .error {
-      color: #ff7777 !important;
+    .full {
+      grid-column: 1 / -1;
     }
 
     hr {
       border: 0;
-      border-top: 1px solid #383838;
-      margin: 25px 0;
+      border-top: 1px solid #303030;
+      margin: 22px 0;
     }
 
     [hidden] {
       display: none !important;
     }
 
-    @media (max-width: 650px) {
+    @media (max-width: 600px) {
       .form-grid {
         grid-template-columns: 1fr;
-      }
-
-      .form-grid .full {
-        grid-column: auto;
       }
 
       .admin-row {
@@ -206,213 +208,217 @@
         flex-direction: column;
       }
 
-      .row-actions {
-        width: 100%;
-      }
-
-      .row-actions button {
-        flex: 1;
+      .topbar h2 {
+        font-size: 16px;
       }
     }
-  </style>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script defer src="config.js"></script>  <script defer src="admin.js"></script></head><body><header class="topbar">
-  <div class="brand">⚙️ إدارة KORA TV VIP</div>
-  <a class="admin-link" href="index.html">عرض التطبيق</a>
-</header><main class="container">  <!-- تسجيل الدخول -->  <section id="login-panel" class="panel"><h1>تسجيل دخول الإدارة</h1>
+  </style>
+</head>
 
-<label>
-  البريد الإلكتروني
-  <input id="email" type="email" autocomplete="username" required>
-</label>
+<body>
 
-<label>
-  كلمة المرور
-  <input id="password" type="password" autocomplete="current-password" required>
-</label>
+<header class="topbar">
+  <h2>⚙️ إدارة KORA TV VIP</h2>
+  <a href="index.html">عرض التطبيق</a>
+</header>
 
-<button id="login-btn" class="primary" type="button">
-  دخول
-</button>
+<main class="container">
 
-<p id="login-message" class="message"></p>
-
-  </section>  <!-- لوحة الإدارة -->  <section id="admin-panel" class="panel" hidden><div class="panel-heading">
-  <h1>لوحة التحكم</h1>
-
-  <button id="logout-btn" class="secondary" type="button">
-    تسجيل الخروج
-  </button>
-</div>
-
-<hr>
-
-<!-- استيراد المباريات -->
-<section class="panel">
-
-  <h2>استيراد المباريات تلقائياً</h2>
-
-  <p>اجلب المباريات من خدمة Football Data API.</p>
-
-  <button id="fetch-matches-btn" class="primary" type="button">
-    تحديث المباريات
-  </button>
-
-  <p id="api-message" class="message"></p>
-
-  <div id="api-matches"></div>
-
-</section>
-
-<hr>
-
-<!-- إدارة القنوات -->
-<section class="panel">
-
-  <h2>إدارة القنوات</h2>
-
-  <p>أضف روابط مشغّلات القنوات التي تملك تصريحاً باستخدامها.</p>
-
-  <form id="channel-form">
+  <!-- تسجيل الدخول -->
+  <section id="login-panel" class="panel">
+    <h1>تسجيل دخول الإدارة</h1>
 
     <label>
-      اسم القناة
-      <input
-        id="channel-name"
-        type="text"
-        maxlength="100"
-        placeholder="مثلاً: قناتي"
-        required
-      >
+      البريد الإلكتروني
+      <input id="email" type="email" autocomplete="username" required>
     </label>
 
     <label>
-      رابط المشغّل
-      <input
-        id="channel-stream-url"
-        type="url"
-        placeholder="https://..."
-        required
-      >
+      كلمة المرور
+      <input id="password" type="password" autocomplete="current-password" required>
     </label>
 
-    <div class="form-actions">
+    <button id="login-btn" class="primary" type="button">
+      دخول
+    </button>
 
-      <button id="save-channel-btn" class="primary" type="submit">
-        حفظ القناة
-      </button>
+    <p id="login-message" class="message"></p>
+  </section>
 
-      <button
-        id="cancel-channel-edit"
-        class="secondary"
-        type="button"
-        hidden
-      >
-        إلغاء التعديل
-      </button>
+  <!-- لوحة التحكم -->
+  <section id="admin-panel" hidden>
 
+    <div class="panel">
+      <div class="panel-heading">
+        <h1>لوحة التحكم</h1>
+        <button id="logout-btn" class="secondary" type="button">
+          تسجيل الخروج
+        </button>
+      </div>
     </div>
 
-    <p id="channel-message" class="message"></p>
+    <!-- استيراد المباريات -->
+    <section class="panel">
+      <h2>استيراد المباريات تلقائياً</h2>
+      <p>اجلب المباريات من خدمة Football Data API.</p>
 
-  </form>
+      <button id="fetch-matches-btn" class="primary" type="button">
+        تحديث المباريات
+      </button>
 
-  <hr>
+      <p id="api-message" class="message"></p>
+      <div id="api-matches"></div>
+    </section>
 
-  <h3>القنوات المحفوظة</h3>
+    <!-- إدارة القنوات -->
+    <section class="panel">
+      <h2>إدارة القنوات</h2>
+      <p>أضف روابط مشغّلات القنوات التي تملك تصريحاً باستخدامها.</p>
 
-  <div id="admin-channels">
-    <p class="notice">جارٍ التحميل...</p>
-  </div>
+      <form id="channel-form">
 
-</section>
+        <label>
+          اسم القناة
+          <input
+            id="channel-name"
+            type="text"
+            maxlength="100"
+            placeholder="مثلاً: قناتي"
+            required
+          >
+        </label>
 
-<hr>
+        <label>
+          رابط المشغّل
+          <input
+            id="channel-stream-url"
+            type="url"
+            placeholder="https://..."
+            required
+          >
+        </label>
 
-<!-- إضافة وتعديل مباراة -->
-<h2 id="form-title">إضافة مباراة</h2>
+        <div class="form-actions">
+          <button id="save-channel-btn" class="primary" type="submit">
+            حفظ القناة
+          </button>
 
-<form id="match-form">
+          <button
+            id="cancel-channel-edit"
+            class="secondary"
+            type="button"
+            hidden
+          >
+            إلغاء التعديل
+          </button>
+        </div>
 
-  <input id="match-id" type="hidden">
+        <p id="channel-message" class="message"></p>
+      </form>
 
-  <div class="form-grid">
+      <hr>
 
-    <label>
-      الفريق الأول
-      <input id="home-team" required maxlength="80">
-    </label>
+      <h3>القنوات المحفوظة</h3>
+      <div id="admin-channels">
+        <p class="notice">جارٍ التحميل...</p>
+      </div>
+    </section>
 
-    <label>
-      الفريق الثاني
-      <input id="away-team" required maxlength="80">
-    </label>
+    <!-- إضافة وتعديل مباراة -->
+    <section class="panel">
 
-    <label>
-      البطولة
-      <input id="competition" maxlength="120">
-    </label>
+      <h2 id="form-title">إضافة مباراة</h2>
 
-    <label>
-      موعد المباراة (توقيت بغداد)
-      <input id="match-time" type="datetime-local" required>
-    </label>
+      <form id="match-form">
 
-    <label>
-      رابط شعار الفريق الأول
-      <input id="home-logo" type="url" placeholder="https://...">
-    </label>
+        <input id="match-id" type="hidden">
 
-    <label>
-      رابط شعار الفريق الثاني
-      <input id="away-logo" type="url" placeholder="https://...">
-    </label>
+        <div class="form-grid">
 
-    <label>
-      القناة الناقلة
-      <select id="channel">
-        <option value="">بدون قناة</option>
-        <option value="beIN Sports 1">beIN Sports 1</option>
-        <option value="beIN Sports 2">beIN Sports 2</option>
-        <option value="beIN Sports 3">beIN Sports 3</option>
-        <option value="beIN Sports 4">beIN Sports 4</option>
-        <option value="beIN Sports 5">beIN Sports 5</option>
-      </select>
-    </label>
+          <label>
+            الفريق الأول
+            <input id="home-team" required maxlength="80">
+          </label>
 
-    <label class="full">
-      رابط البث الخاص بالمباراة
-      <input id="stream-url" type="url" placeholder="https://...">
-    </label>
+          <label>
+            الفريق الثاني
+            <input id="away-team" required maxlength="80">
+          </label>
 
-  </div>
+          <label>
+            البطولة
+            <input id="competition" maxlength="120">
+          </label>
 
-  <div class="form-actions">
+          <label>
+            موعد المباراة (توقيت بغداد)
+            <input id="match-time" type="datetime-local" required>
+          </label>
 
-    <button class="primary" type="submit">
-      حفظ المباراة
-    </button>
+          <label>
+            رابط شعار الفريق الأول
+            <input id="home-logo" type="url" placeholder="https://...">
+          </label>
 
-    <button
-      class="secondary"
-      type="button"
-      id="cancel-edit"
-      hidden
-    >
-      إلغاء التعديل
-    </button>
+          <label>
+            رابط شعار الفريق الثاني
+            <input id="away-logo" type="url" placeholder="https://...">
+          </label>
 
-  </div>
+          <label>
+            القناة الناقلة
+            <select id="channel">
+              <option value="">بدون قناة</option>
+              <option value="beIN Sports 1">beIN Sports 1</option>
+              <option value="beIN Sports 2">beIN Sports 2</option>
+              <option value="beIN Sports 3">beIN Sports 3</option>
+              <option value="beIN Sports 4">beIN Sports 4</option>
+              <option value="beIN Sports 5">beIN Sports 5</option>
+            </select>
+          </label>
 
-  <p id="form-message" class="message"></p>
+          <label class="full">
+            رابط البث الخاص بالمباراة
+            <input id="stream-url" type="url" placeholder="https://...">
+          </label>
 
-</form>
+        </div>
 
-<hr>
+        <div class="form-actions">
+          <button class="primary" type="submit">
+            حفظ المباراة
+          </button>
 
-<h2>المباريات المضافة</h2>
+          <button
+            class="secondary"
+            type="button"
+            id="cancel-edit"
+            hidden
+          >
+            إلغاء التعديل
+          </button>
+        </div>
 
-<div id="admin-matches">
-  <p class="notice">جارٍ التحميل...</p>
-</div>
+        <p id="form-message" class="message"></p>
 
-  </section></main></body>
+      </form>
+    </section>
+
+    <!-- المباريات -->
+    <section class="panel">
+      <h2>المباريات المضافة</h2>
+
+      <div id="admin-matches">
+        <p class="notice">جارٍ التحميل...</p>
+      </div>
+    </section>
+
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="admin.js"></script>
+
+</body>
 </html>
