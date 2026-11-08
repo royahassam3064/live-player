@@ -1,280 +1,200 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#080808">
+
+  <title>مشاهدة البث - KORA TV VIP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script defer src="watch.js"></script>
+
+  <style>
+    .watch-page {
+      min-height: 100vh;
+      background: #080808;
+      font-family: "Noto Sans Arabic", sans-serif;
+    }
+
+    .watch-page .container {
+      width: min(100% - 24px, 1000px);
+      margin: 20px auto 90px;
+    }
+
+    #watch-title {
+      margin: 18px 0;
+      color: #f1d27a;
+      font-size: 20px;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    #player-shell {
+      width: 100%;
+      overflow: hidden;
+      border: 1px solid rgba(214,173,69,.35);
+      border-radius: 13px;
+      background: #000;
+    }
+
+    .watch-logos {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      padding: 10px;
+      background: #080808;
+      border-bottom: 1px solid rgba(214,173,69,.25);
+    }
+
+    .watch-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 42px;
+      padding: 5px;
+      overflow: hidden;
+      border-radius: 7px;
+      background: #fff;
+    }
+
+    .watch-logo img {
+      display: block;
+      width: 100%;
+      max-height: 58px;
+      object-fit: contain;
+    }
+
+    #video-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #000;
+    }
+
+    #video-frame iframe,
+    #video-frame video {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #000;
+    }
+
+    .watch-loading {
+      display: grid;
+      place-items: center;
+      width: 100%;
+      height: 100%;
+      min-height: 220px;
+      padding: 20px;
+      color: #f1d27a;
+      background: #080808;
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .footer-note {
+      margin: 16px 0;
+      color: #999;
+      font-size: 12px;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    @media (max-width: 480px) {
+      .watch-page .container {
+        width: calc(100% - 16px);
+        margin-top: 12px;
+      }
+
+      #watch-title {
+        font-size: 17px;
+      }
+
+      .watch-logo img {
+        max-height: 48px;
+      }
+    }
+  </style>
+</head>
+
+<body class="watch-page">
+
+  <header class="topbar">
+    <a class="admin-link" href="index.html">
+      رجوع للمباريات
+    </a>
+
+    <div class="brand">
+      <span>KORA <b>TV VIP</b></span>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <h1 id="watch-title">
+      جارٍ تحميل البث...
+    </h1>
+
+    <div id="player-shell">
+
+      <div class="watch-logos">
+
+        <div class="watch-logo">
+          <img
+            src="https://i.postimg.cc/GhqfFVBK/1794151382661-copy-1032x279.jpg"
+            alt="KORA TV"
+          >
+        </div>
+
+        <div class="watch-logo">
+          <img
+            src="https://i.postimg.cc/4NB06qK4/1794151382661-copy-1032x168-copy-1032x168.jpg"
+            alt="KORA TV VIP"
+          >
+        </div>
+
+      </div>
+
+      <div id="video-frame">
+
+        <div class="watch-loading" id="loading-notice">
+          جارٍ تحميل المشغّل...
+        </div>
+
+      </div>
+
+    </div>
+
+    <p class="footer-note">
+      يعتمد تشغيل الفيديو على دعم مصدر البث للتضمين داخل المواقع.
+    </p>
+
+  </main>
+
+  <script>
 (() => {
-  "use strict";
+  // إنشاء سجل رجوع داخل صفحة المشغّل
+  history.pushState({ playerPage: true }, "", location.href);
 
-  let client = null;
-
-  const title = document.getElementById("watch-title");
-  const frame = document.getElementById("video-frame");
-
-  const params = new URLSearchParams(window.location.search);
-
-  const matchId = params.get("id");
-  const channelName = params.get("channel");
-
-  const FINISHED_STATUSES = [
-    "FINISHED",
-    "FT",
-    "AET",
-    "PEN",
-    "AFTER_EXTRA_TIME",
-    "FULL_TIME",
-    "ENDED",
-    "COMPLETE",
-    "COMPLETED",
-    "AWARDED"
-  ];
-
-  function setTitle(text) {
-    if (title) {
-      title.textContent = text;
-    }
-  }
-
-  function safeUrl(raw) {
-    try {
-      if (!raw || typeof raw !== "string") {
-        return null;
-      }
-
-      const url = new URL(raw.trim());
-
-      if (
-        url.protocol !== "https:" &&
-        url.protocol !== "http:"
-      ) {
-        return null;
-      }
-
-      return url.href;
-
-    } catch {
-      return null;
-    }
-  }
-
-  function showNotice(message) {
-    if (!frame) return;
-
-    frame.innerHTML = "";
-
-    const notice = document.createElement("div");
-
-    notice.className = "watch-loading";
-    notice.textContent = message;
-
-    notice.style.cssText = `
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      width:100%;
-      height:100%;
-      min-height:220px;
-      padding:20px;
-      color:#f1d27a;
-      background:#080808;
-      text-align:center;
-      font-size:15px;
-      line-height:1.9;
-    `;
-
-    frame.appendChild(notice);
-  }
-
-  function isFinished(data) {
-    const status = String(
-      data.match_status || data.status || ""
-    ).toUpperCase().trim();
-
-    return FINISHED_STATUSES.includes(status);
-  }
-
-  function playStream(rawUrl, streamTitle) {
-    const url = safeUrl(rawUrl);
-
-    if (!url) {
-      setTitle(streamTitle || "المشغّل");
-      showNotice("رابط بث القناة غير متوفر أو غير صالح.");
-      return;
-    }
-
-    setTitle(streamTitle);
-
-    if (!frame) return;
-
-    frame.innerHTML = "";
-
-    const iframe = document.createElement("iframe");
-
-    iframe.src = url;
-    iframe.title = streamTitle || "KORA TV Player";
-    iframe.loading = "eager";
-
-    iframe.allow =
-      "autoplay; fullscreen; picture-in-picture; encrypted-media";
-
-    iframe.allowFullscreen = true;
-
-    iframe.setAttribute("allowfullscreen", "");
-
-    iframe.referrerPolicy =
-      "strict-origin-when-cross-origin";
-
-    iframe.style.cssText = `
-      display:block;
-      width:100%;
-      height:100%;
-      min-height:220px;
-      border:0;
-      background:#000;
-    `;
-
-    frame.appendChild(iframe);
-  }
-
-  async function getChannel(name) {
-    const cleanName = String(name || "").trim();
-
-    if (!cleanName) {
-      throw new Error("Channel name is empty");
-    }
-
-    const { data, error } = await client
-      .from("tv_channels")
-      .select("channel_name, stream_url")
-      .eq("channel_name", cleanName)
-      .maybeSingle();
-
-    if (error) {
-      throw error;
-    }
-
-    if (!data) {
-      throw new Error("Channel not found");
-    }
-
-    return data;
-  }
-
-  async function loadChannel(name) {
-    setTitle(name || "القنوات");
-    showNotice("جاري تحميل القناة...");
-
-    const data = await getChannel(name);
-
-    playStream(
-      data.stream_url,
-      data.channel_name
-    );
-  }
-
-  async function loadMatch(id) {
-    showNotice("جاري تحميل المباراة...");
-
-    const { data, error } = await client
-      .from("matches")
-      .select(`
-        home_team,
-        away_team,
-        channel,
-        stream_url,
-        match_status,
-        status
-      `)
-      .eq("id", id)
-      .maybeSingle();
-
-    if (error) {
-      throw error;
-    }
-
-    if (!data) {
-      throw new Error("Match not found");
-    }
-
-    const matchTitle =
-      `${data.home_team || "الفريق الأول"} × ${data.away_team || "الفريق الثاني"}`;
-
-    setTitle(matchTitle);
-
-    if (isFinished(data)) {
-      showNotice("انتهت المباراة.");
-      return;
-    }
-
-    // تشغيل القناة المرتبطة بالمباراة
-    if (data.channel && data.channel.trim()) {
-      try {
-        const channelData = await getChannel(data.channel);
-
-        if (channelData.stream_url) {
-          playStream(
-            channelData.stream_url,
-            channelData.channel_name
-          );
-
-          return;
-        }
-
-      } catch (error) {
-        console.warn(
-          "تعذر تحميل القناة المرتبطة بالمباراة:",
-          error
-        );
-      }
-    }
-
-    // استخدام رابط المباراة إذا لم يتوفر رابط القناة
-    playStream(
-      data.stream_url,
-      matchTitle
-    );
-  }
-
-  async function init() {
-    if (!title || !frame) {
-      console.error("KORA TV: watch.html elements are missing.");
-      return;
-    }
-
-    if (
-      !window.supabase ||
-      !window.SUPABASE_URL ||
-      !window.SUPABASE_PUBLISHABLE_KEY
-    ) {
-      setTitle("خطأ في الاتصال");
-      showNotice("تعذر الاتصال بإعدادات التطبيق.");
-      return;
-    }
-
-    if (!matchId && !channelName) {
-      setTitle("المشغّل");
-      showNotice("لم يتم تحديد قناة أو مباراة.");
-      return;
-    }
-
-    try {
-      client = window.supabase.createClient(
-        window.SUPABASE_URL,
-        window.SUPABASE_PUBLISHABLE_KEY
-      );
-
-      if (channelName) {
-        await loadChannel(channelName);
-      } else {
-        await loadMatch(matchId);
-      }
-
-    } catch (error) {
-      console.error("KORA TV player:", error);
-
-      setTitle("تعذر تشغيل البث");
-
-      showNotice(
-        "تعذر تحميل القناة. تحقق من وجودها ورابط البث واتصال الإنترنت."
-      );
-    }
-  }
-
-  init();
-
+  window.addEventListener("popstate", () => {
+    // البقاء بصفحة المشغّل عند الضغط على رجوع
+    history.pushState({ playerPage: true }, "", location.href);
+  });
 })();
+</script>
+</body>
+</html>
