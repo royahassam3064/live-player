@@ -188,6 +188,13 @@
       grid-column: 1 / -1;
     }
 
+    .panel-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
     hr {
       border: 0;
       border-top: 1px solid #303030;
@@ -211,6 +218,11 @@
       .topbar h2 {
         font-size: 16px;
       }
+
+      .panel-heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -218,7 +230,7 @@
 <body>
 
 <header class="topbar">
-  <h2>⚙️ إدارة KORA TV VIP</h2>
+  <h2>إدارة KORA TV VIP</h2>
   <a href="index.html">عرض التطبيق</a>
 </header>
 
@@ -226,16 +238,27 @@
 
   <!-- تسجيل الدخول -->
   <section id="login-panel" class="panel">
+
     <h1>تسجيل دخول الإدارة</h1>
 
     <label>
       البريد الإلكتروني
-      <input id="email" type="email" autocomplete="username" required>
+      <input
+        id="email"
+        type="email"
+        autocomplete="username"
+        required
+      >
     </label>
 
     <label>
       كلمة المرور
-      <input id="password" type="password" autocomplete="current-password" required>
+      <input
+        id="password"
+        type="password"
+        autocomplete="current-password"
+        required
+      >
     </label>
 
     <button id="login-btn" class="primary" type="button">
@@ -243,46 +266,63 @@
     </button>
 
     <p id="login-message" class="message"></p>
+
   </section>
 
   <!-- لوحة التحكم -->
   <section id="admin-panel" hidden>
 
     <div class="panel">
+
       <div class="panel-heading">
         <h1>لوحة التحكم</h1>
+
         <button
-  type="button"
-  onclick="alert('JavaScript يعمل')"
-  style="background:gold;color:black;padding:15px;width:100%"
->
-  اختبار الزر
-</button>
+          id="logout-btn"
+          class="danger"
+          type="button"
+        >
+          تسجيل الخروج
+        </button>
       </div>
+
+      <p>مرحباً بك في لوحة إدارة KORA TV VIP.</p>
+
     </div>
 
     <!-- استيراد المباريات -->
     <section class="panel">
+
       <h2>استيراد المباريات تلقائياً</h2>
+
       <p>اجلب المباريات من خدمة Football Data API.</p>
 
-      <button id="fetch-matches-btn" class="primary" type="button">
+      <button
+        id="fetch-matches-btn"
+        class="primary"
+        type="button"
+      >
         تحديث المباريات
       </button>
 
       <p id="api-message" class="message"></p>
+
       <div id="api-matches"></div>
+
     </section>
 
     <!-- إدارة القنوات -->
     <section class="panel">
+
       <h2>إدارة القنوات</h2>
-      <p>أضف روابط مشغّلات القنوات التي تملك تصريحاً باستخدامها.</p>
+
+      <p>أضف روابط المشغّلات التي تملك تصريحاً باستخدامها.</p>
 
       <form id="channel-form">
 
         <label>
           اسم القناة
+
           <input
             id="channel-name"
             type="text"
@@ -294,6 +334,7 @@
 
         <label>
           رابط المشغّل
+
           <input
             id="channel-stream-url"
             type="url"
@@ -303,7 +344,12 @@
         </label>
 
         <div class="form-actions">
-          <button id="save-channel-btn" class="primary" type="submit">
+
+          <button
+            id="save-channel-btn"
+            class="primary"
+            type="submit"
+          >
             حفظ القناة
           </button>
 
@@ -315,17 +361,21 @@
           >
             إلغاء التعديل
           </button>
+
         </div>
 
         <p id="channel-message" class="message"></p>
+
       </form>
 
       <hr>
 
       <h3>القنوات المحفوظة</h3>
+
       <div id="admin-channels">
         <p class="notice">جارٍ التحميل...</p>
       </div>
+
     </section>
 
     <!-- إضافة وتعديل مباراة -->
@@ -371,6 +421,7 @@
 
           <label>
             القناة الناقلة
+
             <select id="channel">
               <option value="">بدون قناة</option>
               <option value="beIN Sports 1">beIN Sports 1</option>
@@ -389,6 +440,7 @@
         </div>
 
         <div class="form-actions">
+
           <button class="primary" type="submit">
             حفظ المباراة
           </button>
@@ -401,23 +453,28 @@
           >
             إلغاء التعديل
           </button>
+
         </div>
 
         <p id="form-message" class="message"></p>
 
       </form>
+
     </section>
 
     <!-- المباريات -->
     <section class="panel">
+
       <h2>المباريات المضافة</h2>
 
       <div id="admin-matches">
         <p class="notice">جارٍ التحميل...</p>
       </div>
+
     </section>
 
   </section>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
