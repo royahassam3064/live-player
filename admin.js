@@ -331,62 +331,75 @@
   }
 
   // استيراد مباراة
-  async function importMatch(match) {
-    const record = {
-      external_match_id: match.id,
+// استيراد مباراة مع الحفاظ على القناة ورابط البث
+async function importMatch(match) {
+  const record = {
+    external_match_id: match.id,
 
-      home_team:
-        match.homeTeam?.name || "غير معروف",
+    home_team:
+      match.homeTeam?.name || "غير معروف",
 
-      away_team:
-        match.awayTeam?.name || "غير معروف",
+    away_team:
+      match.awayTeam?.name || "غير معروف",
 
-      home_logo:
-        match.homeTeam?.crest || null,
+    home_logo:
+      match.homeTeam?.crest || null,
 
-      away_logo:
-        match.awayTeam?.crest || null,
+    away_logo:
+      match.awayTeam?.crest || null,
 
-      competition:
-        match.competition?.name || null,
+    competition:
+      match.competition?.name || null,
 
-      match_time:
-        match.utcDate,
+    match_time:
+      match.utcDate,
 
-      match_status:
-        match.status || null,
+    match_status:
+      match.status || null,
 
-      home_score:
-        match.score?.fullTime?.home ?? null,
+    home_score:
+      match.score?.fullTime?.home ?? null,
 
-      away_score:
-        match.score?.fullTime?.away ?? null
-    };
+    away_score:
+      match.score?.fullTime?.away ?? null
+  };
+
+  apiMessage.textContent = "جارٍ إضافة المباراة...";
+
+  try {
+    // البحث عن المباراة إذا كانت موجودة
+    const { data: existing, error: findError } = await client
+      .from("matches")
+      .select("id, channel, stream_url")
+      .eq("external_match_id", match.id)
+      .maybeSingle();
+
+    if (findError) throw findError;
+
+    // الاحتفاظ بالقناة ورابط البث السابقين
+    if (existing) {
+      record.channel = existing.channel;
+      record.stream_url = existing.stream_url;
+    }
+
+    const { error } = await client
+      .from("matches")
+      .upsert(record, {
+        onConflict: "external_match_id"
+      });
+
+    if (error) throw error;
 
     apiMessage.textContent =
-      "جارٍ إضافة المباراة...";
+      "تم تحديث المباراة بنجاح مع الحفاظ على القناة ورابط البث.";
 
-    try {
-      const { error } = await client
-        .from("matches")
-        .upsert(record, {
-          onConflict: "external_match_id"
-        });
+    await loadMatches();
 
-      if (error) {
-        throw error;
-      }
-
-      apiMessage.textContent =
-        "تمت إضافة المباراة بنجاح. يمكنك تعديلها وإضافة القناة ورابط البث من قائمة المباريات.";
-
-      await loadMatches();
-
-    } catch (error) {
-      apiMessage.textContent =
-        "خطأ أثناء إضافة المباراة: " + error.message;
-    }
+  } catch (error) {
+    apiMessage.textContent =
+      "خطأ أثناء إضافة المباراة: " + error.message;
   }
+}
 
   // تحميل المباريات
   async function loadMatches() {
