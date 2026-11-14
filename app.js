@@ -387,105 +387,118 @@ openChannelPlayer(button.dataset.openChannel);
 // بطاقات المباريات
 // =========================
 
+
+
 function matchCard(match) {
 
-const homeName = match.home_team || "الفريق الأول";
-const awayName = match.away_team || "الفريق الثاني";
+  const homeName = match.home_team || "الفريق الأول";
+  const awayName = match.away_team || "الفريق الثاني";
 
-const home = safeText(homeName);
-const away = safeText(awayName);
+  const home = safeText(homeName);
+  const away = safeText(awayName);
 
-const statusInfo = getStatus(match);
-const minute = getMinute(match, statusInfo);
+  const statusInfo = getStatus(match);
+  const minute = getMinute(match, statusInfo);
 
-const hasScore =
-match.home_score !== null &&
-match.home_score !== undefined &&
-match.home_score !== "" &&
-match.away_score !== null &&
-match.away_score !== undefined &&
-match.away_score !== "";
+  const hasScore =
+    match.home_score !== null &&
+    match.home_score !== undefined &&
+    match.home_score !== "" &&
+    match.away_score !== null &&
+    match.away_score !== undefined &&
+    match.away_score !== "";
 
-const scoreHtml = hasScore
-? `
-<strong class="score" dir="ltr">
-${safeText(match.home_score)} - ${safeText(match.away_score)}
-</strong>
-`
-: `<span class="vs">VS</span>`;
+  const scoreHtml = hasScore
+    ? `
+      <strong class="score" dir="ltr">
+        ${safeText(match.home_score)} - ${safeText(match.away_score)}
+      </strong>
+    `
+    : `<span class="vs">VS</span>`;
 
-const time = formatMatchTime(match.match_time);
+  const time = formatMatchTime(match.match_time);
 
-const competition = safeText(
-match.competition || "مباراة"
-);
+  const competition = safeText(
+    match.competition || "مباراة"
+  );
 
-const channel = String(
-match.channel || ""
-).trim();
+  const channel = String(
+    match.channel || ""
+  ).trim();
 
-const hasChannel = CHANNELS.some(
-item => item.name === channel
-);
+  const hasChannel = CHANNELS.some(
+    item => item.name === channel
+  );
 
-const showStream =
-hasChannel &&
-statusInfo.live &&
-!statusInfo.finished;
+  const hasDirectStream = Boolean(
+    safeHttpUrl(match.stream_url)
+  );
 
-return `
-<article class="match-card">
+  const showStream =
+    !statusInfo.finished &&
+    (
+      hasDirectStream ||
+      (hasChannel && statusInfo.live)
+    );
 
-<div class="match-meta">
+  const watchUrl = hasDirectStream
+    ? `watch.html?id=${encodeURIComponent(match.id)}`
+    : `watch.html?channel=${encodeURIComponent(channel)}`;
 
-<span>${competition}</span>
+  return `
+    <article class="match-card">
 
-<span class="match-time-label">
-${safeText(time)}
-</span>
+      <div class="match-meta">
 
-<span class="${statusInfo.css}">
-${safeText(statusInfo.label)}
-</span>
+        <span>${competition}</span>
 
-${minute ? `
-<span class="match-minute">
-${safeText(minute)}
-</span>
-` : ""}
+        <span class="match-time-label">
+          ${safeText(time)}
+        </span>
 
-</div>
+        <span class="${statusInfo.css}">
+          ${safeText(statusInfo.label)}
+        </span>
 
-<div class="teams">
+        ${minute ? `
+          <span class="match-minute">
+            ${safeText(minute)}
+          </span>
+        ` : ""}
 
-<div class="team">
-${logoHtml(match.home_logo, homeName)}
-<b>${home}</b>
-</div>
+      </div>
 
-<div class="match-middle">
-${scoreHtml}
-</div>
+      <div class="teams">
 
-<div class="team">
-${logoHtml(match.away_logo, awayName)}
-<b>${away}</b>
-</div>
+        <div class="team">
+          ${logoHtml(match.home_logo, homeName)}
+          <b>${home}</b>
+        </div>
 
-</div>
+        <div class="match-middle">
+          ${scoreHtml}
+        </div>
 
-${showStream ? `
-<a
-class="watch-btn"
-href="watch.html?channel=${encodeURIComponent(channel)}"
->
-مشاهدة البث
-</a>
-` : ""}
+        <div class="team">
+          ${logoHtml(match.away_logo, awayName)}
+          <b>${away}</b>
+        </div>
 
-</article>
-`;
+      </div>
+
+      ${showStream ? `
+        <a
+          class="watch-btn"
+          href="${safeText(watchUrl)}"
+        >
+          مشاهدة المباراة
+        </a>
+      ` : ""}
+
+    </article>
+  `;
 }
+
 
 // =========================
 // فلترة المباريات حسب اليوم
