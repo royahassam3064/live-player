@@ -88,48 +88,73 @@
     return FINISHED_STATUSES.includes(status);
   }
 
-  function playStream(rawUrl, streamTitle) {
-    const url = safeUrl(rawUrl);
 
-    if (!url) {
-      setTitle(streamTitle || "المشغّل");
-      showNotice("رابط بث القناة غير متوفر أو غير صالح.");
-      return;
-    }
+function playStream(rawUrl, streamTitle) {
+  const url = safeUrl(rawUrl);
 
-    setTitle(streamTitle);
-
-    if (!frame) return;
-
-    frame.innerHTML = "";
-
-    const iframe = document.createElement("iframe");
-
-    iframe.src = url;
-    iframe.title = streamTitle || "KORA TV Player";
-    iframe.loading = "eager";
-
-    iframe.allow =
-      "autoplay; fullscreen; picture-in-picture; encrypted-media";
-
-    iframe.allowFullscreen = true;
-
-    iframe.setAttribute("allowfullscreen", "");
-
-    iframe.referrerPolicy =
-      "strict-origin-when-cross-origin";
-
-    iframe.style.cssText = `
-      display:block;
-      width:100%;
-      height:100%;
-      min-height:220px;
-      border:0;
-      background:#000;
-    `;
-
-    frame.appendChild(iframe);
+  if (!url) {
+    setTitle(streamTitle || "المشغّل");
+    showNotice("رابط المشغّل غير صالح.");
+    return;
   }
+
+  setTitle(streamTitle || "المشغّل");
+
+  if (!frame) return;
+
+  frame.innerHTML = "";
+
+  const wrapper = document.createElement("div");
+  wrapper.style.cssText = `
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  `;
+
+  const iframe = document.createElement("iframe");
+
+  iframe.src = url;
+  iframe.title = streamTitle || "KORA TV Player";
+  iframe.loading = "eager";
+  iframe.allow = "autoplay; fullscreen; picture-in-picture; encrypted-media";
+  iframe.allowFullscreen = true;
+  iframe.referrerPolicy = "strict-origin-when-cross-origin";
+
+  iframe.style.cssText = `
+    display:block;
+    width:100%;
+    height:100%;
+    min-height:220px;
+    aspect-ratio:16/9;
+    border:0;
+    background:#000;
+  `;
+
+  const openButton = document.createElement("a");
+
+  openButton.href = url;
+  openButton.target = "_blank";
+  openButton.rel = "noopener noreferrer";
+  openButton.textContent = "فتح المشغّل كاملاً بالمتصفح";
+
+  openButton.style.cssText = `
+    display:block;
+    padding:13px;
+    text-align:center;
+    color:#fff;
+    background:#d6ad45;
+    border-radius:10px;
+    text-decoration:none;
+    font-weight:bold;
+  `;
+
+  wrapper.appendChild(iframe);
+  wrapper.appendChild(openButton);
+
+  frame.appendChild(wrapper);
+}
+
 
   async function getChannel(name) {
     const cleanName = String(name || "").trim();
